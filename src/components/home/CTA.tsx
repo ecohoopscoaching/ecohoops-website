@@ -42,21 +42,20 @@ export default function CTA() {
             >
               <h2 className="font-display text-section uppercase mb-6">
                 READY TO{' '}
-                <span className="gradient-text">JOIN THE MOVEMENT</span>
+                <span className="gradient-text">GET STARTED</span>
                 ?
               </h2>
               <p className="text-lg text-eco-muted-light max-w-xl mx-auto mb-10">
-                No tryouts. No cuts. No elitism. Just basketball the way it was meant to be.
-                Sign up today and let your kid find their game.
+                Join the EcoHoops family today.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/register" className="btn-glow flex items-center gap-2 text-base">
-                  Join Now
+                  Find a Program
                   <ArrowRight size={18} />
                 </Link>
-                <Link to="/philosophy" className="btn-ghost">
-                  Learn Our Approach
+                <Link to="/contact" className="btn-ghost">
+                  Contact Us
                 </Link>
               </div>
             </motion.div>

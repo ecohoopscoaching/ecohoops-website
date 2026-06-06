@@ -28,6 +28,7 @@ const FOOTER_LINKS = [
       { label: 'Friday Night Hoops', path: '/schedule' },
       { label: 'Book Club', path: '/philosophy' },
       { label: 'Nonprofit', path: '/nonprofit' },
+      { label: 'Blog', path: '/blog' },
       { label: 'Contact', path: '/register' },
     ],
   },
@@ -37,7 +38,7 @@ const SOCIALS = [
   { icon: Instagram, href: 'https://instagram.com/ecohoopsbasketball', label: 'Instagram' },
   { icon: Twitter, href: 'https://twitter.com/eco_hoops', label: 'Twitter' },
   { icon: Youtube, href: '#', label: 'YouTube' },
-  { icon: Mail, href: 'mailto:info@ecohoops.ca', label: 'Email' },
+  { icon: Mail, href: 'mailto:ecohoopscoaching@gmail.com', label: 'Email' },
 ]
 
 export default function Footer() {
@@ -82,7 +83,7 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-eco-border">
       {/* Gradient glow at top */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-eco-orange/40 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-eco-blue/40 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
@@ -159,10 +160,30 @@ export default function Footer() {
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-eco-orange/10 border border-eco-orange/20 rounded-xl p-3 flex items-center gap-2"
+                className="bg-eco-blue/10 border border-eco-blue/20 rounded-xl p-4 space-y-3"
               >
-                <CheckCircle2 className="text-eco-orange" size={16} />
-                <span className="text-xs text-white">Thanks for subscribing!</span>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="text-eco-blue" size={16} />
+                  <span className="text-xs text-white font-bold">Subscribed!</span>
+                </div>
+                <p className="text-[10px] text-eco-muted-light leading-relaxed">
+                  Thanks for joining! Grab your shooting guide bonus gift below:
+                </p>
+                <div className="flex flex-col gap-1.5 pt-1">
+                  <Link 
+                    to="/guide" 
+                    className="btn-glow !py-2 !px-3 text-[10px] font-heading font-bold uppercase tracking-wider text-center block w-full text-eco-black"
+                  >
+                    📖 Read & Save PDF
+                  </Link>
+                  <a 
+                    href="/Bernstein_Basketball_Guide.txt" 
+                    download
+                    className="text-[10px] text-eco-muted-light hover:text-white transition-colors text-center block py-1 border border-white/5 bg-eco-surface rounded-lg font-heading"
+                  >
+                    💾 Download TXT
+                  </a>
+                </div>
               </motion.div>
             ) : (
               <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
@@ -198,11 +219,11 @@ export default function Footer() {
         <div className="mt-16 pt-8 border-t border-eco-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-eco-muted">
             &copy; 2026 EcoHoops Inc. All rights reserved. 
-            <Link to="/login" className="ml-2 hover:text-eco-orange/50 transition-colors opacity-30">Admin</Link>
+            <Link to="/login" className="ml-2 hover:text-eco-blue/50 transition-colors opacity-30">Admin</Link>
           </p>
           <div className="flex items-center gap-1">
             <span className="text-xs text-eco-muted">Built with</span>
-            <span className="text-eco-orange text-xs">&#9829;</span>
+            <span className="text-eco-blue text-xs">&#9829;</span>
             <span className="text-xs text-eco-muted">for the culture</span>
           </div>
         </div>

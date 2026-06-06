@@ -21,7 +21,7 @@ export default function Nonprofit() {
             <span className="gradient-text">BASKETBALL</span>
           </h1>
           <p className="text-eco-muted-light text-lg max-w-2xl mx-auto">
-            EcoHoops is a registered nonprofit organization dedicated to building resilient youth through sport. We believe in providing accessible basketball programming while actively prioritizing mental wellness.
+            EcoHoops is a registered nonprofit group. We help kids grow strong and healthy through basketball. We make sure all kids can join, and we protect their mental health.
           </p>
         </motion.div>
 
@@ -34,37 +34,47 @@ export default function Nonprofit() {
             className="order-2 lg:order-1"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-eco-orange/10 flex items-center justify-center">
-                <Brain className="text-eco-orange" size={24} />
+              <div className="w-12 h-12 rounded-2xl bg-eco-blue/10 flex items-center justify-center">
+                <Brain className="text-eco-blue" size={24} />
               </div>
-              <h2 className="font-display text-3xl text-white uppercase">Mental Health Focus</h2>
+              <h2 className="font-heading font-bold text-2xl text-white uppercase">Mental Health Focus</h2>
             </div>
             <p className="text-eco-muted-light mb-8 leading-relaxed">
-              Youth sports have become increasingly specialized and high-pressure. We combat athlete burnout, anxiety, and depression by normalizing mental health conversations both on and off the court.
+              Youth sports have become too stressful. Kids get too tired and anxious. We help kids stay happy by talking about feelings and mental health on the court.
             </p>
 
-            <div className="glow-card p-8 border-l-4 border-eco-orange relative overflow-hidden mb-10">
+            <div className="glow-card p-8 border-l-4 border-eco-blue relative overflow-hidden mb-10">
               <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Sparkles size={80} className="text-eco-orange" />
+                <Sparkles size={80} className="text-eco-blue" />
               </div>
               
-              <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-eco-orange mb-6 flex items-center gap-2">
+              <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-eco-blue mb-6 flex items-center gap-2">
                 The Foundation: UN Convention Article 31
               </h3>
               
               <div className="space-y-6 relative z-10">
                 <div className="flex gap-4">
-                  <span className="text-eco-orange font-display text-2xl opacity-50">01</span>
-                  <p className="text-sm text-white/90 leading-relaxed italic">
-                    "States Parties recognize the right of the child to rest and leisure, to engage in play and recreational activities appropriate to the age of the child and to participate freely in cultural life and the arts."
-                  </p>
+                  <span className="text-eco-blue font-heading font-bold text-2xl opacity-50">01</span>
+                  <div>
+                    <p className="text-sm text-white/90 leading-relaxed italic mb-1">
+                      "States Parties recognize the right of the child to rest and leisure, to engage in play and recreational activities appropriate to the age of the child and to participate freely in cultural life and the arts."
+                    </p>
+                    <p className="text-xs text-eco-muted-light">
+                      **This means: Every child has the right to rest, play, and have fun.**
+                    </p>
+                  </div>
                 </div>
                 
                 <div className="flex gap-4 pt-4 border-t border-white/5">
-                  <span className="text-eco-orange font-display text-2xl opacity-50">02</span>
-                  <p className="text-sm text-white/90 leading-relaxed italic">
-                    "States Parties shall respect and promote the right of the child to participate fully in cultural and artistic life and shall encourage the provision of appropriate and equal opportunities for cultural, artistic, recreational and leisure activity."
-                  </p>
+                  <span className="text-eco-blue font-heading font-bold text-2xl opacity-50">02</span>
+                  <div>
+                    <p className="text-sm text-white/90 leading-relaxed italic mb-1">
+                      "States Parties shall respect and promote the right of the child to participate fully in cultural and artistic life and shall encourage the provision of appropriate and equal opportunities for cultural, artistic, recreational and leisure activity."
+                    </p>
+                    <p className="text-xs text-eco-muted-light">
+                      **This means: Governments must make sure all kids get a fair chance to play and do activities.**
+                    </p>
+                  </div>
                 </div>
               </div>
               
@@ -74,7 +84,7 @@ export default function Nonprofit() {
                   href="https://www.unicef.org/child-rights-convention/convention-text" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-[10px] text-eco-orange hover:text-white underline underline-offset-4 transition-colors font-bold uppercase tracking-widest"
+                  className="text-[10px] text-eco-blue hover:text-white underline underline-offset-4 transition-colors font-bold uppercase tracking-widest"
                 >
                   View Full Document
                 </a>
@@ -82,14 +92,14 @@ export default function Nonprofit() {
             </div>
             <ul className="space-y-4">
               {[
-                'Monthly mental wellness workshops for all age groups',
-                'Coaches trained in mental health first aid',
-                'Partnerships with professional sports psychologists',
-                'Focus on psychological safety over "win at all costs"'
+                'Monthly classes about feelings and wellness for all kids',
+                'Coaches trained to help kids when they are stressed',
+                'Support from experts who understand the athlete\'s mind',
+                'We focus on making kids feel safe to make mistakes'
               ].map((item, i) => (
                 <li key={i} className="flex flex-start gap-3">
                   <div className="mt-1 flex-shrink-0">
-                    <Sparkles size={16} className="text-eco-orange" />
+                    <Sparkles size={16} className="text-eco-blue" />
                   </div>
                   <span className="text-white/80">{item}</span>
                 </li>
@@ -131,23 +141,23 @@ export default function Nonprofit() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <div className="glow-card p-10 text-center col-span-1 md:col-span-3">
-              <h3 className="text-2xl font-display text-white uppercase mb-6 flex items-center justify-center gap-3">
-                <Zap className="text-eco-orange" size={24} />
+              <h3 className="text-xl md:text-2xl font-heading font-bold text-white uppercase mb-6 flex items-center justify-center gap-3">
+                <Zap className="text-eco-blue" size={24} />
                 The Play State
               </h3>
               <p className="text-eco-muted-light leading-relaxed max-w-3xl mx-auto">
-                Scientific research shows that play is a biological necessity. When a child enters "The Play State," neurons across the midbrain light up, establishing new neural pathways that create physical agility, social confidence, and emotional regulation.
+                Science shows that play is a **biological necessity** (which means **something the body must have to stay alive and healthy**). When a child is playing, **neurons** (which are **brain cells**) light up. This builds new **neural pathways** (which are **connections in the brain**). These connections help kids move well, make friends, and learn **emotional regulation** (which means **controlling their feelings**).
               </p>
             </div>
             {[
-              { title: 'Self-Directed', desc: 'Players choose and direct the activity themselves, leading to deeper engagement.' },
-              { title: 'Intrinsically Motivated', desc: 'The activity is done for internal satisfaction rather than external rewards or fear.' },
-              { title: 'Structured', desc: 'Play follows rules that exist in the player’s mind, encouraging logic and discipline.' },
-              { title: 'Imaginative', desc: 'A creative aspect that allows for experimentation without real-world consequences.' },
-              { title: 'Active Engagement', desc: 'Total absorption where time seems to stop, building intense focus and flow.' }
+              { title: 'Self-Directed', desc: 'Kids choose the game themselves. This helps them focus and enjoy it more.' },
+              { title: 'Intrinsically Motivated', desc: 'Kids are **intrinsically motivated** (which means **doing something because you love it, not for a trophy or because you are scared**).' },
+              { title: 'Structured', desc: 'Play has rules in the child\'s mind. This helps them learn order and self-control.' },
+              { title: 'Imaginative', desc: 'Play is creative. Kids can try new things without being afraid of failing.' },
+              { title: 'Active Engagement', desc: 'Kids are completely focused. They forget about time and build deep focus.' }
             ].map((element, i) => (
               <div key={i} className={`bg-eco-surface2 p-8 rounded-3xl border border-eco-border hover:border-eco-blue/50 transition-colors ${i === 3 || i === 4 ? 'md:col-span-1.5' : ''}`}>
-                <div className="text-eco-blue font-display text-xl mb-3 flex items-center gap-3">
+                <div className="text-eco-blue font-heading font-bold text-lg mb-3 flex items-center gap-3">
                   <span className="opacity-30 text-2xl">{i + 1}</span>
                   {element.title}
                 </div>
@@ -163,7 +173,7 @@ export default function Nonprofit() {
             <div>
               <h4 className="font-heading font-bold text-white mb-2 uppercase tracking-wider">Wiring the Brain</h4>
               <p className="text-sm text-eco-muted-light leading-relaxed">
-                Because basketball at EcoHoops is designed as **Free Play**, it establishes connections in the cortex that are critical for youth development. The more often children are in a play state, the more they build the skills used for a lifetime: resilience, creativity, and equanimity.
+                Our basketball games are built as **Free Play**. This builds connections in the **cortex** (which is **the outer part of the brain used for thinking**). The more kids play, the more they build lifetime skills: **resilience** (which means **recovering from hard times**), creativity, and **equanimity** (which means **staying calm under pressure**).
               </p>
             </div>
           </div>
@@ -192,10 +202,10 @@ export default function Nonprofit() {
               <div className="w-12 h-12 rounded-2xl bg-eco-blue/10 flex items-center justify-center">
                 <Heart className="text-eco-blue" size={24} />
               </div>
-              <h2 className="font-display text-3xl text-white uppercase">Our Legal Foundation</h2>
+              <h2 className="font-heading font-bold text-2xl text-white uppercase">Our Legal Foundation</h2>
             </div>
             <p className="text-eco-muted-light mb-8 leading-relaxed">
-              EcoHoops operates under a unique, transparent dual-structure that ensures we provide high-quality training infrastructure while remaining fully dedicated to community access and social impact.
+              EcoHoops has two parts. This helps us run great basketball gyms while keeping program costs low for families who need help.
             </p>
 
             <div className="space-y-4">
@@ -209,21 +219,21 @@ export default function Nonprofit() {
                 </div>
                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: SEP 11, 2024</p>
                 <p className="text-xs text-eco-muted-light leading-relaxed">
-                  The central engine driving advanced training, development programs, facility leases, equipment procurement, and professional operations.
+                  This part runs the gym leases, buys the balls and hoops, and handles the main business of the basketball programs.
                 </p>
               </div>
 
               {/* Non-profit card */}
-              <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-orange/30 transition-colors">
+              <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-heading font-bold text-white text-base">EcoHoops for Kids Canada</h3>
-                  <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-orange/10 border border-eco-orange/30 text-eco-orange font-bold">
+                  <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue font-bold">
                     Federal Non-Profit
                   </span>
                 </div>
                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: JUL 31, 2025</p>
                 <p className="text-xs text-eco-muted-light leading-relaxed">
-                  Our dedicated federal non-profit organization focused entirely on accessible grassroots programs, mental health check-ins, financial aid subsidies, and community giveaways.
+                  This part is our non-profit. It helps kids get financial aid, runs free community events, and supports player wellness.
                 </p>
               </div>
             </div>

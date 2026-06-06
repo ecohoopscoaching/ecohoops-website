@@ -53,15 +53,13 @@ export default function AllGirlsProgram() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7 }}
             >
-              <span className="tag mb-4 inline-block">Specialized Training</span>
+              <span className="tag mb-4 inline-block">All Girls</span>
               <h2 className="font-display text-section uppercase tracking-tight mb-6">
-                <span className="text-white">EMPOWHER: </span>
-                <span className="gradient-text">ALL-GIRLS</span>
-                <br />
-                <span className="text-white">BASKETBALL</span>
+                <span className="text-white">BUILT FOR </span>
+                <span className="gradient-text">GIRLS.</span>
               </h2>
               <p className="text-eco-muted-light text-lg leading-relaxed">
-                EcoHoops is fiercely committed to closing the gender gap in youth sports. Our dedicated **All-Girls Program** provides an empowering, safe space where young female athletes build confidence, athletic excellence, and peer-to-peer leadership without distraction.
+                Designed to help them thrive.
               </p>
             </motion.div>
 
@@ -118,12 +116,9 @@ export default function AllGirlsProgram() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 items-center"
             >
-              <Link to="/register" className="w-full sm:w-auto btn-glow flex items-center justify-center gap-2">
-                Join the Girls Squad
+              <Link to="/girls" className="w-full sm:w-auto btn-glow flex items-center justify-center gap-2">
+                Explore Girls Programs
                 <ArrowRight size={16} />
-              </Link>
-              <Link to="/nonprofit" className="w-full sm:w-auto btn-ghost flex items-center justify-center gap-2">
-                Learn About Our Non-Profit Arm
               </Link>
             </motion.div>
 

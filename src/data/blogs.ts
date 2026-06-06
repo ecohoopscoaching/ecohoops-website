@@ -2,6 +2,58 @@ import { BlogPost } from '../types';
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    id: "682787864f3c70938c471f86",
+    slug: "take-off-the-adult-glasses-what-a-soccer-genius-taught-us-about-youth-basketball",
+    title: "🕶️ Take Off the Adult Glasses: What a Soccer Genius Taught Us About Youth Basketball",
+    excerpt: "Why putting child-sized eyes on youth sports development revolutionized Belgian soccer—and how it changes the game for EcoHoops Junior.",
+    date: "2026-06-05T14:30:00.000Z",
+    author: "Adrian Sapp",
+    image: "/images/adult_glasses.png",
+    category: "Coaching Philosophy",
+    content: `<h3>Take Off the Adult Glasses: What a Soccer Genius Taught Us About Youth Basketball</h3>
+<p>Imagine you buy your five-year-old child a brand-new video game. They press start, and instead of a fun first level, the game throws them into a massive boss battle against giant monsters. No instructions. No training. Just instant defeat over and over again while a crowd of adults stands behind them yelling instructions.</p>
+<p>They would throw the controller down and walk away, right? Of course they would. It is not fun. It makes no sense.</p>
+<p>Yet, this is exactly what we do to young kids in sports every single day. We put them on giant fields or courts. We make them play crazy games with ten different rules they do not understand. Then we wonder why they get bored, frustrated, and quit sports by the time they hit high school.</p>
+<p>We are tired of watching the old-school sports system burn kids out. That is why we built our brand-new 10-week EcoHoops Junior and Mini Movers programs. And to do it right, we stole the best blueprint on earth. It is a blueprint created by a soccer genius named Kris Van Der Haegen.</p>
+
+<figure id="figure-adult-glasses-cover" class="my-6">
+  <img id="adult-glasses-cover" src="/images/adult_glasses.png" alt="Oversized adult glasses on kid bench" class="object-cover bg-gray-100 rounded-lg md:rounded-xl lg:rounded-2xl w-full" style="aspect-ratio: 16/9; object-position: center center;" />
+</figure>
+
+<h3>The Man Who Saved Soccer</h3>
+<p>Kris Van Der Haegen is the boss of coach education for the Royal Belgian Football Association. Back in 2009, Belgium's national soccer team was ranked number 66 in the world. They were losing bad. The whole country was frustrated.</p>
+<p>Kris and his team realized the problem started at the very bottom with the little kids. Adults were running youth leagues just to win trophies. Little six-year-olds were playing huge games on giant fields. The biggest, strongest kids would grab the ball, run past everyone, and score. The smaller, highly skilled kids just sat on the bench or stood in the corner watching. Nobody was actually learning how to play.</p>
+<p>So, Kris did something crazy. He banned official scoreboard tables for little kids. He threw away the big team games. Instead, he made five-year-olds play 2v2 games. Just two kids against two kids on a tiny field with a tiny ball.</p>
+<p>The parents went absolutely wild. They literally cried during meetings. They screamed, "Soccer is a team sport! This is crazy!"</p>
+<p>Kris looked at them and gave them a reality check. He told them to take off their "adult glasses" and look at the world through the eyes of a child. Within six years of making this shift, tiny little Belgium became the number one ranked soccer team in the entire world. They built a golden generation of global superstars because they fixed how kids learn.</p>
+
+<div class="glow-card p-5 border-l-4 border-eco-blue bg-eco-dark/60 rounded-r-2xl my-6">
+  <p class="text-white text-sm md:text-md italic font-heading font-semibold leading-relaxed">
+    "You cannot develop if you do not touch the ball. If that was the case, you should be able to become a pro athlete just by playing PlayStation!"
+  </p>
+</div>
+
+<h3>How This Changes EcoHoops Junior</h3>
+<p>We are bringing that exact same world-class logic straight to Mississauga for our new 10-week youth basketball programs. Basketball is facing the exact same trap soccer faced. Adults are treating seven-year-olds like they are in the NBA Finals. They place them on full-sized courts, with heavy balls and rims that are way too high. It is a mess.</p>
+<p>EcoHoops Junior uses a scientific framework called <strong>Ecological Dynamics</strong>. Do not let the big words scare you. It simply means we create manageable chaos. We build games where the environment guides the learning, not a coach screaming instructions from the sideline.</p>
+<p>Here is how the Belgian model applies to our new court setup:</p>
+<ul class="list-disc pl-5 my-4 space-y-2">
+  <li><strong>No More Lines or Boring Drills:</strong> Children do not stand in a single-file line waiting two minutes to take one shot. That kills the fun. Our kids are constantly moving, playing, and exploring.</li>
+  <li><strong>Tiny Games, Huge Growth:</strong> We use small-sided games like 1v1, 2v2, and 3v3 on smaller courts. Every single child is forced to touch the ball, handle pressure, make a choice, and score.</li>
+  <li><strong>The Video Game Effect:</strong> We structure challenges so they feel like a video game. Level 1 is easy. Once a child masters it, the game naturally gets harder. They stay hooked because they feel themselves getting better.</li>
+  <li><strong>Building the Whole Athlete First:</strong> Our Mini Movers curriculum focuses on "multi-moves." Before a child can be a great basketball player, they need to know how to balance, run, jump, and track objects. We build the physical foundation first.</li>
+</ul>
+
+<h3>Our Big Goal</h3>
+<p>We want EcoHoops to become Canada's number one youth basketball brand. But we are not doing it by collecting plastic championship trophies in leagues for eight-year-olds. We are doing it by protecting the mental health and the joy of every single child who steps into our gym.</p>
+<p>We want your kids to fall totally in love with movement and sport. When a child loves the game, learning happens completely naturally. If they don't love it, development stops dead in its tracks.</p>
+<p>So, the next time you walk into our gym and see our coaches setting up crazy, chaotic mini-games instead of traditional lines, remember to take off your adult glasses. Trust the process. Your child is not missing out on instructions. They are busy learning how to play.</p>
+
+<div class="my-8 flex justify-center w-full">
+  <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/episode/4gqu903F1fQk5i119wxukb?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>`
+  },
+  {
     "id": "681767864f3c70938c471e85",
     "slug": "how-kids-learn-to-talk-is-exactly-how-they-should-learn-to-hoop",
     "title": "🧠🏀 How Kids Learn to Talk Is Exactly How They Should Learn to Hoop (Why Most Coaching Is Backwards and What to Do Instead)",

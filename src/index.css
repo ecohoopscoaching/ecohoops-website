@@ -46,6 +46,16 @@
 }
 
 @layer components {
+  /* Prevent browser faux-bolding on Anton display font to keep headings sharp and readable */
+  .font-display,
+  h1.font-display, h2.font-display,
+  .prose h1, .prose h2,
+  .prose-invert h1, .prose-invert h2 {
+    font-family: 'Anton', sans-serif !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.04em !important;
+  }
+
   /* Grain/Noise Overlay */
   .grain-overlay {
     position: fixed;

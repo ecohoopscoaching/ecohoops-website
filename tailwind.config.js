@@ -26,8 +26,8 @@ export default {
           cyan: '#4DA8DA',
           red: '#FF2D2D',
           green: '#00D26A',
-          muted: '#666666',
-          'muted-light': '#999999',
+          muted: '#8CA3BC',
+          'muted-light': '#DCE6F1',
           // Legacy aliases (keeping for compatibility)
           orange: '#97B3D2',
           'orange-light': '#B0C8E0',
@@ -42,9 +42,9 @@ export default {
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'hero': ['clamp(3.5rem, 10vw, 9rem)', { lineHeight: '0.9', letterSpacing: '-0.02em' }],
-        'section': ['clamp(2.5rem, 6vw, 5rem)', { lineHeight: '0.95', letterSpacing: '-0.02em' }],
-        'sub': ['clamp(1.5rem, 3vw, 2.5rem)', { lineHeight: '1.1' }],
+        'hero': ['clamp(3.5rem, 10vw, 9rem)', { lineHeight: '0.9', letterSpacing: '0.04em' }],
+        'section': ['clamp(2.5rem, 6vw, 5rem)', { lineHeight: '0.95', letterSpacing: '0.04em' }],
+        'sub': ['clamp(1.5rem, 3vw, 2.5rem)', { lineHeight: '1.1', letterSpacing: '0.02em' }],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -108,6 +108,9 @@ export default {
         'marquee-reverse': {
           '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0%)' },
+        },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
         },
       },
       boxShadow: {

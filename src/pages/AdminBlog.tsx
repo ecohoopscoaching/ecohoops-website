@@ -73,8 +73,8 @@ export default function AdminBlog() {
           className="glow-card p-8 rounded-3xl"
         >
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-eco-orange/20 rounded-2xl flex items-center justify-center">
-              <FileText className="text-eco-orange" size={24} />
+            <div className="w-12 h-12 bg-eco-blue/20 rounded-2xl flex items-center justify-center">
+              <FileText className="text-eco-blue" size={24} />
             </div>
             <div>
               <h1 className="text-2xl font-display uppercase tracking-tight text-white">Create New Post</h1>
@@ -94,7 +94,7 @@ export default function AdminBlog() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="The Future of Youth Sports..."
-                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50 transition-colors"
+                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50 transition-colors"
                 />
               </div>
 
@@ -107,7 +107,7 @@ export default function AdminBlog() {
                   type="text"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full bg-eco-surface2/50 border border-white/5 rounded-xl px-4 py-3 text-eco-muted-light font-mono text-xs focus:outline-none focus:border-eco-orange/50"
+                  className="w-full bg-eco-surface2/50 border border-white/5 rounded-xl px-4 py-3 text-eco-muted-light font-mono text-xs focus:outline-none focus:border-eco-blue/50"
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ export default function AdminBlog() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50"
+                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50"
                 >
                   <option>Innovation</option>
                   <option>Philosophy</option>
@@ -140,7 +140,7 @@ export default function AdminBlog() {
                   type="text"
                   value={formData.author}
                   onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50"
+                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50"
                 />
               </div>
 
@@ -153,7 +153,7 @@ export default function AdminBlog() {
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50"
+                  className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50"
                 />
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function AdminBlog() {
                 value={formData.excerpt}
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                 placeholder="A brief summary of the post..."
-                className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50 transition-colors resize-none"
+                className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50 transition-colors resize-none"
               />
             </div>
 
@@ -182,7 +182,7 @@ export default function AdminBlog() {
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="<h3>Write your masterpiece here...</h3>"
-                className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-orange/50 transition-colors font-mono text-sm"
+                className="w-full bg-eco-surface2 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue/50 transition-colors font-mono text-sm"
               />
             </div>
 
@@ -197,7 +197,7 @@ export default function AdminBlog() {
             <button
               disabled={isSubmitting}
               type="submit"
-              className="w-full py-4 bg-eco-orange hover:bg-eco-orange-light text-white rounded-xl font-heading font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,107,0,0.2)]"
+              className="w-full py-4 bg-eco-blue text-eco-black hover:bg-eco-blue/80 rounded-xl font-heading font-bold uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-glow-sm"
             >
               <Save size={18} />
               {isSubmitting ? 'Publishing...' : 'Publish Entry'}

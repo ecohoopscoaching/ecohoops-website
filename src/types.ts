@@ -76,6 +76,13 @@ export interface Pillar {
   description: string
   icon: string
   color: string
+  slug?: string
+  scienceTitle?: string
+  scienceDetails?: string[]
+  onCourtTitle?: string
+  onCourtDetails?: string[]
+  parentBenefit?: string[]
+  quote?: string
 }
 
 export interface PaymentRecord {

@@ -56,15 +56,11 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-hero uppercase mb-6"
+          className="font-display text-hero uppercase mb-6 leading-none"
         >
-          <span className="text-white">BUILDING</span>
+          <span className="text-white">KIDS FIRST.</span>
           <br />
-          <span className="gradient-text">PEOPLE</span>
-          <span className="text-white">, NOT</span>
-          <br />
-          <span className="text-white">JUST </span>
-          <span className="gradient-text">PROS</span>
+          <span className="gradient-text">ALWAYS.</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -74,9 +70,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-lg md:text-xl text-eco-muted-light max-w-2xl mx-auto mb-10 font-body leading-relaxed"
         >
-          Youth basketball reimagined. Where ecological dynamics meets street culture.
-          Where every kid finds their game.{' '}
-          <span className="text-white font-medium">Play. Learn. Grow.</span>
+          Basketball built for kids, not adult egos.
         </motion.p>
 
         {/* CTAs */}
@@ -87,13 +81,12 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
           <Link to="/register" className="btn-glow flex items-center gap-2 text-base">
-            Join Now
+            Find a Program
             <ArrowRight size={18} />
           </Link>
-          <button className="btn-ghost flex items-center gap-2">
-            <Play size={16} fill="currentColor" />
-            Watch the Mixtape
-          </button>
+          <Link to="/nonprofit" className="btn-ghost flex items-center gap-2 text-base">
+            Support the Nonprofit
+          </Link>
         </motion.div>
 
         {/* Stats Bar */}

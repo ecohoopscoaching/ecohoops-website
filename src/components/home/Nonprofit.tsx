@@ -42,15 +42,21 @@ export default function Nonprofit() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">Giving Back</span>
+          <span className="tag mb-4 inline-block">EcoHoops for Kids Canada</span>
           <h2 className="font-display text-section uppercase mb-4">
-            <span className="text-white">ECOHOOPS FOR </span>
-            <span className="gradient-text">KIDS CANADA</span>
+            <span className="text-white">PLAY BUILDS </span>
+            <span className="gradient-text">PEOPLE.</span>
           </h2>
-          <p className="text-eco-muted-light text-lg max-w-2xl mx-auto">
-            Our registered nonprofit arm. Because every kid deserves access to the game —
-            regardless of income, background, or ability.
+          <p className="text-eco-muted-light text-lg max-w-2xl mx-auto mb-6">
+            Community impact. Access. Mental health. Opportunity.
           </p>
+          <Link
+            to="/nonprofit"
+            className="btn-glow inline-flex items-center gap-2 !text-xs"
+          >
+            Learn More
+            <ArrowRight size={14} />
+          </Link>
         </motion.div>
 
         {/* Photo Collage + Initiatives */}

@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom'
 import { useScrollReveal, useMouseGlow } from '../../hooks/useScrollReveal'
 import { FEATURES } from '../../data/content'
 import {
-  Users, Calendar, CheckCircle, MessageCircle, CreditCard, Bot,
+  Users, Calendar, CheckCircle, MessageCircle, CreditCard, Bot, Zap, Brain, Trophy
 } from 'lucide-react'
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Users, Calendar, CheckCircle, MessageCircle, CreditCard, Bot,
+  Users, Calendar, CheckCircle, MessageCircle, CreditCard, Bot, Zap, Brain, Trophy
 }
 
 export default function Features() {
   const { ref, isVisible } = useScrollReveal(0.1)
 
   return (
-    <section ref={ref} className="relative py-32 overflow-hidden">
+    <section ref={ref} className="relative py-32 overflow-hidden bg-eco-dark">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -23,13 +23,13 @@ export default function Features() {
           transition={{ duration: 0.7 }}
           className="text-center mb-20"
         >
-          <span className="tag mb-4 inline-block">Platform</span>
+          <span className="tag mb-4 inline-block">The Difference</span>
           <h2 className="font-display text-section uppercase mb-4">
-            <span className="text-white">EVERYTHING YOUR </span>
-            <span className="gradient-text">TEAM NEEDS</span>
+            <span className="text-white">WHY ECOHOOPS </span>
+            <span className="gradient-text">IS DIFFERENT</span>
           </h2>
           <p className="text-eco-muted-light text-lg max-w-2xl mx-auto">
-            One platform to manage rosters, schedules, communication, payments, and player development. Built for coaches. Loved by parents.
+            A kids-first basketball movement focused on development, joy, and belonging.
           </p>
         </motion.div>
 

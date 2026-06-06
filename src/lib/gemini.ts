@@ -96,7 +96,7 @@ Give this a run with your squad and let me know how they adapt! Play. Learn. Gro
   if (normalized.includes('mental') || normalized.includes('wellness') || normalized.includes('burnout') || normalized.includes('health')) {
     return `Normalizing mental wellness is core to our entire DNA! As Dr. Stuart Brown famously said, *"The opposite of play is not work, it's depression."* 
     
-In youth sports today, there's too much elite pressure, leading to anxiety and burnout. Here is how we run things to build resilient minds:
+In youth sports today, there's too much hyper-competitive pressure, leading to anxiety and burnout. Here is how we run things to build resilient minds:
 1. **Psychological Safety:** No child is scolded for a turnover. Mistake-making is part of structural exploration!
 2. **Article 31 Advocacy:** We prioritize the child's right to rest, leisure, and free play.
 3. **Check-ins:** Always start and end practice with a brief mental check-in. Ask the kids what they are excited about, not just how they want to perform.

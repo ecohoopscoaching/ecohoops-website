@@ -50,7 +50,7 @@ export default function Testimonials() {
             {/* Quote icon */}
             <Quote
               size={48}
-              className="text-eco-orange/20 mb-8"
+              className="text-eco-blue/20 mb-8"
               fill="currentColor"
             />
 
@@ -62,12 +62,32 @@ export default function Testimonials() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
+                {/* 5-Star Rating for Google Reviews */}
+                {TESTIMONIALS[current].role.includes('Google') && (
+                  <div className="flex justify-center gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className="w-5 h-5 text-eco-blue fill-current"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    ))}
+                  </div>
+                )}
+
                 <p className="text-xl md:text-2xl lg:text-3xl font-heading font-medium text-white leading-relaxed mb-8 text-balance">
                   "{TESTIMONIALS[current].quote}"
                 </p>
-                <div>
-                  <p className="font-heading font-bold text-white">
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <p className="font-heading font-bold text-white flex items-center gap-2">
                     {TESTIMONIALS[current].name}
+                    {TESTIMONIALS[current].role.includes('Google') && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-eco-blue/10 text-eco-blue border border-eco-blue/20 uppercase tracking-wider">
+                        Google
+                      </span>
+                    )}
                   </p>
                   <p className="text-sm text-eco-muted">
                     {TESTIMONIALS[current].role}
@@ -81,7 +101,7 @@ export default function Testimonials() {
           <div className="flex items-center justify-center gap-4 mt-8">
             <button
               onClick={prev}
-              className="w-10 h-10 rounded-full border border-eco-border flex items-center justify-center text-eco-muted hover:text-white hover:border-eco-orange/30 transition-all"
+              className="w-10 h-10 rounded-full border border-eco-border flex items-center justify-center text-eco-muted hover:text-white hover:border-eco-blue/30 transition-all"
             >
               <ChevronLeft size={18} />
             </button>
@@ -93,7 +113,7 @@ export default function Testimonials() {
                   onClick={() => setCurrent(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     i === current
-                      ? 'w-8 bg-eco-orange'
+                      ? 'w-8 bg-eco-blue'
                       : 'w-1.5 bg-eco-muted/30 hover:bg-eco-muted/50'
                   }`}
                 />
@@ -102,7 +122,7 @@ export default function Testimonials() {
 
             <button
               onClick={next}
-              className="w-10 h-10 rounded-full border border-eco-border flex items-center justify-center text-eco-muted hover:text-white hover:border-eco-orange/30 transition-all"
+              className="w-10 h-10 rounded-full border border-eco-border flex items-center justify-center text-eco-muted hover:text-white hover:border-eco-blue/30 transition-all"
             >
               <ChevronRight size={18} />
             </button>

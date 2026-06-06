@@ -4,11 +4,11 @@ export const SCHEDULE: ScheduleEvent[] = [
   {
     id: 'e1',
     type: 'game',
-    title: 'vs Raptors Elite',
+    title: 'vs Raptors Prep',
     date: '2026-04-06',
     time: '2:00 PM',
     location: 'Hershey Centre, Mississauga',
-    opponent: 'Raptors Elite',
+    opponent: 'Raptors Prep',
     homeAway: 'home',
     rsvp: { going: 10, maybe: 1, notGoing: 1, total: 12 },
   },

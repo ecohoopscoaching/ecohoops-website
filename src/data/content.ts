@@ -4,34 +4,72 @@ export const PILLARS: Pillar[] = [
   {
     title: 'ECOLOGICAL DYNAMICS',
     subtitle: 'Train How Kids Really Learn',
-    description: 'Game-like practice scenarios that mirror real competition. No line drills. No standing around. Every session is alive, chaotic, and purposeful — just like the game itself.',
+    description: 'We learn by playing. No boring drills or standing in lines. We play games that look like real basketball, so kids react and learn naturally.',
     icon: 'Zap',
     color: '#B0C8E0',
+    slug: 'ecological-dynamics',
   },
   {
     title: 'CONSTRAINTS-LED APPROACH',
     subtitle: 'Change the Game, Not the Kid',
-    description: 'We shape the environment, not the player. By manipulating rules, space, and numbers, we let each athlete discover their own solutions. Every kid develops their unique game.',
+    description: 'We change the game, not the kid. By changing rules or using smaller balls, we help kids discover how to move. Every kid finds their own way to play.',
     icon: 'Puzzle',
     color: '#97B3D2',
+    slug: 'constraints-led-approach',
   },
   {
-    title: 'SELF-DETERMINATION',
+    title: 'SELF DETERMINATION THEORY',
     subtitle: 'Fuel the Fire Inside',
-    description: 'Rooted in the science of "The Play State," we focus on autonomy, competence, and connection. When kids are intrinsically motivated and self-directed, they don\'t just play — they wire their brains for resilience.',
+    description: 'We feed the fire inside. Kids stay excited when they have choices (autonomy), feel progress (competence), and feel they belong (connection).',
     icon: 'Flame',
     color: '#6A9BC7',
+    slug: 'self-determination-theory',
   },
   {
-    title: 'MENTAL HEALTH FIRST',
-    subtitle: 'Protect the Mind or Lose the Person',
-    description: 'Basketball is the vehicle, not the destination. Rooted in Article 31 of the UN Convention on the Rights of the Child, we weave mindfulness and safety into every session. We build resilient humans first.',
-    icon: 'Brain',
+    title: 'DIFFERENTIAL LEARNING',
+    subtitle: 'The Brain Loves Variety',
+    description: 'The brain loves variety. We use different ball weights, footing, and postures to wake up the brain. This helps kids learn faster and adapt to games.',
+    icon: 'Shuffle',
     color: '#4A7FB5',
+    slug: 'differential-learning',
+  },
+  {
+    title: 'GROWTH MINDSET',
+    subtitle: 'Celebrate the Effort, Learn from Mistakes',
+    description: 'Mistakes are just data, not disasters. We praise effort and trying new things. This builds brave kids who do not fear failure.',
+    icon: 'TrendingUp',
+    color: '#F0E6D3',
+    slug: 'growth-mindset',
+  },
+  {
+    title: 'MENTAL HEALTH',
+    subtitle: 'Protect the Mind or Lose the Person',
+    description: 'We protect the mind first. Every child has a right to play and rest under UN Article 31. We build a safe space where kids feel valued.',
+    icon: 'Brain',
+    color: '#85A4C4',
+    slug: 'mental-health',
   },
 ]
 
 export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: 'g1',
+    name: 'Dina Hamed',
+    role: 'Parent — Google Review',
+    quote: 'A fantastic program! My daughter has grown a lot as a player while having fun, learning the game, making friends, and understanding teamwork and community values. We\'re very happy to be part of this team.',
+  },
+  {
+    id: 'g2',
+    name: 'Brajgeet Bhathal',
+    role: 'Parent — Google Review',
+    quote: 'EcoHoops has been a fantastic experience! The program builds strong fundamentals in a fun and supportive environment, helping kids improve their skills while enjoying the game. Highly recommended!',
+  },
+  {
+    id: 'g3',
+    name: 'Joanna Kkk',
+    role: 'Parent — Google Review',
+    quote: 'EcoHoops for Kids Canada is a fantastic basketball program! Great structure, high energy, and a supportive coaching staff that makes learning basketball fun.',
+  },
   {
     id: 't1',
     name: 'Kendy M.',
@@ -113,53 +151,47 @@ export const PHILOSOPHY_CONTENT = {
   founder: {
     name: 'Adrian Sapp',
     title: 'Founder & Head Coach',
-    bio: 'Adrian created EcoHoops after witnessing how traditional competitive coaching harmed his own sons\' mental health and love for basketball. A lifelong basketball mind — player, coach, and basketball dad — he decided enough was enough. EcoHoops was born from the belief that we can keep the grit, the community, and the love for the game while burning the toxic culture that crushes young athletes.',
+    bio: 'Adrian started EcoHoops after seeing how high-pressure coaching hurt his own sons. He is a player, coach, and dad. He wants to keep competitive basketball fun and safe, and throw away the toxic pressure.',
   },
   mission: 'We\'re not here to build pros. We\'re here to build people. Basketball is just the tool.',
   vision: 'A world where every kid who picks up a basketball finds joy, growth, and belonging — regardless of talent level.',
   bookClub: {
     current: 'The Inner Game of Tennis',
     author: 'W. Timothy Gallwey',
-    description: 'Understanding the mental game and the power of letting go of conscious control.',
+    description: 'How to stay calm, stop overthinking, and let your body learn naturally.',
   },
 }
 
 export const FEATURES = [
   {
-    title: 'Team Management',
-    description: 'Full roster management, player profiles, stats tracking, and lineup builder — all in one place.',
+    title: 'Play-Based Learning',
+    description: 'Kids learn best by playing. We change the game setup (like using lower hoops) to help them learn.',
+    icon: 'Zap',
+    link: '/philosophy'
+  },
+  {
+    title: 'Confidence Building',
+    description: 'We make kids feel safe (psychological safety). Mistakes are celebrated as part of learning.',
+    icon: 'Brain',
+    link: '/philosophy'
+  },
+  {
+    title: 'Great Coaches',
+    description: 'Friendly coaches who help kids grow without shouting, shaming, or putting them down.',
     icon: 'Users',
-    link: '/teams'
+    link: '/about'
   },
   {
-    title: 'Smart Scheduling',
-    description: 'Games, practices, tournaments, and events with calendar sync, conflict detection, and automatic reminders.',
-    icon: 'Calendar',
-    link: '/schedule'
-  },
-  {
-    title: 'Live RSVP',
-    description: 'Real-time availability tracking. Know exactly who\'s coming to every game and practice.',
+    title: 'Safe Environments',
+    description: 'A kind gym where every kid belongs and is free from toxic sports pressure.',
     icon: 'CheckCircle',
-    link: '/schedule'
+    link: '/about'
   },
   {
-    title: 'Team Chat',
-    description: 'Instant messaging for coaches, parents, and players. Announcements, alerts, and group discussions.',
-    icon: 'MessageCircle',
-    link: '/dashboard'
-  },
-  {
-    title: 'Payment Tracking',
-    description: 'Automated invoicing, payment reminders, and financial reporting. No more chasing fees.',
-    icon: 'CreditCard',
-    link: '/dashboard'
-  },
-  {
-    title: 'AI Coach',
-    description: 'Powered by Google Gemini. Get instant answers about drills, strategy, player development, and the EcoHoops philosophy.',
-    icon: 'Bot',
-    link: '/dashboard'
+    title: 'Real Development',
+    description: 'We build happy, strong children who happen to be great basketball players.',
+    icon: 'Trophy',
+    link: '/philosophy'
   },
 ]
 

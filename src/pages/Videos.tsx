@@ -72,7 +72,7 @@ const VIDEOS: Video[] = [
     views: '2.5K',
     category: 'training',
     date: 'Dec 2024',
-    description: 'Learn the footwork patterns that make elite defenders.',
+    description: 'Learn the footwork patterns that make exceptional defenders.',
   },
   {
     id: '6',
@@ -171,7 +171,7 @@ export default function Videos() {
   const featured = VIDEOS.filter((v) => v.featured)
 
   return (
-    <section ref={ref} className="pt-28 pb-20 min-h-screen">
+    <section ref={ref} className="pt-10 pb-20 min-h-screen">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -573,7 +573,7 @@ const RECENT_GAMES: GameVideo[] = [
   },
   {
     id: 'fg2',
-    title: '2011 Boys vs Raptors Elite',
+    title: '2011 Boys vs Raptors Prep',
     thumbnail: '/images/IMG_0373.JPG',
     duration: '48:30',
     team: '2011 Boys',

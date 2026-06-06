@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { useScrollReveal } from '../hooks/useScrollReveal'
-import { SCHEDULE } from '../data/schedule'
 import {
   Calendar, MapPin, Clock, Users, Check, X, HelpCircle,
   Trophy, Dumbbell, Star, PartyPopper, Filter,
   ChevronDown, Plus, Trash2
 } from 'lucide-react'
 import type { ScheduleEvent } from '../types'
+import { useData } from '../contexts/DataContext'
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
   game: Trophy,
@@ -31,7 +31,7 @@ export default function Schedule() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const { ref, isVisible } = useScrollReveal(0.05)
   const { isAdmin } = useAuth()
-  const [events, setEvents] = useState<ScheduleEvent[]>(SCHEDULE)
+  const { schedule, addEvent, deleteEvent, updateEvent } = useData()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [userRsvps, setUserRsvps] = useState<Record<string, 'going'|'maybe'|'notGoing'>>({})
 
@@ -39,33 +39,32 @@ export default function Schedule() {
     const currentStatus = userRsvps[eventId]
     if (currentStatus === newStatus) return
 
-    setEvents(prev => prev.map(event => {
-      if (event.id !== eventId) return event
-      const updatedRsvp = { ...event.rsvp }
-      
-      if (currentStatus === 'going') updatedRsvp.going--
-      if (currentStatus === 'maybe') updatedRsvp.maybe--
-      if (currentStatus === 'notGoing') updatedRsvp.notGoing--
-      
-      if (newStatus === 'going') updatedRsvp.going++
-      if (newStatus === 'maybe') updatedRsvp.maybe++
-      if (newStatus === 'notGoing') updatedRsvp.notGoing++
+    const event = schedule.find(e => e.id === eventId)
+    if (!event) return
 
-      if (!currentStatus) {
-         updatedRsvp.total++
-      }
-
-      return { ...event, rsvp: updatedRsvp }
-    }))
+    const updatedRsvp = { ...event.rsvp }
     
+    if (currentStatus === 'going') updatedRsvp.going--
+    if (currentStatus === 'maybe') updatedRsvp.maybe--
+    if (currentStatus === 'notGoing') updatedRsvp.notGoing--
+    
+    if (newStatus === 'going') updatedRsvp.going++
+    if (newStatus === 'maybe') updatedRsvp.maybe++
+    if (newStatus === 'notGoing') updatedRsvp.notGoing++
+
+    if (!currentStatus) {
+       updatedRsvp.total++
+    }
+
+    updateEvent({ ...event, rsvp: updatedRsvp })
     setUserRsvps(prev => ({ ...prev, [eventId]: newStatus }))
   }
 
   const handleDeleteEvent = (eventId: string) => {
-    setEvents(prev => prev.filter(e => e.id !== eventId))
+    deleteEvent(eventId)
   }
 
-  const filtered = events
+  const filtered = schedule
     .filter((e) => filter === 'all' || e.type === filter)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
@@ -107,7 +106,7 @@ export default function Schedule() {
           <div className="flex justify-end mb-6">
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-eco-orange text-white rounded-xl text-sm font-heading font-semibold hover:bg-eco-orange/90 transition-colors shadow-glow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-eco-blue text-eco-black rounded-xl text-sm font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm"
             >
               <Plus size={16} />
               Add Event
@@ -116,7 +115,7 @@ export default function Schedule() {
         )}
 
         {/* Filters */}
-        {events.length > 0 && (
+        {schedule.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
@@ -129,8 +128,8 @@ export default function Schedule() {
                 onClick={() => setFilter(f)}
                 className={`px-5 py-2.5 rounded-xl text-xs font-heading font-semibold uppercase tracking-wider transition-all duration-300 ${
                   filter === f
-                    ? 'bg-eco-orange text-white shadow-glow-sm'
-                    : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white hover:border-eco-orange/30'
+                    ? 'bg-eco-blue text-eco-black font-bold shadow-glow-sm'
+                    : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white hover:border-eco-blue/30'
                 }`}
               >
                 {f === 'all' ? 'All Events' : f + 's'}
@@ -139,7 +138,7 @@ export default function Schedule() {
           </motion.div>
         )}
 
-        {events.length === 0 && (
+        {schedule.length === 0 && (
           <div className="text-center py-20">
             <Calendar className="mx-auto text-eco-muted mb-4" size={48} />
             <h3 className="text-xl font-heading font-bold text-white mb-2">No Upcoming Events</h3>
@@ -150,7 +149,7 @@ export default function Schedule() {
         {/* Upcoming Events */}
         {upcoming.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-xs font-mono uppercase tracking-widest text-eco-orange mb-6 flex items-center gap-2">
+            <h3 className="text-xs font-mono uppercase tracking-widest text-eco-blue mb-6 flex items-center gap-2">
               <Calendar size={14} />
               Upcoming
             </h3>
@@ -203,7 +202,7 @@ export default function Schedule() {
           <AddEventModal
             onClose={() => setIsAddModalOpen(false)}
             onAdd={(newEvent) => {
-              setEvents(prev => [...prev, newEvent])
+              addEvent(newEvent)
               setIsAddModalOpen(false)
             }}
           />
@@ -264,7 +263,7 @@ function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Sch
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Type</label>
-            <select value={type} onChange={e => setType(e.target.value as any)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" required>
+            <select value={type} onChange={e => setType(e.target.value as any)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" required>
               <option value="game">Game</option>
               <option value="practice">Practice</option>
               <option value="tournament">Tournament</option>
@@ -273,32 +272,32 @@ function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Sch
           </div>
           <div>
             <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Title</label>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" placeholder="e.g. vs Raptors Elite" required />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" placeholder="e.g. vs Raptors Prep" required />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Date</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" required />
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" required />
             </div>
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Time</label>
-              <input type="time" value={time} onChange={e => setTime(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" required />
+              <input type="time" value={time} onChange={e => setTime(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" required />
             </div>
           </div>
           <div>
             <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Location</label>
-            <input type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" placeholder="e.g. Hershey Centre" required />
+            <input type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" placeholder="e.g. Hershey Centre" required />
           </div>
           
           {type === 'game' && (
             <>
               <div>
                 <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Opponent</label>
-                <input type="text" value={opponent} onChange={e => setOpponent(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors" placeholder="e.g. Raptors Elite" />
+                <input type="text" value={opponent} onChange={e => setOpponent(e.target.value)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors" placeholder="e.g. Raptors Prep" />
               </div>
               <div>
                 <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted mb-1">Home / Away</label>
-                <select value={homeAway} onChange={e => setHomeAway(e.target.value as any)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-orange/50 transition-colors">
+                <select value={homeAway} onChange={e => setHomeAway(e.target.value as any)} className="w-full bg-eco-surface border border-eco-border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-eco-blue/50 transition-colors">
                   <option value="home">Home</option>
                   <option value="away">Away</option>
                 </select>
@@ -308,7 +307,7 @@ function AddEventModal({ onClose, onAdd }: { onClose: () => void, onAdd: (e: Sch
 
           <div className="pt-4 flex gap-3">
             <button type="button" onClick={onClose} className="flex-1 py-3 bg-eco-surface border border-eco-border text-white rounded-xl font-heading font-semibold hover:bg-eco-surface2 transition-colors">Cancel</button>
-            <button type="submit" className="flex-1 py-3 bg-eco-orange text-white rounded-xl font-heading font-semibold hover:bg-eco-orange/90 transition-colors shadow-glow-sm">Save Event</button>
+            <button type="submit" className="flex-1 py-3 bg-eco-blue text-eco-black rounded-xl font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm">Save Event</button>
           </div>
         </form>
       </motion.div>
