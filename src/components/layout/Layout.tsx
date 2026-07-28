@@ -1,8 +1,25 @@
-import { Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
+declare global {
+  interface Window {
+    fbq?: any
+  }
+}
+
 export default function Layout() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'PageView')
+    }
+  }, [location.pathname])
+
+  const isLandingPage = location.pathname === '/girls-tryouts' || location.pathname === '/girls-grade-5-6'
+
   return (
     <div className="relative min-h-screen bg-eco-black">
       {/* Grain Overlay */}
@@ -15,11 +32,11 @@ export default function Layout() {
         <div className="absolute bottom-0 left-1/2 w-96 h-64 bg-eco-navy-bright/3 rounded-full blur-[128px]" />
       </div>
 
-      <Navbar />
+      {!isLandingPage && <Navbar />}
       <main className="relative z-10">
         <Outlet />
       </main>
-      <Footer />
+      {!isLandingPage && <Footer />}
     </div>
   )
 }

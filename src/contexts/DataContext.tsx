@@ -35,7 +35,7 @@ export function useData() {
 export function DataProvider({ children }: { children: ReactNode }) {
   // Try to load initial state from localStorage, fallback to static data files
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem('ecohoops_teams')
+    const saved = localStorage.getItem('ecohoops_teams_v2')
     return saved ? JSON.parse(saved) : TEAMS
   })
 
@@ -56,7 +56,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // Synchronize state changes to localStorage
   useEffect(() => {
-    localStorage.setItem('ecohoops_teams', JSON.stringify(teams))
+    localStorage.setItem('ecohoops_teams_v2', JSON.stringify(teams))
   }, [teams])
 
   useEffect(() => {

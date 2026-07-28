@@ -67,26 +67,26 @@ export default function AllGirlsProgram() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 {
-                  title: 'Psychological Safety',
-                  desc: 'No anxiety, no pressure. A growth-focused environment where making structural learning mistakes is welcomed as part of skill discovery.',
+                  title: 'Mistake-Friendly Gym',
+                  desc: 'Zero pressure, zero anxiety. We celebrate mistakes because that’s how skill is built. Girls are free to try new moves without fear of looking bad or getting yelled at.',
                   icon: Sparkles,
                   color: 'from-eco-orange to-eco-orange-light'
                 },
                 {
-                  title: 'Mentorship & Ratios',
-                  desc: 'Individualized coaching with high-quality player-to-coach ratios (8:1) led by dedicated mentors who advocate for girls in sports.',
+                  title: 'Mentors Who Care (Seeking Female Coaches)',
+                  desc: 'Coaching led by dedicated mentors who care about the person before the athlete. As our girls squads expand, we are actively recruiting female coaches and role models to join our team!',
                   icon: Award,
                   color: 'from-eco-blue to-eco-blue-light'
                 },
                 {
-                  title: 'Socioeconomic Subsidies',
-                  desc: 'Grounded in our non-profit mission, we offer extensive subsidies and full sponsorships to ensure cost is never a barrier.',
+                  title: 'Cost is Never a Barrier',
+                  desc: 'As a nonprofit, we make sure fees are accessible for everyone. We offer extensive subsidies and full sponsorships so every girl has a chance to play.',
                   icon: Heart,
                   color: 'from-eco-orange to-eco-blue'
                 },
                 {
-                  title: 'Logistical Equality',
-                  desc: 'Equal priority court times, equal facility access, and prime tournament funding—representing true equity in competitive sports.',
+                  title: 'Equal Priority',
+                  desc: 'No second-class status. Our girls\' squads get equal court priority, premium practice times, equal facility access, and full tournament funding.',
                   icon: ShieldCheck,
                   color: 'from-eco-blue-light to-white'
                 }
@@ -114,12 +114,15 @@ export default function AllGirlsProgram() {
               initial={{ opacity: 0, y: 20 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 items-center"
+              className="flex flex-col md:flex-row gap-6 items-center justify-between w-full pt-6 border-t border-white/5"
             >
-              <Link to="/girls" className="w-full sm:w-auto btn-glow flex items-center justify-center gap-2">
+              <Link to="/girls" className="w-full md:w-auto btn-glow flex items-center justify-center gap-2 whitespace-nowrap">
                 Explore Girls Programs
                 <ArrowRight size={16} />
               </Link>
+              <p className="text-xs text-eco-muted-light text-center md:text-right max-w-sm leading-relaxed">
+                <strong>We are hiring!</strong> As a young organization founded in 2024, we are actively seeking coaches—especially female mentors. <Link to="/contact" className="text-eco-blue hover:underline font-semibold whitespace-nowrap">Join our staff</Link>
+              </p>
             </motion.div>
 
           </div>

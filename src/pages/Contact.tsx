@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { Mail, MapPin, Phone, Send } from 'lucide-react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Contact() {
+  useDocumentTitle('Get in Touch')
   const { ref, isVisible } = useScrollReveal(0.05)
 
   return (

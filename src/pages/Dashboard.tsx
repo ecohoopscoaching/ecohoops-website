@@ -16,10 +16,12 @@ import {
   askAICoach,
   getSimulatedResponse
 } from '../lib/gemini'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 type Tab = 'overview' | 'messages' | 'payments' | 'ai-coach' | 'analytics'
 
 export default function Dashboard() {
+  useDocumentTitle('Member Dashboard')
   const { isAdmin } = useAuth()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
 

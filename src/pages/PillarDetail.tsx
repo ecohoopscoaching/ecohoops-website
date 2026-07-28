@@ -38,6 +38,20 @@ export default function PillarDetail() {
     window.scrollTo(0, 0)
   }, [slug])
 
+  const parseHighlights = (text: string) => {
+    const parts = text.split('**')
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        return (
+          <strong key={index} className="text-eco-blue font-bold tracking-wide uppercase font-heading">
+            {part}
+          </strong>
+        )
+      }
+      return part
+    })
+  }
+
   if (!slug || !PILLARS_DETAIL[slug]) {
     return (
       <div className="pt-32 pb-20 min-h-screen bg-eco-dark text-white flex flex-col items-center justify-center px-6">
@@ -174,9 +188,9 @@ export default function PillarDetail() {
                 </h2>
               </div>
             </div>
-            <div className="space-y-4 text-eco-muted-light text-sm md:text-base leading-relaxed">
+             <div className="space-y-4 text-eco-muted-light text-sm md:text-base leading-relaxed">
               {pillar.scienceDetails?.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+                <p key={index}>{parseHighlights(paragraph)}</p>
               ))}
             </div>
           </motion.div>
@@ -201,7 +215,7 @@ export default function PillarDetail() {
             </div>
             <div className="space-y-4 text-eco-muted-light text-sm md:text-base leading-relaxed">
               {pillar.onCourtDetails?.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+                <p key={index}>{parseHighlights(paragraph)}</p>
               ))}
             </div>
           </motion.div>
@@ -232,7 +246,7 @@ export default function PillarDetail() {
                     <CheckCircle size={14} style={{ color: pillar.color }} />
                   </div>
                   <p className="text-eco-muted-light text-base md:text-lg leading-relaxed">
-                    {benefit}
+                    {parseHighlights(benefit)}
                   </p>
                 </div>
               ))}

@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { Heart, Brain, Users, HandHeart, Sparkles, Lightbulb, Zap, Layers, Quote } from 'lucide-react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Nonprofit() {
+  useDocumentTitle('EcoHoops for Kids Canada')
   const { ref, isVisible } = useScrollReveal(0.05)
 
   return (
@@ -60,7 +62,7 @@ export default function Nonprofit() {
                       "States Parties recognize the right of the child to rest and leisure, to engage in play and recreational activities appropriate to the age of the child and to participate freely in cultural life and the arts."
                     </p>
                     <p className="text-xs text-eco-muted-light">
-                      **This means: Every child has the right to rest, play, and have fun.**
+                      <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">This means:</strong> Every child has the right to rest, play, and have fun.
                     </p>
                   </div>
                 </div>
@@ -72,7 +74,7 @@ export default function Nonprofit() {
                       "States Parties shall respect and promote the right of the child to participate fully in cultural and artistic life and shall encourage the provision of appropriate and equal opportunities for cultural, artistic, recreational and leisure activity."
                     </p>
                     <p className="text-xs text-eco-muted-light">
-                      **This means: Governments must make sure all kids get a fair chance to play and do activities.**
+                      <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">This means:</strong> Governments must make sure all kids get a fair chance to play and do activities.
                     </p>
                   </div>
                 </div>
@@ -90,6 +92,14 @@ export default function Nonprofit() {
                 </a>
               </div>
             </div>
+            <div className="mt-8 mb-4">
+              <span className="bg-eco-blue/10 border border-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase px-2.5 py-1 rounded inline-block mb-3">
+                Future Initiatives (Building & Growing)
+              </span>
+              <h3 className="text-sm font-heading font-semibold uppercase tracking-wider text-white mb-4">
+                What We Are Building Toward:
+              </h3>
+            </div>
             <ul className="space-y-4">
               {[
                 'Monthly classes about feelings and wellness for all kids',
@@ -99,9 +109,9 @@ export default function Nonprofit() {
               ].map((item, i) => (
                 <li key={i} className="flex flex-start gap-3">
                   <div className="mt-1 flex-shrink-0">
-                    <Sparkles size={16} className="text-eco-blue" />
+                    <Sparkles size={16} className="text-eco-blue/60" />
                   </div>
-                  <span className="text-white/80">{item}</span>
+                  <span className="text-white/75">{item}</span>
                 </li>
               ))}
             </ul>
@@ -145,13 +155,53 @@ export default function Nonprofit() {
                 <Zap className="text-eco-blue" size={24} />
                 The Play State
               </h3>
-              <p className="text-eco-muted-light leading-relaxed max-w-3xl mx-auto">
-                Science shows that play is a **biological necessity** (which means **something the body must have to stay alive and healthy**). When a child is playing, **neurons** (which are **brain cells**) light up. This builds new **neural pathways** (which are **connections in the brain**). These connections help kids move well, make friends, and learn **emotional regulation** (which means **controlling their feelings**).
-              </p>
+              <div className="text-eco-muted-light leading-relaxed max-w-4xl mx-auto text-base md:text-lg space-y-4 pt-2">
+                <p>
+                  Science shows that play is a{" "}
+                  <span className="text-eco-blue font-bold px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/20">
+                    biological necessity
+                  </span>{" "}
+                  <span className="text-xs text-eco-muted italic block sm:inline mt-1 sm:mt-0">
+                    (something the body must have to stay alive and healthy)
+                  </span>.
+                </p>
+                <p>
+                  When a child is playing,{" "}
+                  <span className="text-eco-blue font-bold px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/20">
+                    neurons
+                  </span>{" "}
+                  <span className="text-xs text-eco-muted italic block sm:inline mt-1 sm:mt-0">
+                    (brain cells)
+                  </span>{" "}
+                  light up, building new{" "}
+                  <span className="text-eco-blue font-bold px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/20">
+                    neural pathways
+                  </span>{" "}
+                  <span className="text-xs text-eco-muted italic block sm:inline mt-1 sm:mt-0">
+                    (connections in the brain)
+                  </span>.
+                </p>
+                <p>
+                  These connections help kids move well, make friends, and learn{" "}
+                  <span className="text-eco-blue font-bold px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/20">
+                    emotional regulation
+                  </span>{" "}
+                  <span className="text-xs text-eco-muted italic block sm:inline mt-1 sm:mt-0">
+                    (controlling their feelings)
+                  </span>.
+                </p>
+              </div>
             </div>
             {[
               { title: 'Self-Directed', desc: 'Kids choose the game themselves. This helps them focus and enjoy it more.' },
-              { title: 'Intrinsically Motivated', desc: 'Kids are **intrinsically motivated** (which means **doing something because you love it, not for a trophy or because you are scared**).' },
+              {
+                title: 'Intrinsically Motivated',
+                desc: (
+                  <span>
+                    Kids are <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">intrinsically motivated</strong> <span className="text-xs text-eco-muted italic">(doing something because you love it, not for a trophy or because you are scared)</span>.
+                  </span>
+                )
+              },
               { title: 'Structured', desc: 'Play has rules in the child\'s mind. This helps them learn order and self-control.' },
               { title: 'Imaginative', desc: 'Play is creative. Kids can try new things without being afraid of failing.' },
               { title: 'Active Engagement', desc: 'Kids are completely focused. They forget about time and build deep focus.' }
@@ -161,7 +211,7 @@ export default function Nonprofit() {
                   <span className="opacity-30 text-2xl">{i + 1}</span>
                   {element.title}
                 </div>
-                <p className="text-sm text-eco-muted-light leading-relaxed">{element.desc}</p>
+                <div className="text-sm text-eco-muted-light leading-relaxed">{element.desc}</div>
               </div>
             ))}
           </div>
@@ -173,7 +223,7 @@ export default function Nonprofit() {
             <div>
               <h4 className="font-heading font-bold text-white mb-2 uppercase tracking-wider">Wiring the Brain</h4>
               <p className="text-sm text-eco-muted-light leading-relaxed">
-                Our basketball games are built as **Free Play**. This builds connections in the **cortex** (which is **the outer part of the brain used for thinking**). The more kids play, the more they build lifetime skills: **resilience** (which means **recovering from hard times**), creativity, and **equanimity** (which means **staying calm under pressure**).
+                Our basketball games are built as <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Free Play</strong>. This builds connections in the <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">cortex</strong> <span className="text-xs text-eco-muted italic">(the outer part of the brain used for thinking)</span>. The more kids play, the more they build lifetime skills: <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">resilience</strong> <span className="text-xs text-eco-muted italic">(recovering from hard times)</span>, creativity, and <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">equanimity</strong> <span className="text-xs text-eco-muted italic">(staying calm under pressure)</span>.
               </p>
             </div>
           </div>
@@ -208,35 +258,35 @@ export default function Nonprofit() {
               EcoHoops has two parts. This helps us run great basketball gyms while keeping program costs low for families who need help.
             </p>
 
-            <div className="space-y-4">
-              {/* For-profit card */}
-              <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-heading font-bold text-white text-base">EcoHoops Inc.</h3>
-                  <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue-light font-bold">
-                    For-Profit
-                  </span>
-                </div>
-                <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: SEP 11, 2024</p>
-                <p className="text-xs text-eco-muted-light leading-relaxed">
-                  This part runs the gym leases, buys the balls and hoops, and handles the main business of the basketball programs.
-                </p>
-              </div>
+             <div className="space-y-4">
+               {/* For-profit card */}
+               <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
+                 <div className="flex justify-between items-start mb-2">
+                   <h3 className="font-heading font-bold text-white text-base">EcoHoops Inc.</h3>
+                   <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue-light font-bold">
+                     For-Profit Corporation
+                   </span>
+                 </div>
+                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: SEP 11, 2024</p>
+                 <p className="text-xs text-eco-muted-light leading-relaxed">
+                   Handles the basketball side of the program. This includes coaching, skill development, practice design, team structure, program planning, and basketball activities.
+                 </p>
+               </div>
 
-              {/* Non-profit card */}
-              <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-heading font-bold text-white text-base">EcoHoops for Kids Canada</h3>
-                  <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue font-bold">
-                    Federal Non-Profit
-                  </span>
-                </div>
-                <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: JUL 31, 2025</p>
-                <p className="text-xs text-eco-muted-light leading-relaxed">
-                  This part is our non-profit. It helps kids get financial aid, runs free community events, and supports player wellness.
-                </p>
-              </div>
-            </div>
+               {/* Non-profit card */}
+               <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
+                 <div className="flex justify-between items-start mb-2">
+                   <h3 className="font-heading font-bold text-white text-base">EcoHoops for Kids Canada</h3>
+                   <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue font-bold">
+                     Federal Non-Profit Corporation
+                   </span>
+                 </div>
+                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: JUL 31, 2025</p>
+                 <p className="text-xs text-eco-muted-light leading-relaxed">
+                   Helps make basketball more accessible. This includes gym rentals, equipment purchases, financial aid, free community events, wellness support, and safe play options.
+                 </p>
+               </div>
+             </div>
           </motion.div>
         </div>
       </div>

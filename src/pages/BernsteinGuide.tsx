@@ -1,8 +1,25 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { BookOpen, Printer, Download, ChevronRight, ArrowLeft, CheckCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function BernsteinGuide() {
+  useDocumentTitle('The Bernstein Basketball Guide')
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
+      if (totalHeight > 0) {
+        const progress = (window.scrollY / totalHeight) * 100
+        setScrollProgress(progress)
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const handlePrint = () => {
     window.print()
   }
@@ -26,6 +43,11 @@ export default function BernsteinGuide() {
 
   return (
     <div className="pt-28 pb-20 min-h-screen bg-eco-dark text-white print:bg-white print:text-black">
+      {/* Scroll Progress Bar */}
+      <div 
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-eco-blue to-eco-blue-light z-[70] transition-all duration-100 no-print"
+        style={{ width: `${scrollProgress}%` }}
+      />
       {/* CSS style to format printing nicely */}
       <style>{`
         @media print {

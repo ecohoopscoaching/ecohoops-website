@@ -26,10 +26,20 @@ const FOOTER_LINKS = [
     title: 'Community',
     links: [
       { label: 'Friday Night Hoops', path: '/schedule' },
-      { label: 'Book Club', path: '/philosophy' },
+      { label: 'The Game Changer', path: '/game-changer/index.html' },
       { label: 'Nonprofit', path: '/nonprofit' },
       { label: 'Blog', path: '/blog' },
       { label: 'Contact', path: '/register' },
+    ],
+  },
+  {
+    title: 'Legal & Safety',
+    links: [
+      { label: 'Privacy Policy', path: '/privacy' },
+      { label: 'Terms of Service', path: '/terms' },
+      { label: 'Refund Policy', path: '/refund-policy' },
+      { label: 'Waiver & Release', path: '/waiver' },
+      { label: 'Safe Sport & Aid', path: '/safe-sport' },
     ],
   },
 ]
@@ -99,9 +109,12 @@ export default function Footer() {
                 ECO<span className="text-eco-orange">HOOPS</span>
               </span>
             </Link>
-            <p className="text-eco-muted-light text-sm leading-relaxed mb-6 max-w-sm">
-              The Anti-Elite Basketball Movement. Building people, not just pros.
+            <p className="text-eco-muted-light text-sm leading-relaxed mb-4 max-w-sm">
+              EcoHoops is a youth basketball movement focused on character, community, and joy. Building people, not just pros.
               Basketball is just the tool.
+            </p>
+            <p className="text-eco-muted text-xs mb-6 max-w-sm">
+              EcoHoops for Kids Canada is a registered federal non-profit organization.
             </p>
             <div className="flex items-center gap-1 text-eco-muted text-sm mb-6">
               <MapPin size={14} />
@@ -130,20 +143,32 @@ export default function Footer() {
                 {col.title}
               </h4>
               <ul className="space-y-3">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.path}
-                      className="text-sm text-eco-muted-light hover:text-white transition-colors duration-300 inline-flex items-center gap-1 group"
-                    >
-                      {link.label}
-                      <ArrowUpRight
-                        size={12}
-                        className="opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300"
-                      />
-                    </Link>
-                  </li>
-                ))}
+                {col.links.map((link) => {
+                  const isStatic = link.path.includes('/game-changer') || link.path.endsWith('.html');
+                  const linkClass = "text-sm text-eco-muted-light hover:text-white transition-colors duration-300 inline-flex items-center gap-1 group";
+                  
+                  return (
+                    <li key={link.label}>
+                      {isStatic ? (
+                        <a href={link.path} className={linkClass}>
+                          {link.label}
+                          <ArrowUpRight
+                            size={12}
+                            className="opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300"
+                          />
+                        </a>
+                      ) : (
+                        <Link to={link.path} className={linkClass}>
+                          {link.label}
+                          <ArrowUpRight
+                            size={12}
+                            className="opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300"
+                          />
+                        </Link>
+                      )}
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ))}
@@ -216,11 +241,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-eco-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-eco-muted">
-            &copy; 2026 EcoHoops Inc. All rights reserved. 
-            <Link to="/login" className="ml-2 hover:text-eco-blue/50 transition-colors opacity-30">Admin</Link>
-          </p>
+        <div className="mt-16 pt-8 border-t border-eco-border flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-eco-muted">
+            <span>&copy; 2026 EcoHoops Inc. All rights reserved.</span>
+            <span className="hidden sm:inline">&bull;</span>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/refund-policy" className="hover:text-white transition-colors">Refunds</Link>
+            <Link to="/waiver" className="hover:text-white transition-colors">Waiver</Link>
+            <Link to="/login" className="ml-1 hover:text-eco-blue/50 transition-colors opacity-30">Admin</Link>
+          </div>
           <div className="flex items-center gap-1">
             <span className="text-xs text-eco-muted">Built with</span>
             <span className="text-eco-blue text-xs">&#9829;</span>

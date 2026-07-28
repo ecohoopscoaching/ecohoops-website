@@ -3,49 +3,38 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { TESTIMONIALS } from '../data/content'
 import { ArrowRight, Quote, Heart, Users, Calendar, Trophy, Zap, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function About() {
+  useDocumentTitle('Our Story')
   const { ref: heroRef, isVisible: heroVisible } = useScrollReveal(0.05)
   const { ref: storyRef, isVisible: storyVisible } = useScrollReveal(0.1)
   const { ref: timelineRef, isVisible: timelineVisible } = useScrollReveal(0.1)
   const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollReveal(0.1)
+  const { ref: orgRef, isVisible: orgVisible } = useScrollReveal(0.1)
   const { ref: ctaRef, isVisible: ctaVisible } = useScrollReveal(0.1)
 
   const timelineMilestones = [
     {
-      year: '2021',
-      title: 'The Spark of Change',
-      desc: 'Coach Adrian saw that kids got too stressed and tired (burnout) in normal sports groups. He decided we needed a new way to keep kids happy and safe while playing.',
+      year: '2024',
+      title: 'EcoHoops Launches',
+      desc: 'Coach Adrian founded EcoHoops in Mississauga in late 2024 to save youth sports from toxic pressure. We began with just a few players in local school gyms, prioritizing free play and emotional safety.',
       icon: Zap,
       color: '#6A9BC7'
     },
     {
-      year: '2022',
-      title: 'EcoHoops Launches',
-      desc: 'We started in Mississauga with 15 players in local school gyms. We focused on having fun, playing freely, and making sure kids felt safe to try new things without fear.',
+      year: '2025',
+      title: 'Federal Non-Profit Expansion',
+      desc: 'In July 2025, we established "EcoHoops for Kids Canada" as a federal non-profit organization to provide extensive financial subsidies, scholarships, and wellness support for families in Mississauga.',
       icon: Users,
       color: '#97B3D2'
     },
     {
-      year: '2023',
-      title: 'Science of Play',
-      desc: 'We brought in modern learning science. We use the **Constraints-Led Approach** (which means **changing the game rules to teach kids how to move**). We threw out standard orange cones and replaced them with active games.',
-      icon: Star,
-      color: '#B0C8E0'
-    },
-    {
-      year: '2024',
-      title: 'Competitive Rep Teams',
-      desc: 'We started our travel team program (Rep Teams). We wanted to show that kids can play in big leagues and win, even with coaches who are kind and never yell.',
-      icon: Trophy,
-      color: '#4A7FB5'
-    },
-    {
       year: '2026',
       title: 'The Movement Today',
-      desc: 'Now we help hundreds of kids. We have girls-only teams, junior games, and modern player profiles. We are the best place for healthy growth.',
-      icon: Calendar,
-      color: '#F0E6D3'
+      desc: 'Today we support our 2011 Boys and 2012 Girls competitive rep teams alongside developmental training groups. As a young organization, we are actively expanding and seeking coaches (especially female mentors) to grow with us.',
+      icon: Trophy,
+      color: '#4A7FB5'
     }
   ]
 
@@ -135,47 +124,32 @@ export default function About() {
             {/* Content narrative column */}
             <div className="lg:col-span-7 space-y-6 text-base text-eco-muted-light leading-relaxed">
               <p>
-                When Adrian was a teenager, famous sports players from his own neighborhood helped him.
-                They taught him how to lead with kindness, order, and respect:
-              </p>
-
-              {/* Mentors Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-eco-surface2 border border-white/5">
-                  <h5 className="font-heading font-bold text-white text-sm uppercase mb-1">
-                    Trevor Williams & Wayne Yearwood
-                  </h5>
-                  <p className="text-xs text-eco-muted-light leading-relaxed">
-                    Wayne played in the 1988 Olympics. Trevor played against the famous USA "Dream Team" in 1992. Their basketball camps showed Adrian how to build good character in young players.
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-eco-surface2 border border-white/5">
-                  <h5 className="font-heading font-bold text-white text-sm uppercase mb-1">
-                    Alvin Powell
-                  </h5>
-                  <p className="text-xs text-eco-muted-light leading-relaxed">
-                    Alvin was a big football player in the NFL. He became a counselor. He spent his life helping kids stay calm and feel safe when life gets too hard.
-                  </p>
-                </div>
-              </div>
-
-              <p>
-                Adrian worked hard and became the main point guard for a championship college basketball team. He was named a star player.
+                <strong>Adrian Sapp</strong> didn't just study basketball; he lived it at the <strong>highest level</strong>. He was one of the top high school players in Montreal, earning <strong>All-Star</strong> honors at Westmount High before moving on to Vanier College's <strong>elite AAA program</strong>. During the legendary 2004-2005 season, Adrian earned All-Star honors while leading Vanier to a <strong>Provincial Championship</strong> and a trip to the Nationals, where he was named a <strong>2nd Team All-Canadian</strong>. When it comes to skill development and understanding the true flow of the game, Adrian brings the <strong>proven execution of a champion</strong>. He knows exactly what it takes to perform under pressure because he has actually done it.
               </p>
 
               <p>
-                But Adrian's best skills do not come from books. Members of his own family had hard times with mental health. Adrian spent his life learning how to help and understand people who feel sad, stressed, or scared. This gives him a lot of kindness that you cannot learn in a standard coaching class.
+                But his deep understanding of youth development wasn't just built in a gym. Adrian grew up in <strong>Little Burgundy</strong>, a tough Montreal neighborhood where poverty and crime were daily realities. Raised by a single mother, his childhood was a high-pressure environment, made more difficult by severe <strong>mental health struggles</strong> within his own family. He knows firsthand what it feels like to navigate stress, trauma, and uncertainty as a kid.
               </p>
 
               <p>
-                At first, Adrian coached the old way. He pushed kids hard. But he saw it made them sad and play with fear. Many kids quit sports by age 13. He decided to change things. He started EcoHoops to mix high-level basketball with kind support and brain science.
+                During those critical teenage years, local sports legends stepped in to guide him, including Olympian <strong>Wayne Yearwood</strong> and former NFL player turned counselor <strong>Alvin Powell</strong>. But it was Montreal basketball icon <strong>Trevor Williams</strong> who left the biggest blueprint. Trevor famously played against Michael Jordan and the 1992 USA Dream Team. Watching Trevor build his summer camps and grow his kids' foundation showed Adrian exactly how a leader can become a <strong>positive pillar in the community</strong>. Trevor didn't just teach basketball; he showed Adrian how to use the game to <strong>protect youth, build character, and give kids a safe place to land</strong>.
               </p>
 
-              <div className="p-4 rounded-xl bg-[#97B3D2]/5 border border-[#97B3D2]/10">
-                <p className="text-sm font-semibold text-white">
-                  "When we walk into the gym, we bring the skills of a champion, the street smarts of a tough neighborhood, and a promise to keep every kid happy and safe."
-                </p>
-              </div>
+              <p>
+                The crazy part is that Adrian didn't grow up being coached in a rigid system. He never even played organized basketball until he was 13 at the local high school. Instead, he earned his stripes playing <strong>raw streetball</strong>, competing in tough adult men's leagues starting at just 14 years old, and training entirely by himself for hours on the blacktop in the early mornings.
+              </p>
+
+              <p>
+                Yet, early in his coaching career, Adrian fell right into the <strong>traditional sports trap</strong>. He used heavy pressure, yelling, and the typical grind culture. But he saw the damage it caused. He watched kids <strong>play with fear</strong>, lose their love for the game, and quit sports entirely.
+              </p>
+
+              <p>
+                Adrian admitted he was wrong, turned his back on that toxic environment, and changed his approach. He founded <strong>ECOHOOPS</strong> to fix a broken youth sports system.
+              </p>
+
+              <p>
+                Today, Adrian does things differently. He sets up the court so kids can figure things out on their own, the same way he learned on the playground. He does not treat kids like robots. He holds players accountable, but his ultimate goal is to help kids <strong>grow as whole people</strong>, have fun, and fall in love with the game. When you bring your child to ECOHOOPS, you are getting a <strong>real mentor</strong> who has been there, done that, and made it his life mission to keep your kid <strong>happy, safe, and growing</strong>.
+              </p>
             </div>
           </div>
         </motion.div>
@@ -195,7 +169,7 @@ export default function About() {
             <span className="gradient-text">MILESTONES</span>
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
-            From a single play-based community group to a thriving GTA basketball organization, look back at the key moments of our journey.
+            From a single play-based community group to a thriving Mississauga basketball organization, look back at the key moments of our journey.
           </p>
         </motion.div>
 
@@ -244,6 +218,99 @@ export default function About() {
               </motion.div>
             )
           })}
+        </div>
+      </section>
+
+      {/* How EcoHoops Is Organized Section */}
+      <section ref={orgRef} className="max-w-7xl mx-auto px-6 lg:px-8 mb-28 relative z-10 border-t border-white/5 pt-24">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={orgVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16"
+        >
+          <span className="tag mb-4 inline-block">Our Legal Foundation</span>
+          <h2 className="font-display text-section uppercase">
+            <span className="text-white">HOW ECOHOOPS IS </span>
+            <span className="gradient-text">ORGANIZED</span>
+          </h2>
+          <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
+            EcoHoops has two separate parts. This clean split lets us focus on runs, coaching, and safety while keeping fees affordable and accessible.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Card 1: EcoHoops Inc. */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={orgVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="glow-card p-8 bg-eco-surface border border-eco-border rounded-3xl relative overflow-hidden flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <h3 className="font-heading font-extrabold text-xl text-white uppercase tracking-wider">EcoHoops Inc.</h3>
+                <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-[#97B3D2]/10 border border-[#97B3D2]/30 text-[#97B3D2] font-bold self-start sm:self-auto">
+                  For-Profit Corporation
+                </span>
+              </div>
+              <div className="text-[11px] font-mono text-eco-muted uppercase tracking-wider mb-6">
+                Incorporated: September 11, 2024
+              </div>
+              
+              <div className="space-y-4 text-sm text-eco-muted-light leading-relaxed font-body">
+                <p>
+                  EcoHoops Inc. handles the basketball side of the program.
+                </p>
+                <p>
+                  This includes coaching, skill development, practice design, team structure, program planning, and basketball-related activities.
+                </p>
+                <p className="border-t border-white/5 pt-4 text-white font-heading font-bold">
+                  This is the side that builds and runs the basketball experience.
+                </p>
+              </div>
+            </div>
+            {/* Footer indicator */}
+            <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[11px] text-eco-muted uppercase tracking-widest font-mono">
+              <span>Focus: Basketball activities, coaching, program planning</span>
+            </div>
+          </motion.div>
+
+          {/* Card 2: EcoHoops for Kids Canada */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={orgVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="glow-card p-8 bg-eco-surface border border-eco-border rounded-3xl relative overflow-hidden flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <h3 className="font-heading font-extrabold text-xl text-white uppercase tracking-wider">EcoHoops for Kids Canada</h3>
+                <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-[#97B3D2]/10 border border-[#97B3D2]/30 text-[#97B3D2] font-bold self-start sm:self-auto">
+                  Federal Non-Profit Corporation
+                </span>
+              </div>
+              <div className="text-[11px] font-mono text-eco-muted uppercase tracking-wider mb-6">
+                Incorporated: July 31, 2025
+              </div>
+              
+              <div className="space-y-4 text-sm text-eco-muted-light leading-relaxed font-body">
+                <p>
+                  EcoHoops for Kids Canada helps make basketball more accessible for kids and families.
+                </p>
+                <p>
+                  This includes gym rentals, equipment purchases, financial aid, free community events, wellness support, and safe basketball opportunities for kids.
+                </p>
+                <p className="border-t border-white/5 pt-4 text-white font-heading font-bold">
+                  Its purpose is simple: To help more kids play, grow, and belong.
+                </p>
+              </div>
+            </div>
+            {/* Footer indicator */}
+            <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[11px] text-eco-muted uppercase tracking-widest font-mono">
+              <span>Focus: Access, gym rentals, equipment, subsidies, community events</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -311,15 +378,20 @@ export default function About() {
           
           <Heart size={48} className="text-[#97B3D2]/30 mx-auto mb-6" />
           <h2 className="font-display text-section uppercase text-white mb-4">
-            DISCOVER THE SCIENCE
+            DISCOVER THE SCIENCE & GROW WITH US
           </h2>
           <p className="text-eco-muted-light max-w-xl mx-auto mb-8 leading-relaxed">
-            We do not guess how to teach. Read about our methods, like the **Constraints-Led Approach** (which means **changing the game rules to help kids learn**), and why play comes first.
+            We do not guess how to teach. Read about our methods, like the <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Constraints-Led Approach</strong> <span className="text-xs text-eco-muted italic">(changing the game rules to help kids learn)</span>, and why play comes first.
+            <br /><br />
+            <strong>Join our staff:</strong> As a young organization founded in 2024, we are actively looking for passionate coaches—especially female mentors—to grow our team.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/philosophy" className="btn-glow inline-flex items-center gap-2 px-8 py-3">
               Explore Our Philosophy <ArrowRight size={16} />
+            </Link>
+            <Link to="/contact" className="px-6 py-3 border border-[#97B3D2]/20 hover:border-[#97B3D2]/50 bg-eco-surface border rounded-xl text-sm font-heading font-semibold text-white uppercase transition-all duration-300">
+              Apply to Coach
             </Link>
             <Link to="/blog" className="px-6 py-3 border border-white/10 hover:border-[#97B3D2]/30 bg-eco-surface2/50 rounded-xl text-sm font-heading font-semibold text-white uppercase transition-all duration-300">
               Read the Blog

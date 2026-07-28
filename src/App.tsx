@@ -20,8 +20,16 @@ import AdminBlog from './pages/AdminBlog'
 import AICoach from './pages/AICoach'
 import BernsteinGuide from './pages/BernsteinGuide'
 import Philosophy from './pages/Philosophy'
+import MarketingPlaybook from './pages/MarketingPlaybook'
 import Teams from './pages/Teams'
 import PillarDetail from './pages/PillarDetail'
+import Videos from './pages/Videos'
+import SafeSport from './pages/SafeSport'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
+import RefundPolicy from './pages/RefundPolicy'
+import Waiver from './pages/Waiver'
+import GirlsLandingPage from './pages/GirlsLandingPage'
 import { AuthProvider } from './contexts/AuthContext'
 import { DataProvider } from './contexts/DataContext'
 
@@ -35,6 +43,8 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="nonprofit" element={<Nonprofit />} />
             <Route path="girls" element={<Girls />} />
+            <Route path="girls-tryouts" element={<GirlsLandingPage />} />
+            <Route path="girls-grade-5-6" element={<GirlsLandingPage />} />
             <Route path="jr" element={<Jr />} />
             <Route path="rep" element={<Rep />} />
             <Route path="about" element={<About />} />
@@ -43,6 +53,7 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="admin" element={<AdminDashboard />} />
             <Route path="login" element={<Login />} />
+            <Route path="playbook" element={<MarketingPlaybook />} />
             
             {/* Restored Routes */}
             <Route path="player/:teamId/:playerId" element={<PlayerProfile />} />
@@ -55,6 +66,14 @@ export default function App() {
             <Route path="philosophy" element={<Philosophy />} />
             <Route path="pillar/:slug" element={<PillarDetail />} />
             <Route path="teams" element={<Teams />} />
+            <Route path="videos" element={<Videos />} />
+            <Route path="safe-sport" element={<SafeSport />} />
+            
+            {/* Legal Routes */}
+            <Route path="privacy" element={<PrivacyPolicy />} />
+            <Route path="terms" element={<TermsOfService />} />
+            <Route path="refund-policy" element={<RefundPolicy />} />
+            <Route path="waiver" element={<Waiver />} />
           </Route>
         </Routes>
       </DataProvider>

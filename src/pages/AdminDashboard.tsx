@@ -7,8 +7,13 @@ import {
   LayoutDashboard, Users, Calendar, Settings, FileText, 
   ChevronRight, Plus, Edit2, Shield, AlertTriangle, Trash2
 } from 'lucide-react'
+import { blogService } from '../lib/blog-service'
+import { BLOG_POSTS } from '../data/blogs'
+import { BlogPost } from '../types'
 
-type Tab = 'overview' | 'content' | 'teams' | 'schedule'
+import MarketingPlaybook from './MarketingPlaybook'
+
+type Tab = 'overview' | 'content' | 'teams' | 'schedule' | 'marketing'
 
 export default function AdminDashboard() {
   const { isAdmin, loading: authLoading } = useAuth()
@@ -28,6 +33,7 @@ export default function AdminDashboard() {
     { id: 'content' as Tab, label: 'Content', icon: FileText },
     { id: 'teams' as Tab, label: 'Teams', icon: Users },
     { id: 'schedule' as Tab, label: 'Schedule', icon: Calendar },
+    { id: 'marketing' as Tab, label: 'Marketing Playbook v2', icon: Shield },
   ]
 
   return (
@@ -81,6 +87,7 @@ export default function AdminDashboard() {
             {activeTab === 'content' && <ContentTab navigate={navigate} />}
             {activeTab === 'teams' && <TeamsTab />}
             {activeTab === 'schedule' && <ScheduleTab />}
+            {activeTab === 'marketing' && <div className="-mt-20"><MarketingPlaybook /></div>}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -129,24 +136,116 @@ function OverviewTab() {
 }
 
 function ContentTab({ navigate }: { navigate: (path: string) => void }) {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const fetchPosts = async () => {
+    setIsLoading(true)
+    try {
+      const dbPosts = await blogService.getFirestorePosts()
+      const combined = [...dbPosts, ...BLOG_POSTS]
+        .filter(post => !blogService.isPostDeleted(post.id))
+        .sort((a, b) => {
+          const timeA = a.date ? new Date(a.date).getTime() : 0
+          const timeB = b.date ? new Date(b.date).getTime() : 0
+          const validA = isNaN(timeA) ? 0 : timeA
+          const validB = isNaN(timeB) ? 0 : timeB
+          return validB - validA
+        })
+      setPosts(combined)
+    } catch (error) {
+      console.error('Error fetching admin posts:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const handleDelete = async (id: string, title: string) => {
+    if (window.confirm(`Are you sure you want to delete the blog post "${title}"?`)) {
+      const result = await blogService.deleteBlogPost(id)
+      if (result.success) {
+        alert('Blog post deleted successfully!')
+        fetchPosts()
+      } else {
+        alert('Failed to delete blog post.')
+      }
+    }
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="glow-card p-6 flex flex-col justify-between items-start h-full min-h-[200px] bg-eco-surface border border-eco-border rounded-2xl">
-        <div>
-          <div className="w-12 h-12 bg-eco-blue/20 rounded-xl flex items-center justify-center mb-4">
-            <FileText className="text-eco-blue" size={24} />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Blog Manager Actions */}
+        <div className="glow-card p-6 flex flex-col justify-between items-start h-full min-h-[220px] bg-eco-surface border border-eco-border rounded-2xl lg:col-span-1">
+          <div>
+            <div className="w-12 h-12 bg-eco-blue/20 rounded-xl flex items-center justify-center mb-4">
+              <FileText className="text-eco-blue" size={24} />
+            </div>
+            <h3 className="font-heading font-bold text-xl text-white mb-2">Blog Manager</h3>
+            <p className="text-eco-muted-light text-sm">Create, edit, or delete journal entries and site articles.</p>
           </div>
-          <h3 className="font-heading font-bold text-xl text-white mb-2">Blog Manager</h3>
-          <p className="text-eco-muted-light text-sm">Create, edit, or delete journal entries and site articles.</p>
+          <button 
+            onClick={() => navigate('/admin/blog/new')}
+            className="mt-6 btn-glow flex items-center gap-2 w-full justify-center"
+          >
+            <Plus size={16} /> New Blog Post
+          </button>
         </div>
-         <button 
-          onClick={() => navigate('/admin/blog/new')}
-          className="mt-6 btn-glow flex items-center gap-2 w-full justify-center"
-        >
-          <Plus size={16} /> New Blog Post
-        </button>
+
+        {/* Blog List & Deletion Panel */}
+        <div className="glow-card p-6 bg-eco-surface border border-eco-border rounded-2xl lg:col-span-2">
+          <h3 className="font-heading font-bold text-xl text-white mb-4">Manage Existing Entries</h3>
+          
+          {isLoading ? (
+            <p className="text-sm text-eco-muted font-mono">Loading entries...</p>
+          ) : posts.length === 0 ? (
+            <p className="text-sm text-eco-muted py-4 text-center">No blog posts found.</p>
+          ) : (
+            <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin">
+              {posts.map((post) => (
+                <div 
+                  key={post.id} 
+                  className="p-3 bg-eco-surface2 rounded-xl border border-eco-border flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] uppercase font-mono tracking-widest text-eco-blue bg-eco-blue/10 px-2 py-0.5 rounded">
+                        {post.category}
+                      </span>
+                      <span className="text-[10px] font-mono text-eco-muted">
+                        {(() => {
+                          try {
+                            if (post.date) {
+                              const d = new Date(post.date)
+                              if (!isNaN(d.getTime())) return d.toLocaleDateString()
+                            }
+                          } catch (e) {}
+                          return 'Recent'
+                        })()}
+                      </span>
+                    </div>
+                    <h4 className="font-heading font-bold text-sm text-white truncate">{post.title}</h4>
+                    <p className="text-xs text-eco-muted truncate">By {post.author}</p>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleDelete(post.id, post.title)}
+                    className="text-eco-muted hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-all flex-shrink-0"
+                    title="Delete Post"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      
+
       <div className="glow-card p-6 opacity-50 cursor-not-allowed bg-eco-surface border border-eco-border rounded-2xl">
         <h3 className="font-heading font-bold text-white mb-2">Page Content Manager</h3>
         <p className="text-sm text-eco-muted-light mb-4">Edit homepage text, philosophy, and program details directly.</p>

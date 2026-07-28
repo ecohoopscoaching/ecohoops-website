@@ -5,12 +5,14 @@ import { PILLARS } from '../data/content'
 import { PHILOSOPHY_CONTENT } from '../data/content'
 import { Zap, Puzzle, Flame, Brain, BookOpen, Heart, Target, Quote, ArrowRight, Shuffle, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Zap, Puzzle, Flame, Brain, Shuffle, TrendingUp,
 }
 
 export default function Philosophy() {
+  useDocumentTitle('Pedagogical Philosophy')
   const { ref: heroRef, isVisible: heroVisible } = useScrollReveal(0.05)
   const { ref: missionRef, isVisible: missionVisible } = useScrollReveal(0.1)
   const { ref: pillarsRef, isVisible: pillarsVisible } = useScrollReveal(0.1)
@@ -234,77 +236,114 @@ export default function Philosophy() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">Basketball Science Explained Like You’re Human</span>
+          <span className="tag mb-4 inline-block">The Parent Translation Dictionary</span>
           <h2 className="font-display text-section uppercase">
-            <span className="text-white">STREET </span>
-            <span className="gradient-text">TRANSLATION</span>
+            <span className="text-white">PARENT-FIRST </span>
+            <span className="gradient-text">TRANSLATION DICTIONARY</span>
           </h2>
-          <p className="text-eco-muted-light text-base max-w-2xl mx-auto mt-4 leading-relaxed">
-            Academics love big words. Parents and players want things that make sense. We took the complicated science of learning and translated it into raw, human language.
+          <p className="text-eco-muted-light text-base max-w-3xl mx-auto mt-4 leading-relaxed">
+            Coaches and academics love big terms. Parents and players want real outcomes that show up on game day. We translate complex motor learning science into plain language that parents standing at pickup can immediately understand.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Positioning Statement Callout */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={translationVisible ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8 }}
+          className="mb-12 p-8 md:p-10 rounded-2xl bg-gradient-to-r from-eco-surface via-eco-navy/30 to-eco-surface border border-eco-blue/30 relative overflow-hidden shadow-glow-sm"
+        >
+          <div className="absolute top-0 right-0 w-48 h-48 bg-eco-blue/10 blur-3xl rounded-full pointer-events-none" />
+          <span className="text-xs font-mono uppercase text-eco-blue font-bold tracking-widest block mb-2">
+            The EcoHoops Positioning Promise
+          </span>
+          <p className="font-heading font-semibold text-lg md:text-xl text-white leading-relaxed italic">
+            "EcoHoops helps players become smarter, more confident competitors by teaching basketball the way it's actually played. Our practices are built around real game situations, so learning sticks, improvement transfers to games, and players develop faster where it matters most. We don't just build better basketball players. We build competitors who can think, adapt, and perform under pressure."
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              jargon: "Constraints-Led Approach",
-              translation: "We change the game, not the kid.",
-              quote: "Kids learn basketball like they learn to walk or play video games. They try, make mistakes, and try again. Instead of forcing them to move like robots, we change the game setup (like using smaller balls or lower hoops) so they find the right moves naturally.",
-              icon: Puzzle,
-              color: "#97B3D2"
-            },
-            {
-              jargon: "Differential Learning",
-              translation: "The brain loves variety.",
-              quote: "If a player does the same drill every time, their brain falls asleep. We add small changes, like using heavier balls or changing where they stand. This forces the brain to stay awake, pay attention, and learn faster.",
+              jargon: "Ecological Dynamics",
+              translation: "We help players become smarter on the court",
+              quote: "Instead of memorizing plays by rote, players read defender spacing, make instant split-second decisions, and develop true court IQ.",
               icon: Zap,
               color: "#B0C8E0"
             },
             {
-              jargon: "Perception-Action Coupling",
-              translation: "Feeling the court.",
-              quote: "This is a big term for how your eyes, feet, and brain work together. For example, when kids train in socks, their feet feel the floor better. Their brain gets more information. It is like turning up the touch sensitivity on a game controller so you can play better.",
-              icon: Brain,
+              jargon: "Differential Learning",
+              translation: "We help players adapt instead of panic",
+              quote: "We introduce variability in footwork, speeds, and ball weights so players handle unexpected game situations without freezing.",
+              icon: Shuffle,
               color: "#4A7FB5"
             },
             {
-              jargon: "Self-Organization",
-              translation: "We are gardeners, not puppet masters.",
-              quote: "Some coaches try to control every single step, jump, and pass. We do not do that. We set up the game and let kids find their own way to move. We let them grow naturally, like flowers in a garden.",
+              jargon: "Constraints-Led Approach",
+              translation: "We teach kids to solve problems on their own",
+              quote: "By altering defender rules, court size, or scoring rules, players naturally discover optimal solutions rather than copying rigid drill steps.",
+              icon: Puzzle,
+              color: "#97B3D2"
+            },
+            {
+              jargon: "Game-based learning",
+              translation: "Everything we do shows up in real games",
+              quote: "No static cone drills. Practice scenarios mirror full-speed game context so skills transfer seamlessly when referee whistles blow.",
+              icon: Target,
+              color: "#F0E6D3"
+            },
+            {
+              jargon: "Perception-action coupling",
+              translation: "Reading the game",
+              quote: "Training eyes, brain, and body to act together so players see open lanes, passing windows, and defensive rotations early.",
+              icon: Brain,
+              color: "#6A9BC7"
+            },
+            {
+              jargon: "Affordances",
+              translation: "Seeing opportunities",
+              quote: "Teaching players to recognize gaps in defense, mismatch angles, and scoring opportunities before the defense reacts.",
+              icon: Heart,
+              color: "#85A4C4"
+            },
+            {
+              jargon: "Emergence",
+              translation: "Players figure it out",
+              quote: "Creating guided game environments where player creativity and instinct flourish naturally without micromanagement.",
               icon: Flame,
               color: "#6A9BC7"
             },
             {
-              jargon: "The Drill Paradox",
-              translation: "Why kids freeze in real games.",
-              quote: "Orange cones do not move or play defense. Standard drills teach kids to repeat patterns without thinking. When a real defender stands in front of them in a game, the child freezes. We train with real defenders so kids learn how to react.",
-              icon: Target,
-              color: "#F0E6D3"
+              jargon: "Representative learning design",
+              translation: "Practice looks like the game",
+              quote: "Every drill includes decision-making, live defender pressure, and spatial constraints that mirror actual competition.",
+              icon: TrendingUp,
+              color: "#B0C8E0"
             }
           ].map((item, i) => (
             <motion.div
               key={item.jargon}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={translationVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 * i }}
-              className="glow-card p-8 bg-eco-surface border border-eco-border rounded-2xl flex flex-col justify-between"
+              transition={{ duration: 0.5, delay: 0.08 * i }}
+              className="glow-card p-6 bg-eco-surface border border-eco-border rounded-xl flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-mono uppercase tracking-widest text-eco-muted line-through">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-eco-muted line-through">
                     {item.jargon}
                   </span>
                   <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
                     style={{ backgroundColor: `${item.color}15`, border: `1px solid ${item.color}30` }}
                   >
-                    <item.icon size={18} style={{ color: item.color }} />
+                    <item.icon size={16} style={{ color: item.color }} />
                   </div>
                 </div>
-                <h3 className="font-heading font-bold text-lg md:text-xl text-white mb-3 uppercase">
-                  {item.translation}
+                <h3 className="font-heading font-bold text-base text-white mb-2 leading-snug">
+                  "{item.translation}"
                 </h3>
-                <p className="text-sm text-eco-muted-light leading-relaxed">
+                <p className="text-xs text-eco-muted-light leading-relaxed">
                   {item.quote}
                 </p>
               </div>
@@ -353,43 +392,31 @@ export default function Philosophy() {
             {/* Right Column: Story Details */}
             <div className="lg:col-span-7 space-y-6 text-sm text-eco-muted-light leading-relaxed">
               <p>
-                When Adrian was a teenager, famous sports players from his own neighborhood helped him. They mentored him and taught him how to lead with kindness, order, and respect:
-              </p>
-
-              {/* Mentors Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-eco-surface2 border border-white/5">
-                  <h5 className="font-heading font-bold text-white text-xs uppercase mb-1">
-                    Trevor Williams & Wayne Yearwood
-                  </h5>
-                  <p className="text-[11px] text-eco-muted-light leading-relaxed">
-                    Wayne played in the 1988 Olympics. Trevor played against the famous USA "Dream Team" in 1992. Their basketball camps showed Adrian how to build good character in young players.
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-eco-surface2 border border-white/5">
-                  <h5 className="font-heading font-bold text-white text-xs uppercase mb-1">
-                    Alvin Powell
-                  </h5>
-                  <p className="text-[11px] text-eco-muted-light leading-relaxed">
-                    Alvin was a big football player in the NFL. He became a counselor. He spent his life helping kids stay calm and feel safe when life gets too hard.
-                  </p>
-                </div>
-              </div>
-
-              <p>
-                Adrian worked hard and became the main point guard for a championship college basketball team. He was named a star player.
+                <strong>Adrian Sapp</strong> didn't just study basketball; he lived it at the <strong>highest level</strong>. He was one of the top high school players in Montreal, earning <strong>All-Star</strong> honors at Westmount High before moving on to Vanier College's <strong>elite AAA program</strong>. During the legendary 2004-2005 season, Adrian earned All-Star honors while leading Vanier to a <strong>Provincial Championship</strong> and a trip to the Nationals, where he was named a <strong>2nd Team All-Canadian</strong>. When it comes to skill development and understanding the true flow of the game, Adrian brings the <strong>proven execution of a champion</strong>. He knows exactly what it takes to perform under pressure because he has actually done it.
               </p>
 
               <p>
-                But Adrian's best skills do not come from books. Members of his own family had hard times with mental health. Adrian spent his life learning how to help and understand people who feel sad, stressed, or scared. This gives him a lot of kindness that you cannot learn in a standard coaching class.
+                But his deep understanding of youth development wasn't just built in a gym. Adrian grew up in <strong>Little Burgundy</strong>, a tough Montreal neighborhood where poverty and crime were daily realities. Raised by a single mother, his childhood was a high-pressure environment, made more difficult by severe <strong>mental health struggles</strong> within his own family. He knows firsthand what it feels like to navigate stress, trauma, and uncertainty as a kid.
               </p>
 
               <p>
-                At first, Adrian coached the old way. He pushed kids hard. But he saw it made them sad and play with fear. Many kids quit sports by age 13. He decided to change things. He started EcoHoops to mix high-level basketball with kind support and brain science.
+                During those critical teenage years, local sports legends stepped in to guide him, including Olympian <strong>Wayne Yearwood</strong> and former NFL player turned counselor <strong>Alvin Powell</strong>. But it was Montreal basketball icon <strong>Trevor Williams</strong> who left the biggest blueprint. Trevor famously played against Michael Jordan and the 1992 USA Dream Team. Watching Trevor build his summer camps and grow his kids' foundation showed Adrian exactly how a leader can become a <strong>positive pillar in the community</strong>. Trevor didn't just teach basketball; he showed Adrian how to use the game to <strong>protect youth, build character, and give kids a safe place to land</strong>.
               </p>
 
-              <p className="font-semibold text-white">
-                When Adrian brings EcoHoops to your facility, he brings the skills of a champion, the street smarts of a tough neighborhood, and a promise to keep every kid happy and safe.
+              <p>
+                The crazy part is that Adrian didn't grow up being coached in a rigid system. He never even played organized basketball until he was 13 at the local high school. Instead, he earned his stripes playing <strong>raw streetball</strong>, competing in tough adult men's leagues starting at just 14 years old, and training entirely by himself for hours on the blacktop in the early mornings.
+              </p>
+
+              <p>
+                Yet, early in his coaching career, Adrian fell right into the <strong>traditional sports trap</strong>. He used heavy pressure, yelling, and the typical grind culture. But he saw the damage it caused. He watched kids <strong>play with fear</strong>, lose their love for the game, and quit sports entirely.
+              </p>
+
+              <p>
+                Adrian admitted he was wrong, turned his back on that toxic environment, and changed his approach. He founded <strong>ECOHOOPS</strong> to fix a broken youth sports system.
+              </p>
+
+              <p>
+                Today, Adrian does things differently. He sets up the court so kids can figure things out on their own, the same way he learned on the playground. He does not treat kids like robots. He holds players accountable, but his ultimate goal is to help kids <strong>grow as whole people</strong>, have fun, and fall in love with the game. When you bring your child to ECOHOOPS, you are getting a <strong>real mentor</strong> who has been there, done that, and made it his life mission to keep your kid <strong>happy, safe, and growing</strong>.
               </p>
             </div>
           </div>

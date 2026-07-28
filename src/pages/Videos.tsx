@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { Play, Clock, Eye, Filter, ExternalLink, Youtube, Film, ChevronRight } from 'lucide-react'
+import { useLocation, Link } from 'react-router-dom'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 type VideoCategory = 'all' | 'highlights' | 'training' | 'recaps' | 'culture'
 type PageTab = 'clips' | 'fullgames'
@@ -162,16 +164,69 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 export default function Videos() {
-  const [tab, setTab] = useState<PageTab>('clips')
+  const location = useLocation()
+  const isStandalonePage = location.pathname === '/videos'
+  
+  if (isStandalonePage) {
+    useDocumentTitle('Media & Highlights')
+  }
+
+  const [tab, setTab] = useState<PageTab>('fullgames')
   const [filter, setFilter] = useState<VideoCategory>('all')
   const [playingId, setPlayingId] = useState<string | null>(null)
   const { ref, isVisible } = useScrollReveal(0.05)
+
+  if (!isStandalonePage) {
+    return (
+      <section ref={ref} className="relative py-24 overflow-hidden bg-eco-black border-t border-eco-border/20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-16"
+          >
+            <span className="tag mb-4 inline-block">Game Footage & Proof</span>
+            <h2 className="font-display text-4xl md:text-6xl uppercase text-white">
+              THE <span className="gradient-text">FILM ROOM</span>
+            </h2>
+            <p className="text-eco-muted-light text-lg max-w-2xl mx-auto mt-4">
+              Watch our Mississauga basketball training in action and check out real game footage from our rep teams.
+            </p>
+          </motion.div>
+
+          {/* Video Grid (Display first 3 videos) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {VIDEOS.slice(0, 3).map((video, i) => (
+              <VideoCard
+                key={video.id}
+                video={video}
+                index={i}
+                isVisible={isVisible}
+                isPlaying={playingId === video.id}
+                onPlay={() => setPlayingId(playingId === video.id ? null : video.id)}
+              />
+            ))}
+          </div>
+
+          {/* Watch More Games Button linking to /videos page */}
+          <div className="text-center">
+            <Link to="/videos" className="btn-ghost inline-flex items-center gap-2 cursor-pointer font-bold uppercase tracking-wider text-white">
+              <Film size={16} className="text-eco-orange" />
+              Watch More Games
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   const filtered = filter === 'all' ? VIDEOS : VIDEOS.filter((v) => v.category === filter)
   const featured = VIDEOS.filter((v) => v.featured)
 
   return (
-    <section ref={ref} className="pt-10 pb-20 min-h-screen">
+    <section ref={ref} className={`${isStandalonePage ? 'pt-28' : 'pt-10'} pb-20 min-h-screen`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -198,17 +253,6 @@ export default function Videos() {
           className="flex gap-2 mb-12"
         >
           <button
-            onClick={() => setTab('clips')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-heading font-bold text-sm uppercase tracking-wider transition-all duration-300 ${
-              tab === 'clips'
-                ? 'bg-eco-orange text-white shadow-glow-sm'
-                : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white hover:border-eco-orange/30'
-            }`}
-          >
-            <Film size={16} />
-            Clips & Highlights
-          </button>
-          <button
             onClick={() => setTab('fullgames')}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-heading font-bold text-sm uppercase tracking-wider transition-all duration-300 ${
               tab === 'fullgames'
@@ -218,6 +262,17 @@ export default function Videos() {
           >
             <Youtube size={16} />
             Full Games
+          </button>
+          <button
+            onClick={() => setTab('clips')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-heading font-bold text-sm uppercase tracking-wider transition-all duration-300 ${
+              tab === 'clips'
+                ? 'bg-eco-orange text-white shadow-glow-sm'
+                : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white hover:border-eco-orange/30'
+            }`}
+          >
+            <Film size={16} />
+            Clips & Highlights
           </button>
         </motion.div>
 

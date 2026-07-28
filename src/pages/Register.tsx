@@ -1,26 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import {
   User, Mail, Phone, Calendar, Users, Shield, ChevronRight,
-  Check, AlertCircle, CreditCard, FileText,
+  Check, AlertCircle, CreditCard, FileText, Loader2,
 } from 'lucide-react'
 
 type Step = 1 | 2 | 3 | 4 | 5
 
 const PROGRAMS = [
-  { id: 'rep-boys', name: 'Rep Team — Boys (2011)', price: 1850, spots: '3 spots left' },
-  { id: 'rep-girls', name: 'Rep Team — Girls (2012)', price: 1850, spots: '5 spots left' },
-  { id: 'camp-summer', name: 'Summer Camp (Ages 6-16)', price: 275, spots: 'Open' },
-  { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all' },
-  { id: 'skills', name: 'Skills Development Program', price: 200, spots: 'Open' },
+  { id: 'rep-boys', name: 'Rep Team — Boys', price: 1850, spots: 'Open', billing: 'per season + HST' },
+  { id: 'rep-girls', name: 'Rep Team — Girls', price: 1850, spots: 'Open', billing: 'per season + HST' },
+  { id: 'camp-summer', name: 'Summer Camp (Ages 6-16)', price: 199, spots: 'Open', billing: '+ HST' },
+  { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all', billing: '' },
+  { id: 'skills', name: 'Skills Development Program', price: 149, spots: '1 session per week', billing: 'per month + HST' },
 ]
 
 export default function Register() {
+  useDocumentTitle('Join the Movement')
   const [regType, setRegType] = useState<'rep' | 'other'>('rep')
   const [step, setStep] = useState<Step>(1)
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [mountIframe, setMountIframe] = useState(false)
+  const [iframeLoading, setIframeLoading] = useState(true)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -35,6 +39,29 @@ export default function Register() {
   })
 
   const { ref, isVisible } = useScrollReveal(0.05)
+
+  // Lazy-mount iframe after a tiny delay to yield the main thread for low INP during navigation
+  useEffect(() => {
+    if (regType === 'rep') {
+      const timer = setTimeout(() => {
+        setMountIframe(true)
+      }, 150)
+      return () => clearTimeout(timer)
+    } else {
+      setMountIframe(false)
+      setIframeLoading(true)
+    }
+  }, [regType])
+
+  // Safety timeout: If iframe doesn't finish loading in 3.5s, clear loading state
+  useEffect(() => {
+    if (mountIframe && iframeLoading) {
+      const timer = setTimeout(() => {
+        setIframeLoading(false)
+      }, 3500)
+      return () => clearTimeout(timer)
+    }
+  }, [mountIframe, iframeLoading])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -74,6 +101,13 @@ export default function Register() {
       });
       const result = await response.json();
       if (result.success) {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'CompleteRegistration', {
+            content_name: PROGRAMS.find(p => p.id === selectedProgram)?.name || 'EcoHoops Registration',
+            currency: 'CAD',
+            value: PROGRAMS.find(p => p.id === selectedProgram)?.price || 0,
+          });
+        }
         setStep(5)
       } else {
         alert("Something went wrong. Please try again.")
@@ -107,7 +141,7 @@ export default function Register() {
             <span className="gradient-text">REGISTER</span>
           </h1>
           <p className="text-eco-muted-light text-lg">
-            Accessible programming for all GTA youth. Play. Learn. Grow.
+            Accessible programming for all Mississauga youth. Play. Learn. Grow.
           </p>
         </motion.div>
 
@@ -158,18 +192,45 @@ export default function Register() {
             </div>
             
             <div className="relative w-full h-[500px] bg-white overflow-hidden rounded-b-xl">
-              <iframe
-                src="https://docs.google.com/forms/d/e/1FAIpQLSe5VRmXBfBeQ0qy_Vw6ZQviioSxlC1C1UgbXVXeq15GbaxI6g/viewform?embedded=true"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                marginHeight={0}
-                marginWidth={0}
-                title="Rep Registrations Google Form"
-                className="w-full h-full"
-              >
-                Loading…
-              </iframe>
+              {iframeLoading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-eco-dark/95 z-20 p-6 text-center">
+                  <Loader2 className="animate-spin text-eco-blue mb-3" size={32} />
+                  <span className="font-heading text-xs uppercase tracking-widest text-eco-muted">Loading Application Form...</span>
+                  <p className="text-xs text-eco-muted mt-6 max-w-sm">
+                    Taking too long? You can also{' '}
+                    <a 
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSe5VRmXBfBeQ0qy_Vw6ZQviioSxlC1C1UgbXVXeq15GbaxI6g/viewform" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-eco-blue hover:underline font-bold"
+                    >
+                      open the Google Form directly
+                    </a>
+                    .
+                  </p>
+                </div>
+              )}
+
+              {mountIframe ? (
+                <iframe
+                  src="https://docs.google.com/forms/d/e/1FAIpQLSe5VRmXBfBeQ0qy_Vw6ZQviioSxlC1C1UgbXVXeq15GbaxI6g/viewform?embedded=true"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  marginHeight={0}
+                  marginWidth={0}
+                  onLoad={() => setIframeLoading(false)}
+                  title="Rep Registrations Google Form"
+                  className="w-full h-full"
+                >
+                  Loading…
+                </iframe>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-eco-dark/95">
+                  <Loader2 className="animate-spin text-eco-blue mb-2" size={24} />
+                  <span className="font-heading text-xs uppercase tracking-widest text-eco-muted ml-2">Preparing Form...</span>
+                </div>
+              )}
             </div>
           </motion.div>
         ) : (
@@ -236,7 +297,7 @@ export default function Register() {
                             {prog.price === 0 ? 'FREE' : `$${prog.price}`}
                           </p>
                           {prog.price > 0 && (
-                            <p className="text-xs text-eco-muted">per season + HST</p>
+                            <p className="text-xs text-eco-muted">{prog.billing}</p>
                           )}
                         </div>
                       </div>
@@ -359,7 +420,9 @@ export default function Register() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between pb-4 border-b border-eco-border">
-                      <span className="text-eco-muted">Season Fee</span>
+                      <span className="text-eco-muted">
+                        {selectedProgram === 'skills' ? 'Monthly Fee' : 'Program Fee'}
+                      </span>
                       <span className="font-display text-2xl gradient-text">
                         ${PROGRAMS.find(p => p.id === selectedProgram)?.price || 0}
                       </span>

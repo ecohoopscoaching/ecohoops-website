@@ -10,6 +10,7 @@ import {
   getSimulatedResponse
 } from '../lib/gemini'
 import type { ChatMessage } from '../lib/gemini'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
@@ -19,6 +20,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 ]
 
 export default function AICoach() {
+  useDocumentTitle('AI Coach')
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)

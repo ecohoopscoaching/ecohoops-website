@@ -2,8 +2,10 @@ import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { Trophy, Calendar, Users, DollarSign, ShieldAlert, Award, ArrowRight, Zap, Target } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Rep() {
+  useDocumentTitle('Rep Teams')
   const { ref: heroRef, isVisible: heroVisible } = useScrollReveal(0.05)
   const { ref: divisionsRef, isVisible: divisionsVisible } = useScrollReveal(0.1)
   const { ref: tryoutsRef, isVisible: tryoutsVisible } = useScrollReveal(0.1)
@@ -12,28 +14,34 @@ export default function Rep() {
 
   const divisions = [
     {
-      age: 'U10 & U11',
+      age: 'Grade 5/6 (U11/U12)',
       name: 'Developmental Rep',
       focus: 'Basic Spacing & Reading the Game',
-      desc: 'We help young players start playing in real games without stress. We use fun rules to teach **spacing** (which means **standing in the right places**) and **game-reading** (which means **understanding what is happening in the game**).'
+      desc: (
+        <span>
+          We help young players in Grades 5 & 6 start playing in competitive games without stress. We use fun rules to teach <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">spacing</strong> <span className="text-xs text-eco-muted italic">(standing in the right places)</span> and <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">game-reading</strong> <span className="text-xs text-eco-muted italic">(understanding what is happening in the game)</span>.
+        </span>
+      )
     },
     {
-      age: 'U12 & U13',
+      age: 'Grade 7/8 (U13/U14)',
       name: 'Transitional Rep',
-      focus: 'Smart Game Rules & Speed Control',
-      desc: 'We teach kids how to run fast when they get the ball (**transition**) and how to play defense. Players learn to handle hard times (**adversity**) and **self-organize** (which means **solving problems on the court together without a coach telling them what to do**).'
+      focus: 'Smart Decisions & Speed Control',
+      desc: (
+        <span>
+          We teach kids how to run fast when they get the ball (<strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">transition</strong>) and how to play defense. Players learn to handle hard times (<strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">adversity</strong>) and <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">self-organize</strong> <span className="text-xs text-eco-muted italic">(solving problems on the court together without a coach telling them what to do)</span>.
+        </span>
+      )
     },
     {
-      age: 'U14 & U15',
-      name: 'Performance Rep',
-      focus: 'Fast Decisions & High-Energy Play',
-      desc: 'We play in big tournaments. We use faster games and different rules to help players make quick choices when defenders are pressing them hard.'
-    },
-    {
-      age: 'U16 & U17',
+      age: 'Grade 9/10 (U15/U16)',
       name: 'Varsity Prep',
       focus: 'Big Games & Leadership Skills',
-      desc: 'We prepare players for high school and college teams. We focus on **tactical** play (which means **making smart team moves**) and building **resilience** (which means **staying strong and not giving up**).'
+      desc: (
+        <span>
+          We prepare high school players for competitive varsity squads. We use faster game constraints to help players make quick choices, focusing on <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">tactical</strong> play <span className="text-xs text-eco-muted italic">(making smart team moves)</span> and building <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">resilience</strong> <span className="text-xs text-eco-muted italic">(staying strong and not giving up)</span>.
+        </span>
+      )
     }
   ]
 
@@ -129,7 +137,7 @@ export default function Rep() {
             <span className="gradient-text">BRACKETS</span>
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
-            Our teams participate in Ontario Basketball Association (OBA) leagues and regional tournaments across the Greater Toronto Area.
+            We are currently fielding our 2011 Boys Team and 2012 Girls Team. Our squads play in different leagues around the GTA like the Coalition League and others.
           </p>
         </motion.div>
 
@@ -146,7 +154,7 @@ export default function Rep() {
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-xl sm:text-2xl font-display text-white tracking-wide">{division.age}</span>
                   <span className="bg-eco-blue/10 border border-eco-blue/20 text-eco-blue text-[10px] uppercase font-mono px-2 py-1 rounded">
-                    OBA Registered
+                    GTA League Play
                   </span>
                 </div>
                 <h3 className="font-heading font-bold text-lg text-[#97B3D2] uppercase tracking-wide mb-2">
@@ -186,7 +194,7 @@ export default function Rep() {
                   <div>
                     <h4 className="font-heading font-bold text-white text-sm uppercase">Fall Rep Tryouts</h4>
                     <p className="text-xs text-eco-muted-light mt-1">
-                      Late August to Early September. Selects rosters for the Fall/Winter OBA competitive runs.
+                      Late August to Early September. Selects rosters for the Fall/Winter GTA competitive leagues.
                     </p>
                   </div>
                 </div>
@@ -277,7 +285,7 @@ export default function Rep() {
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
-                  <span><strong>GTA Tournaments:</strong> Fees for four weekend tournaments (at least 12 games total).</span>
+                  <span><strong>League Play:</strong> We play in different leagues around the GTA like the Coalition League and others.</span>
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
@@ -300,7 +308,7 @@ export default function Rep() {
                 <span>Scholarships & subsidies available</span>
               </div>
               <p className="text-xs text-eco-muted-light max-w-sm leading-relaxed">
-                As a community-focused non-profit, we partner with programs like Jumpstart and KidSport. Contact our staff to coordinate financial assistance.
+                As a community-focused non-profit, we help parents coordinate funding from programs like Jumpstart and KidSport. Contact our staff to learn more.
               </p>
             </div>
           </motion.div>
@@ -331,20 +339,28 @@ export default function Rep() {
             <div className="space-y-4">
               <div className="text-left text-xs bg-eco-black/40 border border-white/5 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-white font-semibold">
-                  <span>Registration Deposit</span>
+                  <span>Registration Deposit (Sept 1st)</span>
                   <span>$350</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #1 (Oct)</span>
-                  <span>$500</span>
+                  <span>Installment #1 (Oct 1st)</span>
+                  <span>$300</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #2 (Dec)</span>
-                  <span>$500</span>
+                  <span>Installment #2 (Nov 1st)</span>
+                  <span>$300</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #3 (Feb)</span>
-                  <span>$500</span>
+                  <span>Installment #3 (Dec 1st)</span>
+                  <span>$300</span>
+                </div>
+                <div className="flex justify-between text-eco-muted-light">
+                  <span>Installment #4 (Jan 1st)</span>
+                  <span>$300</span>
+                </div>
+                <div className="flex justify-between text-eco-muted-light">
+                  <span>Installment #5 (Feb 1st)</span>
+                  <span>$300</span>
                 </div>
               </div>
               
@@ -371,7 +387,7 @@ export default function Rep() {
           <p className="text-eco-muted-light max-w-2xl mx-auto mb-8 leading-relaxed text-sm md:text-base">
             We want our players to try their hardest. Our coaches do not yell to make kids feel bad. Sometimes coaches speak loudly to get kids focused, but they are always kind and supportive.
             <br /><br />
-            Please note: for older kids, not everyone plays the same amount of time. Everyone is treated **FAIRLY** (which means **with respect**), but not **EQUALLY** (which means **some will play more than others**). Playing time is earned by showing up to practice, working hard on defense, and developing skills.
+            Please note: for older kids, not everyone plays the same amount of time. Everyone is treated <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Fairly</strong> <span className="text-xs text-eco-muted italic">(with respect)</span>, but not <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Equally</strong> <span className="text-xs text-eco-muted italic">(some will play more than others)</span>. Playing time is earned by showing up to practice, working hard on defense, and developing skills.
           </p>
 
           <Link to="/philosophy" className="btn-glow inline-flex items-center gap-2 px-8 py-3">

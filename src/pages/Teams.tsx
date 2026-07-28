@@ -5,14 +5,17 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { Users, Trophy, Calendar, MapPin, X, BarChart2, ArrowUpDown, Check } from 'lucide-react'
 import type { Player, Team } from '../types'
 import { useData } from '../contexts/DataContext'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Teams() {
+  useDocumentTitle('Active Roster & Stats')
   const { teams } = useData()
   const [selectedTeamId, setSelectedTeamId] = useState<string>(teams[0]?.id || '')
   const selectedTeam = useMemo(() => teams.find(t => t.id === selectedTeamId) || teams[0], [teams, selectedTeamId])
   const [positionFilter, setPositionFilter] = useState<'All' | 'Guards' | 'Forwards' | 'Centers'>('All')
   const [sortBy, setSortBy] = useState<'number' | 'name' | 'ppg' | 'rpg' | 'apg'>('number')
   const [comparePlayers, setComparePlayers] = useState<Player[]>([])
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   
   const { ref, isVisible } = useScrollReveal(0.05)
   const navigate = useNavigate()
@@ -112,7 +115,7 @@ export default function Teams() {
             <span className="gradient-text">SQUADS</span>
           </h1>
           <p className="text-eco-muted-light text-lg max-w-xl">
-            Meet the players building the future of basketball in the GTA.
+            Meet the players building the future of basketball in Mississauga.
           </p>
         </motion.div>
 
@@ -174,14 +177,14 @@ export default function Teams() {
         </div>
 
         {/* Team Layout Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16 items-start">
+        <div className="mb-16">
           {/* Main Team Overview Card */}
           <motion.div
             key={`overview-${selectedTeam.id}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="glow-card overflow-hidden lg:col-span-2"
+            className="glow-card overflow-hidden w-full"
           >
             {/* Team Photo */}
             {selectedTeam.teamPhoto ? (
@@ -274,48 +277,6 @@ export default function Teams() {
               )}
             </div>
           </motion.div>
-
-          {/* Leaders Panel */}
-          {leaders && (
-            <motion.div
-              key={`leaders-${selectedTeam.id}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-eco-surface border border-eco-blue/20 rounded-2xl p-6 relative overflow-hidden group hover:border-eco-blue/40 transition-all shadow-glow-sm"
-            >
-              <div className="absolute top-0 right-0 p-3 text-eco-blue/10 pointer-events-none">
-                <BarChart2 size={80} />
-              </div>
-              <h3 className="font-display text-2xl uppercase text-white mb-4 tracking-wider flex items-center gap-2 border-b border-eco-border pb-2">
-                Squad Leaders
-              </h3>
-              <div className="space-y-4">
-                {leaders.map((leader) => (
-                  <div key={leader.label} className="flex items-center justify-between gap-3 p-2 rounded-xl bg-eco-surface2/50 border border-white/5 hover:border-eco-blue/20 hover:bg-eco-surface2 transition-all cursor-pointer" onClick={() => navigate(`/player/${selectedTeam.id}/${leader.id}`)}>
-                    <div className="flex items-center gap-3">
-                      {leader.avatar ? (
-                        <img src={leader.avatar} alt={leader.name} className="w-9 h-9 rounded-lg object-cover border border-white/10 contrast-110 saturate-50" />
-                      ) : (
-                        <div className="w-9 h-9 rounded-lg bg-eco-blue/10 border border-eco-blue/20 flex items-center justify-center font-display text-white text-sm">
-                          #{leader.number}
-                        </div>
-                      )}
-                      <div>
-                        <p className="text-[10px] text-eco-muted uppercase tracking-wider">{leader.label}</p>
-                        <p className="text-sm font-heading font-semibold text-white leading-tight">{leader.name.split(' ')[0]} {leader.name.split(' ').slice(1).join(' ').substring(0, 1)}.</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-mono text-sm font-bold text-eco-blue bg-eco-blue/10 px-2 py-0.5 rounded border border-eco-blue/20">
-                        {leader.val}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
         </div>
 
         {/* Filter and Sorting Controls */}
@@ -349,9 +310,6 @@ export default function Teams() {
             >
               <option value="number">Jersey #</option>
               <option value="name">Name (A-Z)</option>
-              <option value="ppg">Points (PPG)</option>
-              <option value="rpg">Rebounds (RPG)</option>
-              <option value="apg">Assists (APG)</option>
             </select>
           </div>
         </div>
@@ -376,7 +334,7 @@ export default function Teams() {
                     index={i}
                     isSelectedForCompare={isSelectedForCompare}
                     onToggleCompare={(e) => handleToggleCompare(player, e)}
-                    onClick={() => navigate(`/player/${selectedTeam.id}/${player.id}`)}
+                    onClick={() => setSelectedPlayer(player)}
                   />
                 )
               })}
@@ -509,6 +467,86 @@ export default function Teams() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Collector Card Modal */}
+      <AnimatePresence>
+        {selectedPlayer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-eco-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedPlayer(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="relative max-w-sm w-full bg-white p-6 pb-8 shadow-2xl rounded-sm transform rotate-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedPlayer(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-eco-black/5 flex items-center justify-center text-eco-black hover:bg-eco-black/10 transition-colors z-30"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Tape Effect */}
+              <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 w-28 h-8 bg-white/70 backdrop-blur-sm -rotate-1 z-20 shadow-sm" />
+
+              {/* Card Title/Logo Header */}
+              <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                  EcoHoops Roster Card
+                </span>
+                <span className="font-mono text-[10px] text-eco-blue bg-eco-blue/5 border border-eco-blue/10 px-2 py-0.5 rounded uppercase tracking-wider font-bold">
+                  {selectedTeam.name}
+                </span>
+              </div>
+
+              {/* Polaroid Image */}
+              <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden border border-gray-200 shadow-inner rounded-sm">
+                {selectedPlayer.avatar ? (
+                  <img
+                    src={selectedPlayer.avatar}
+                    alt={selectedPlayer.name}
+                    className="w-full h-full object-cover filter contrast-110 saturate-75 hover:saturate-100 transition-all duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-display text-7xl text-gray-200">
+                    #{selectedPlayer.number}
+                  </div>
+                )}
+                {/* Large Jersey Number overlay */}
+                <div className="absolute top-4 right-5 font-display text-7xl text-white/35 drop-shadow-md select-none pointer-events-none">
+                  {selectedPlayer.number}
+                </div>
+              </div>
+
+              {/* Polaroid bottom caption */}
+              <div className="text-center pt-2">
+                <h3 className="font-graffiti text-eco-black text-3xl md:text-4xl tracking-wide -rotate-1 transform">
+                  {selectedPlayer.name}
+                </h3>
+                <div className="mt-4 pt-4 border-t border-gray-100 flex justify-around text-gray-400 font-mono text-[10px] uppercase tracking-wider">
+                  <div>
+                    <p className="text-gray-300">Jersey</p>
+                    <p className="font-bold text-eco-black text-sm">#{selectedPlayer.number}</p>
+                  </div>
+                  <div className="border-l border-gray-100" />
+                  <div>
+                    <p className="text-gray-300 font-heading">Division</p>
+                    <p className="font-bold text-eco-black text-sm font-heading">{selectedTeam.ageGroup}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
@@ -546,19 +584,6 @@ function PlayerCard({
       {/* Tape Effect */}
       <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-20 h-6 bg-white/60 backdrop-blur-sm -rotate-2 z-10 shadow-sm" />
 
-      {/* Compare Tag Action */}
-      <button 
-        onClick={onToggleCompare}
-        className={`absolute top-2 left-2 z-20 px-2 py-0.5 rounded font-mono text-[9px] uppercase tracking-wider border transition-all duration-300 flex items-center gap-1 ${
-          isSelectedForCompare
-            ? 'bg-eco-blue text-eco-black border-eco-blue font-bold shadow-glow-sm'
-            : 'bg-black/60 text-white border-white/20 hover:bg-black/80 hover:border-eco-blue/50'
-        }`}
-      >
-        {isSelectedForCompare ? <Check size={10} strokeWidth={3} /> : null}
-        Compare
-      </button>
-
       {/* Image Container */}
       <div className="relative aspect-square mb-2 bg-gray-100 overflow-hidden border border-gray-200">
         {player.avatar ? (
@@ -583,9 +608,6 @@ function PlayerCard({
       <div className="text-center">
         <p className="font-graffiti text-eco-black text-xl md:text-2xl tracking-wide -rotate-2 transform">
           {player.name}
-        </p>
-        <p className="text-gray-500 font-heading text-[10px] md:text-xs uppercase tracking-widest mt-1">
-          {player.position} &middot; {player.height}
         </p>
       </div>
     </motion.div>

@@ -15,7 +15,7 @@ export default function CoachAdrian() {
             transition={{ duration: 0.7 }}
             className="glow-card overflow-hidden rounded-3xl"
           >
-            <img src="/images/IMG_0160.JPG" alt="Coach Adrian" className="w-full h-full object-cover" />
+            <img src="/images/coach_adrian_new.jpg" alt="Coach Adrian" className="w-full h-full object-cover" />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 30 }}
@@ -28,11 +28,9 @@ export default function CoachAdrian() {
               <span className="gradient-text">APPROACH</span>
             </h2>
             <p className="text-eco-muted-light text-lg leading-relaxed mb-6">
-              Coach Adrian built EcoHoops because youth sports needed a change. 
-              After witnessing the negative impact of win-at-all-costs environments, 
-              he created a program that puts kids first. 
+              Coach Adrian built EcoHoops because too many kids are being pushed out of basketball by pressure, yelling, and adult ego. EcoHoops gives kids a better way to learn, compete, and grow.
             </p>
-            <p className="text-eco-muted-light text-lg leading-relaxed mb-8">
+            <p className="text-eco-muted-light text-lg leading-relaxed mb-8 font-semibold text-white">
               "We're not here to build pros. We're here to build people. Basketball is just the tool."
             </p>
             <Link to="/about" className="btn-ghost inline-flex items-center justify-center">

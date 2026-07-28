@@ -22,6 +22,19 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
+const isFirebaseConfigured = (): boolean => {
+  const apiKey = import.meta.env.VITE_FIREBASE_API_KEY
+  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID
+  return !!(
+    apiKey && 
+    apiKey !== "" && 
+    apiKey !== "dummy_api_key" && 
+    projectId && 
+    projectId !== "" && 
+    projectId !== "dummy_project_id"
+  )
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -33,12 +46,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAdmin = currentUser !== null || isMockAdmin
 
   useEffect(() => {
+    if (!isFirebaseConfigured()) {
+      setLoading(false)
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      clearTimeout(timeout)
       setCurrentUser(user)
       setLoading(false)
     })
 
-    return unsubscribe
+    return () => {
+      clearTimeout(timeout)
+      unsubscribe()
+    }
   }, [])
 
   const loginMockAdmin = () => {

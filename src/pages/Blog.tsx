@@ -6,20 +6,35 @@ import { Calendar, User, ArrowRight, Loader2 } from 'lucide-react'
 import { BLOG_POSTS } from '../data/blogs'
 import { blogService } from '../lib/blog-service'
 import { BlogPost } from '../types'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Blog() {
+  useDocumentTitle('The EcoHoops Blog')
   const { ref, isVisible } = useScrollReveal(0.05)
-  const [allPosts, setAllPosts] = useState<BlogPost[]>(BLOG_POSTS)
+  const [allPosts, setAllPosts] = useState<BlogPost[]>(() => 
+    BLOG_POSTS.filter(post => !blogService.isPostDeleted(post.id))
+  )
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchPosts() {
-      const dbPosts = await blogService.getFirestorePosts()
-      const combined = [...dbPosts, ...BLOG_POSTS].sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
-      setAllPosts(combined)
-      setIsLoading(false)
+      try {
+        const dbPosts = await blogService.getFirestorePosts()
+        const combined = [...dbPosts, ...BLOG_POSTS]
+          .filter(post => !blogService.isPostDeleted(post.id))
+          .sort((a, b) => {
+            const timeA = a.date ? new Date(a.date).getTime() : 0
+            const timeB = b.date ? new Date(b.date).getTime() : 0
+            const validA = isNaN(timeA) ? 0 : timeA
+            const validB = isNaN(timeB) ? 0 : timeB
+            return validB - validA
+          })
+        setAllPosts(combined)
+      } catch (error) {
+        console.error('Error fetching/sorting posts:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
     fetchPosts()
   }, [])
@@ -58,8 +73,17 @@ export default function Blog() {
             </div>
           )}
           {allPosts.map((post, index) => {
-            const dateObj = new Date(post.date)
-            const fullDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            let fullDate = 'Recent'
+            try {
+              if (post.date) {
+                const dateObj = new Date(post.date)
+                if (!isNaN(dateObj.getTime())) {
+                  fullDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                }
+              }
+            } catch (e) {
+              console.error('Error formatting date:', e)
+            }
             return (
               <motion.div
                 key={post.id}

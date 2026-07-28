@@ -4,11 +4,12 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { 
   Heart, Users, CheckCircle, Sparkles, Move, Target, Shield, Play, Smile, ChevronRight, ChevronLeft, BookOpen, Brain, X
 } from 'lucide-react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Jr() {
+  useDocumentTitle('EcoHoops Jr. (Ages 4-11)')
   const { ref, isVisible } = useScrollReveal(0.05)
   const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies' | 'hoopers'>('minis')
-  const [selectedAction, setSelectedAction] = useState<'layup' | 'crossover' | 'pass'>('layup')
   const [psychologySlide, setPsychologySlide] = useState(0)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [parentEmail, setParentEmail] = useState('')
@@ -190,35 +191,7 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
     }
   }
 
-  const actions = {
-    layup: {
-      name: "A Layup",
-      description: "Driving to the basket, leaping off one foot, and gently banking the ball in.",
-      skills: {
-        locomotor: ['running', 'jumping'],
-        stability: ['balance', 'landing', 'twisting'],
-        manipulative: ['throwing']
-      }
-    },
-    crossover: {
-      name: "A Crossover Dribble",
-      description: "Sprinting up court, throwing a hard change of pace, and changing directions instantly.",
-      skills: {
-        locomotor: ['running', 'sprinting', 'shuffling'],
-        stability: ['balance', 'stopping', 'starting', 'changing direction'],
-        manipulative: ['dribbling']
-      }
-    },
-    pass: {
-      name: "Catching & Passing",
-      description: "Running to meet a pass, landing securely, bracing for defense, and firing a chest pass.",
-      skills: {
-        locomotor: ['running'],
-        stability: ['balance', 'landing', 'bracing', 'posture control'],
-        manipulative: ['throwing', 'catching']
-      }
-    }
-  }
+
 
   return (
     <section ref={ref} className="pt-28 pb-20 min-h-screen bg-eco-dark text-white">
@@ -399,7 +372,6 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
             ))}
           </div>
         </div>
-
       {/* The ABCs of Movement Section */}
       <div className="mb-24">
         <div className="text-center mb-12">
@@ -410,128 +382,6 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
           <p className="text-eco-muted-light text-base max-w-3xl mx-auto mt-4 leading-relaxed text-balance">
             You wouldn't expect a toddler to read a novel before learning the alphabet. Basketball is no different. Before your child can drive to the hoop, their nervous system needs to master the basic movement alphabet: balance, deceleration, and spatial control.
           </p>
-        </div>
-
-        {/* Interactive Movement Translator Widget */}
-        <div className="glow-card p-6 md:p-8 bg-eco-surface/50 border border-eco-border rounded-2xl mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <div className="lg:col-span-4 space-y-6">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-eco-blue font-bold mb-1 block">Interactive Metaphor</span>
-                <h3 className="font-heading font-bold text-lg uppercase text-white">The Movement Alphabet</h3>
-              </div>
-              <p className="text-xs text-eco-muted-light leading-relaxed">
-                Click a basketball action below to see how a high-level play breaks down into basic human movements. This shows why we build coordination first!
-              </p>
-              <div className="flex flex-col gap-2">
-                {(Object.keys(actions) as Array<keyof typeof actions>).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedAction(key)}
-                    className={`text-left py-3 px-4 rounded-xl font-heading font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-between ${
-                      selectedAction === key
-                        ? 'bg-eco-blue text-eco-black shadow-glow-sm scale-[1.02]'
-                        : 'bg-eco-dark hover:bg-eco-surface border border-white/5 text-eco-muted-light'
-                    }`}
-                  >
-                    <span>{actions[key].name}</span>
-                    <ChevronRight size={12} />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:col-span-8 space-y-6 lg:pl-6 lg:border-l border-white/5">
-              <div className="bg-eco-dark/60 p-5 rounded-xl border border-white/5">
-                <h4 className="font-heading font-bold text-white text-sm uppercase mb-1">
-                  Anatomy of {actions[selectedAction].name}
-                </h4>
-                <p className="text-xs text-eco-muted-light leading-relaxed">
-                  {actions[selectedAction].description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Locomotor column */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-heading font-semibold uppercase text-eco-blue">
-                    <Move size={14} />
-                    <span>Locomotor</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    {['running', 'sprinting', 'hopping', 'skipping', 'shuffling', 'jumping'].map((s) => {
-                      const active = actions[selectedAction].skills.locomotor.includes(s);
-                      return (
-                        <div
-                          key={s}
-                          className={`px-3 py-1.5 rounded-lg text-[11px] font-heading capitalize border transition-all duration-300 ${
-                            active
-                              ? 'bg-eco-blue/10 border-eco-blue/30 text-white font-bold shadow-glow-sm'
-                              : 'bg-transparent border-transparent text-eco-muted/50'
-                          }`}
-                        >
-                          {s}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Stability column */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-heading font-semibold uppercase text-eco-blue">
-                    <Shield size={14} />
-                    <span>Stability</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    {['balance', 'stopping', 'landing', 'twisting', 'bracing', 'posture control', 'starting', 'changing direction'].map((s) => {
-                      const active = actions[selectedAction].skills.stability.includes(s);
-                      return (
-                        <div
-                          key={s}
-                          className={`px-3 py-1.5 rounded-lg text-[11px] font-heading capitalize border transition-all duration-300 ${
-                            active
-                              ? 'bg-eco-blue/10 border-eco-blue/30 text-white font-bold shadow-glow-sm'
-                              : 'bg-transparent border-transparent text-eco-muted/50'
-                          }`}
-                        >
-                          {s}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Manipulative column */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-heading font-semibold uppercase text-eco-blue">
-                    <Target size={14} />
-                    <span>Manipulative</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    {['throwing', 'catching', 'dribbling', 'striking', 'kicking'].map((s) => {
-                      const active = actions[selectedAction].skills.manipulative.includes(s);
-                      return (
-                        <div
-                          key={s}
-                          className={`px-3 py-1.5 rounded-lg text-[11px] font-heading capitalize border transition-all duration-300 ${
-                            active
-                              ? 'bg-eco-blue/10 border-eco-blue/30 text-white font-bold shadow-glow-sm'
-                              : 'bg-transparent border-transparent text-eco-muted/50'
-                          }`}
-                        >
-                          {s}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
         </div>
 
         {/* Three Categories Cards */}
@@ -594,6 +444,8 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
           </p>
         </div>
       </div>
+
+
 
       {/* 3. Why We Do It */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
@@ -718,7 +570,7 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
                 BECAUSE BIOLOGY DOES NOT CARE ABOUT BIRTHDAYS
               </h3>
               <p className="text-sm text-eco-muted-light leading-relaxed">
-                Kids born in the same year can be very different in size and strength. Standard teams only reward the biggest kids. This hurts kids who grow later (late bloomers). We use **Bio-Banding** (which means **grouping kids by how much their body has actually grown, not by their age**). This keeps smaller kids in the game. It also forces bigger kids to learn real skills instead of just using their size.
+                Kids born in the same year can be very different in size and strength. Standard teams only reward the biggest kids. This hurts kids who grow later (late bloomers). We use <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Bio-Banding</strong> <span className="text-xs text-eco-muted italic">(grouping kids by how much their body has actually grown, not by their age)</span>. This keeps smaller kids in the game. It also forces bigger kids to learn real skills instead of just using their size.
               </p>
             </div>
             <div className="lg:col-span-4 bg-eco-dark/60 p-5 rounded-xl border border-white/5 text-center">
@@ -991,7 +843,7 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
                 Get the Science-Backed Solo Shooting Plan
               </h3>
               <p className="text-xs text-eco-muted-light leading-relaxed">
-                Do not make your kid run around orange cones. Download our 5 solo games based on brain science. We use **Variability** (which means **doing things differently each time**) to help their brain learn to adapt, not just copy.
+                Do not make your kid run around orange cones. Download our 5 solo games based on brain science. We use <strong className="text-eco-blue font-bold uppercase tracking-wide font-heading">Variability</strong> <span className="text-xs text-eco-muted italic">(doing things differently each time)</span> to help their brain learn to adapt, not just copy.
               </p>
 
               {practicePlanStatus === 'success' ? (

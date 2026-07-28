@@ -1,23 +1,53 @@
-import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { ArrowRight, Play } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 
-export default function Hero() {
+interface HeroProps {
+  onRegisterClick?: () => void;
+}
+
+const BACKGROUND_IMAGES = [
+  { src: '/images/IMG_0493.JPG', alt: 'EcoHoops team huddle' },
+  { src: '/images/hero-bg-new-1.jpg', alt: 'EcoHoops U15 boys game play' },
+  { src: '/images/hero-bg-new-13.jpg', alt: 'EcoHoops girls practice scrimmage' }
+]
+
+export default function Hero({ onRegisterClick }: HeroProps) {
+  const [bgIndex, setBgIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length)
+    }, 7000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src="/images/IMG_0493.JPG"
-          alt="EcoHoops team huddle"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {/* Background Image Slideshow */}
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence mode="popLayout">
+          <motion.img
+            key={bgIndex}
+            src={BACKGROUND_IMAGES[bgIndex].src}
+            alt={BACKGROUND_IMAGES[bgIndex].alt}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 1.5, ease: 'easeInOut' }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-eco-black/80 via-eco-black/70 to-eco-black/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-eco-black/85 via-eco-black/75 to-eco-black/90 z-10" />
         {/* Navy tint overlay */}
-        <div className="absolute inset-0 bg-eco-navy/30 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-eco-navy/35 mix-blend-multiply z-10" />
         {/* Bottom fade to seamless transition */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-eco-black to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-eco-black to-transparent z-20" />
+      </div>
+
+      {/* Grid lines and floating elements need to sit above background slideshow but below text */}
+      <div className="absolute inset-0 z-20 pointer-events-none">
 
         {/* Grid lines */}
         <div className="absolute inset-0 opacity-[0.03]"
@@ -48,7 +78,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
-          <span className="tag">The Anti-Elite Basketball Movement</span>
+          <span className="tag">ECOHOOPS BASKETBALL MISSISSAUGA</span>
         </motion.div>
 
         {/* Main Headline */}
@@ -58,6 +88,9 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="font-display text-hero uppercase mb-6 leading-none"
         >
+          <span className="text-[clamp(1.2rem,3vw,2.5rem)] text-eco-blue tracking-[0.2em] block mb-4 font-heading font-extrabold">
+            ECOHOOPS MISSISSAUGA
+          </span>
           <span className="text-white">KIDS FIRST.</span>
           <br />
           <span className="gradient-text">ALWAYS.</span>
@@ -68,9 +101,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-lg md:text-xl text-eco-muted-light max-w-2xl mx-auto mb-10 font-body leading-relaxed"
+          className="text-lg md:text-xl text-eco-muted-light max-w-3xl mx-auto mb-10 font-body leading-relaxed"
         >
-          Basketball built for kids, not adult egos.
+          We help players become smarter, more confident competitors by teaching basketball the way it's actually played — so improvement transfers directly to real games.
         </motion.p>
 
         {/* CTAs */}
@@ -80,13 +113,19 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <Link to="/register" className="btn-glow flex items-center gap-2 text-base">
-            Find a Program
+          <button
+            onClick={onRegisterClick}
+            className="btn-glow flex items-center gap-2 text-base cursor-pointer"
+          >
+            Register for Tryouts
             <ArrowRight size={18} />
-          </Link>
-          <Link to="/nonprofit" className="btn-ghost flex items-center gap-2 text-base">
-            Support the Nonprofit
-          </Link>
+          </button>
+          <a
+            href="#programs"
+            className="btn-ghost flex items-center gap-2 text-base cursor-pointer"
+          >
+            View Programs
+          </a>
         </motion.div>
 
         {/* Stats Bar */}
@@ -94,29 +133,34 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto mt-8"
         >
-          {[
-            { value: '2', label: 'Years Strong' },
-            { value: 'Non-Profit', label: 'Registered Status' },
-            { value: '100%', label: 'Backed by Sports Science' },
-            { value: 'Inclusive', label: 'Non-Discriminatory' },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
-              className="text-center"
-            >
-              <div className="font-display text-3xl md:text-4xl gradient-text mb-1">
-                {stat.value}
-              </div>
-              <div className="text-xs uppercase tracking-wider text-eco-muted font-heading">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
+          <div className="bg-eco-surface/50 backdrop-blur-md border border-white/5 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
+            {/* Subtle internal border dividing elements on desktop */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#97B3D2]/5 to-transparent pointer-events-none" />
+            
+            {[
+              { value: '2', label: 'Years Strong' },
+              { value: 'Nonprofit', label: 'Arm' },
+              { value: 'Science', label: 'Built With Sports Science' },
+              { value: 'Belonging', label: 'Every Kid Belongs' },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
+                className="text-center flex flex-col justify-center items-center"
+              >
+                <div className="font-display text-3xl md:text-4xl font-bold text-white mb-2 leading-none">
+                  {stat.value}
+                </div>
+                <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#97B3D2] font-heading font-medium text-balance">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
 

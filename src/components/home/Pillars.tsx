@@ -24,6 +24,16 @@ export default function Pillars() {
 
   return (
     <section ref={ref} className="relative py-32 overflow-hidden">
+      {/* Subtle background team image */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <img 
+          src="/images/hero-bg-new-13.jpg" 
+          alt="EcoHoops scrimmage session" 
+          className="w-full h-full object-cover opacity-[0.03] mix-blend-luminosity filter contrast-125 saturate-50"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-eco-black via-transparent to-eco-black" />
+      </div>
+
       {/* Background accent */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-eco-surface/30 to-transparent" />
 
@@ -35,10 +45,10 @@ export default function Pillars() {
           transition={{ duration: 0.7 }}
           className="text-center mb-20"
         >
-          <span className="tag mb-4 inline-block">The Difference</span>
+          <span className="tag mb-4 inline-block">Our Coaching Method</span>
           <h2 className="font-display text-section uppercase mb-4">
-            <span className="text-white">WHY ECOHOOPS </span>
-            <span className="gradient-text">IS DIFFERENT</span>
+            <span className="text-white">HOW WE </span>
+            <span className="gradient-text">COACH</span>
           </h2>
           <p className="text-eco-muted-light text-lg max-w-2xl mx-auto">
             A kids-first basketball movement focused on development, joy, and belonging. Click on any pillar to explore the science.
@@ -116,7 +126,7 @@ export default function Pillars() {
                         className="text-xs font-mono uppercase mt-4 inline-flex items-center gap-1 transition-colors"
                         style={{ color: hoveredIndex === i ? '#ffffff' : pillar.color }}
                       >
-                        Explore Scientific Deep Dive <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
+                        See How We Coach <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
                       </span>
                     </div>
                   </div>
@@ -125,6 +135,44 @@ export default function Pillars() {
             )
           })}
         </div>
+
+        {/* The Game Changer Ebook & Library Callout Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="mt-20 bg-gradient-to-r from-eco-surface to-eco-navy/40 border border-eco-blue/20 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-glow-sm"
+        >
+          {/* Ambient background glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-eco-blue/5 blur-[50px] rounded-full pointer-events-none" />
+          
+          <div className="flex-1">
+            <span className="bg-eco-blue/10 border border-eco-blue/20 text-eco-blue text-[10px] uppercase font-mono px-2.5 py-1 rounded-full inline-block mb-4 font-bold tracking-wider">
+              📖 The Game Changer Ebook
+            </span>
+            <h3 className="font-display text-2xl sm:text-3xl text-white uppercase mb-3">
+              Explore Our Complete Science Guide
+            </h3>
+            <p className="text-eco-muted-light max-w-xl text-sm leading-relaxed">
+              Read our interactive 16-chapter ebook on Ecological Dynamics and the Constraints-Led Approach in basketball. Access our database of 122 game-like constraints to learn how kids acquire skills naturally.
+            </p>
+          </div>
+          
+          <div className="flex-shrink-0 w-full md:w-auto flex flex-col sm:flex-row gap-4">
+            <a
+              href="/game-changer/index.html"
+              className="btn-glow !px-8 !py-4 text-center font-bold text-eco-black text-sm uppercase tracking-wider rounded-xl block md:inline-block w-full sm:w-auto"
+            >
+              Start Reading
+            </a>
+            <a
+              href="/game-changer/library.html"
+              className="text-white hover:text-eco-blue border border-white/10 hover:border-eco-blue/30 bg-white/5 hover:bg-eco-blue/5 transition-all duration-300 font-heading text-xs font-bold uppercase tracking-widest px-6 py-4 rounded-xl flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              Constraints Library <ArrowRight size={14} />
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

@@ -17,7 +17,7 @@ export default function BlogPost() {
     async function fetchPost() {
       // 1. Try local memory first
       const localPost = BLOG_POSTS.find(p => p.slug === slug)
-      if (localPost) {
+      if (localPost && !blogService.isPostDeleted(localPost.id)) {
         setPost(localPost)
         setIsLoading(false)
         return
@@ -52,12 +52,21 @@ export default function BlogPost() {
   }
 
   // Format the ISO Date back to standard string
-  const dateObj = new Date(post.date)
-  const fullDate = dateObj.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  })
+  let fullDate = 'Recent'
+  try {
+    if (post.date) {
+      const dateObj = new Date(post.date)
+      if (!isNaN(dateObj.getTime())) {
+        fullDate = dateObj.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        })
+      }
+    }
+  } catch (e) {
+    console.error('Error formatting blog post date:', e)
+  }
 
   return (
     <article className="pt-28 pb-20 min-h-screen max-w-4xl mx-auto px-6 lg:px-8">

@@ -6,7 +6,7 @@ import { Heart, Users, Dumbbell, Brain, ArrowRight } from 'lucide-react'
 const INITIATIVES = [
   {
     title: 'Free Community Sessions',
-    description: 'Weekly no-cost basketball sessions for underserved youth across the GTA. No registration fees, no barriers — just show up and play.',
+    description: 'Weekly no-cost basketball sessions for underserved youth in Mississauga. No registration fees, no barriers — just show up and play.',
     icon: Dumbbell,
   },
   {
@@ -30,7 +30,17 @@ export default function Nonprofit() {
   const { ref, isVisible } = useScrollReveal(0.1)
 
   return (
-    <section ref={ref} className="relative py-32 overflow-hidden">
+    <section ref={ref} className="relative py-32 overflow-hidden bg-eco-black">
+      {/* Subtle background team image */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <img 
+          src="/images/hero-bg-new-2.jpg" 
+          alt="EcoHoops Boys Team Photo" 
+          className="w-full h-full object-cover opacity-[0.03] mix-blend-luminosity filter contrast-125 saturate-50"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-eco-black via-transparent to-eco-black" />
+      </div>
+
       {/* Navy gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-eco-navy/20 to-transparent" />
 
@@ -42,13 +52,14 @@ export default function Nonprofit() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">EcoHoops for Kids Canada</span>
+          <span className="tag mb-4 inline-block">Our Nonprofit Arm</span>
           <h2 className="font-display text-section uppercase mb-4">
-            <span className="text-white">PLAY BUILDS </span>
-            <span className="gradient-text">PEOPLE.</span>
+            <span className="text-white">ECOHOOPS FOR KIDS </span>
+            <span className="gradient-text">CANADA</span>
           </h2>
-          <p className="text-eco-muted-light text-lg max-w-2xl mx-auto mb-6">
-            Community impact. Access. Mental health. Opportunity.
+          <p className="text-eco-muted-light text-lg max-w-3xl mx-auto mb-6 leading-relaxed">
+            <strong>EcoHoops Basketball</strong> offers training, rep teams, and youth basketball programs. 
+            <strong> EcoHoops for Kids Canada</strong> is our nonprofit arm, focused on access, belonging, and community impact. We believe every kid deserves a place on the court, regardless of financial barriers.
           </p>
           <Link
             to="/nonprofit"
@@ -75,7 +86,7 @@ export default function Nonprofit() {
               <img src="/images/4.png" alt="Girls practicing" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
             <div className="rounded-2xl overflow-hidden h-[200px] col-span-2">
-              <img src="/images/13.png" alt="Girls team with coaches" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+              <img src="/images/hero-bg-new-13.jpg" alt="Girls team with coaches" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
           </motion.div>
 

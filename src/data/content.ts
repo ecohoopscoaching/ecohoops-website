@@ -1,18 +1,39 @@
 import { Testimonial, Pillar, Message, PaymentRecord } from '../types'
 
+export const POSITIONING_STATEMENT = `EcoHoops helps players become smarter, more confident competitors by teaching basketball the way it's actually played. Our practices are built around real game situations, so learning sticks, improvement transfers to games, and players develop faster where it matters most. We don't just build better basketball players. We build competitors who can think, adapt, and perform under pressure.`
+
+export const TRANSLATION_DICTIONARY = [
+  { neverSay: "Ecological Dynamics", sayInstead: "We help players become smarter on the court", note: "Focus on court intelligence and instinct" },
+  { neverSay: "Differential Learning", sayInstead: "We help players adapt instead of panic", note: "Focus on adaptability under pressure" },
+  { neverSay: "Constraints-Led Approach", sayInstead: "We teach kids to solve problems on their own", note: "Focus on independent decision-making" },
+  { neverSay: "Game-based learning", sayInstead: "Everything we do shows up in real games", note: "Focus on game transfer" },
+  { neverSay: "Perception-action coupling", sayInstead: "Reading the game", note: "Focus on visual awareness and timing" },
+  { neverSay: "Affordances", sayInstead: "Seeing opportunities", note: "Focus on recognizing openings" },
+  { neverSay: "Emergence", sayInstead: "Players figure it out", note: "Focus on natural skill discovery" },
+  { neverSay: "Representative learning design", sayInstead: "Practice looks like the game", note: "Focus on realistic environment" }
+]
+
+export const FIVE_QUESTION_CHECKLIST = [
+  { id: 1, question: "What problem does this solve?", description: "Addresses real parent frustrations (freezing in games, drill burnout, lack of transfer)." },
+  { id: 2, question: "What outcome does it promise?", description: "Promises real game confidence, adaptability, and decision-making." },
+  { id: 3, question: "Why is EcoHoops different?", description: "Game-based constraint training instead of repetitive cone drills." },
+  { id: 4, question: "Why should a parent believe us?", description: "Proof line: player transformations, parent reviews, or game evidence." },
+  { id: 5, question: "What do they do next?", description: "Clear single CTA (e.g. Register for Tryouts)." }
+]
+
 export const PILLARS: Pillar[] = [
   {
     title: 'ECOLOGICAL DYNAMICS',
-    subtitle: 'Train How Kids Really Learn',
-    description: 'We learn by playing. No boring drills or standing in lines. We play games that look like real basketball, so kids react and learn naturally.',
+    subtitle: 'We Help Players Become Smarter On The Court',
+    description: 'Kids learn by playing. We play games that look like real basketball, so kids react, read the game, and learn naturally.',
     icon: 'Zap',
     color: '#B0C8E0',
     slug: 'ecological-dynamics',
   },
   {
     title: 'CONSTRAINTS-LED APPROACH',
-    subtitle: 'Change the Game, Not the Kid',
-    description: 'We change the game, not the kid. By changing rules or using smaller balls, we help kids discover how to move. Every kid finds their own way to play.',
+    subtitle: 'We Teach Kids To Solve Problems On Their Own',
+    description: 'We change the game setup, not the kid. By changing rules, boundaries, or defenders, we help kids discover how to adapt and make smart decisions.',
     icon: 'Puzzle',
     color: '#97B3D2',
     slug: 'constraints-led-approach',
@@ -20,23 +41,23 @@ export const PILLARS: Pillar[] = [
   {
     title: 'SELF DETERMINATION THEORY',
     subtitle: 'Fuel the Fire Inside',
-    description: 'We feed the fire inside. Kids stay excited when they have choices (autonomy), feel progress (competence), and feel they belong (connection).',
+    description: 'We feed the fire inside. Kids stay excited when they have choices, feel progress, and feel they belong.',
     icon: 'Flame',
     color: '#6A9BC7',
     slug: 'self-determination-theory',
   },
   {
     title: 'DIFFERENTIAL LEARNING',
-    subtitle: 'The Brain Loves Variety',
-    description: 'The brain loves variety. We use different ball weights, footing, and postures to wake up the brain. This helps kids learn faster and adapt to games.',
+    subtitle: 'We Help Players Adapt Instead Of Panic',
+    description: 'The brain loves variety. We use different ball weights, footings, and body positions so kids adapt fast and stay calm under pressure.',
     icon: 'Shuffle',
     color: '#4A7FB5',
     slug: 'differential-learning',
   },
   {
     title: 'GROWTH MINDSET',
-    subtitle: 'Celebrate the Effort, Learn from Mistakes',
-    description: 'Mistakes are just data, not disasters. We praise effort and trying new things. This builds brave kids who do not fear failure.',
+    subtitle: 'Celebrate Effort, Learn From Mistakes',
+    description: 'Mistakes are part of learning. We do not turn kids into robots. We celebrate effort, build confidence, and foster joy.',
     icon: 'TrendingUp',
     color: '#F0E6D3',
     slug: 'growth-mindset',
@@ -44,57 +65,89 @@ export const PILLARS: Pillar[] = [
   {
     title: 'MENTAL HEALTH',
     subtitle: 'Protect the Mind or Lose the Person',
-    description: 'We protect the mind first. Every child has a right to play and rest under UN Article 31. We build a safe space where kids feel valued.',
+    description: 'We protect the mind first. Every child has a right to play and feel safe. We build a space where kids feel valued.',
     icon: 'Brain',
     color: '#85A4C4',
     slug: 'mental-health',
   },
 ]
 
+
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'g1',
-    name: 'Dina Hamed',
+    name: 'Katarina Homolova',
     role: 'Parent — Google Review',
-    quote: 'A fantastic program! My daughter has grown a lot as a player while having fun, learning the game, making friends, and understanding teamwork and community values. We\'re very happy to be part of this team.',
+    quote: "We couldn't be happier with our experience at Ecohoops. It's an incredibly positive and encouraging environment where young players truly love being on the court. Practices are creative and game-based, not old-school drills, which helps players learn organically through playing. Players are encouraged to share their opinions, reflect on their performances, and grow with confidence. Ecohoops isn't just about basketball- it's about developing thoughtful, well-rounded human beings, teammates, and friends through meaningful social activities off the court. Fantastic club! Strongly recommend!",
   },
   {
     id: 'g2',
     name: 'Brajgeet Bhathal',
     role: 'Parent — Google Review',
-    quote: 'EcoHoops has been a fantastic experience! The program builds strong fundamentals in a fun and supportive environment, helping kids improve their skills while enjoying the game. Highly recommended!',
+    quote: "EcoHoops has been a fantastic experience! The program builds strong fundamentals in a fun and supportive environment, helping players grow in both skill and confidence. The coach is dedicated, patient, and truly invested in each athlete's development. It's a positive atmosphere that encourages continuous improvement and a genuine love for the game. My son absolutely loves being part of it!",
   },
   {
     id: 'g3',
+    name: 'Dina Hamed',
+    role: 'Parent — Google Review',
+    quote: "A fantastic program! My daughter has grown a lot as a player while having fun, learning the game, making friends, and understanding teamwork and community values. We're very happy to be part of this team.",
+  },
+  {
+    id: 'g4',
     name: 'Joanna Kkk',
     role: 'Parent — Google Review',
-    quote: 'EcoHoops for Kids Canada is a fantastic basketball program! Great structure, high energy, and a supportive coaching staff that makes learning basketball fun.',
+    quote: "Amazing coach, team and people 😊 My son loves his team",
+  },
+  {
+    id: 'g5',
+    name: 'T De Mesa',
+    role: 'Parent — Google Review',
+    quote: "Great coach/mentor on & off the court. If you're looking for non traditional & more games based development this is the place to be!",
+  },
+  {
+    id: 'g6',
+    name: 'Anna Badurina',
+    role: 'Parent — Google Review',
+    quote: "Great team environment and very dedicated Coaches!",
+  },
+  {
+    id: 'g7',
+    name: 'herald sison',
+    role: 'Parent — Google Review',
+    quote: "EcoHoops has been an amazing organization to grow your Kids basketball skills but to also help them mature into good human beings. This club fosters inclusivity and good decision making and mental health.",
+  },
+  {
+    id: 'g8',
+    name: 'Matthew Barker',
+    role: 'Parent — Google Review',
+    quote: "Amazing basketball program that develops players the right way! Hello to learning through playing and goodbye to old school methods! Glad to be a part of the Ecohoops community!",
+  },
+  {
+    id: 'g9',
+    name: 'Rabia Din',
+    role: 'Parent — Google Review',
+    quote: "My daughter has been with the program for a while now and absolutely loves it! She has learned so much, grown as an athlete and made amazing friends. Strongly recommend!",
   },
   {
     id: 't1',
-    name: 'Kendy M.',
-    role: 'Parent — 2011 Boys',
-    quote: 'My son used to dread practice. Now he counts the days. Coach Adrian didn\'t just teach him basketball — he taught him to love the process.',
+    name: 'Kendy',
+    role: 'Parent Testimonial',
+    quote: "Coach Adrian has been pivotal in my son's basketball development journey. Coach not only focuses on the physical skills training, but also in the development of having a growth mindset. My son was extremely raw when he began his U9 journey. The discipline he has developed as an elite player has also transformed his performance academically in school. So if you're serious about investing in basketball development for your child, you've come to the right place.",
   },
   {
     id: 't2',
-    name: 'Meghan R.',
-    role: 'Parent — 2012 Girls',
-    quote: 'The difference is night and day. My daughter\'s confidence on AND off the court has skyrocketed. This isn\'t just a basketball program — it\'s a life program.',
+    name: 'Meghan',
+    role: 'Parent Testimonial',
+    quote: "Coach Adrian has been working with our daughter for some time now and we have noticed huge improvements with her confidence and decision making on the court. Adrian's focus on the mental and physical aspects of the game have allowed our daughter to make effective decisions during practice and game time. We greatly appreciate all the effort and commitment, Adrian's utmost professionalism is outstanding. Our Daughter and all kids that he is currently working with gravitate to him and his style!",
   },
   {
     id: 't3',
-    name: 'Chris T.',
-    role: 'Parent — 2011 Boys',
-    quote: 'After years of toxic rep basketball, EcoHoops restored my son\'s love for the game. Adrian gets it — the kid comes first, always.',
-  },
-  {
-    id: 't4',
-    name: 'Priya S.',
-    role: 'Parent — 2012 Girls',
-    quote: 'Finally, a program that values growth over wins. My daughter is learning life skills that will outlast any trophy. EcoHoops is the future.',
+    name: 'Chris',
+    role: 'Parent Testimonial',
+    quote: "I met Adrian several years ago as our sons played on the same basketball team. At the time I was searching for someone to help my son develop some confidence and skills, especially coming from a traumatic experience with a previous coach. I decided to reach out and take a look at how Adrian trains and works with young people. I can simply say that this man has done wonders for my son's skills and confidence in playing the game he enjoys. Adrian pays attention to details and demands the best out of each player he works with.",
   },
 ]
+
 
 export const MESSAGES: Message[] = [
   {
