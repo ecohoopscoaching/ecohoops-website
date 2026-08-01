@@ -1,3 +1,16 @@
+export type UserRole = 'admin' | 'coach' | 'parent' | 'player'
+
+export interface UserProfile {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  teamId?: string
+  playerId?: string
+  childName?: string
+  avatar?: string
+}
+
 export interface Player {
   id: string
   number: number

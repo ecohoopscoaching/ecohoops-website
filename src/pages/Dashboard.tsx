@@ -102,7 +102,7 @@ export default function Dashboard() {
 
 /* ─── OVERVIEW TAB ─── */
 function OverviewTab() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, isPlayer, isParent, userRole, userProfile } = useAuth()
   const navigate = useNavigate()
   const { teams, schedule, messages } = useData()
 
@@ -135,6 +135,87 @@ function OverviewTab() {
 
   return (
     <div className="space-y-8">
+      
+      {/* Role Banner / Player Card */}
+      {isPlayer && (
+        <div className="glow-card p-6 md:p-8 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2 border border-eco-orange/30">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-eco-orange/20 border border-eco-orange/40 flex items-center justify-center font-display text-2xl text-eco-orange">
+                #7
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-eco-orange/20 text-eco-orange text-[10px] font-mono uppercase font-bold tracking-wider">
+                    PLAYER ACCOUNT
+                  </span>
+                  <span className="text-xs text-eco-muted font-mono">U15 Boys Rep</span>
+                </div>
+                <h2 className="font-display text-2xl md:text-3xl text-white uppercase tracking-tight">
+                  {userProfile?.name || 'Marcus Vance'}
+                </h2>
+                <p className="text-xs text-eco-muted-light font-mono mt-0.5">
+                  Point Guard / Shooting Guard &middot; EcoHoops Academy
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/coach')}
+                className="btn-glow py-3 px-4 text-xs font-bold font-heading uppercase tracking-wider flex items-center gap-2"
+              >
+                <Bot size={16} /> Ask AI Coach
+              </button>
+            </div>
+          </div>
+
+          {/* Season Stats Summary */}
+          <div className="grid grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/10">
+            <div className="p-3 rounded-xl bg-eco-black/50 border border-white/5 text-center">
+              <p className="text-[10px] font-mono text-eco-muted uppercase">Points (PPG)</p>
+              <p className="font-display text-xl text-eco-orange">14.5</p>
+            </div>
+            <div className="p-3 rounded-xl bg-eco-black/50 border border-white/5 text-center">
+              <p className="text-[10px] font-mono text-eco-muted uppercase">Rebounds (RPG)</p>
+              <p className="font-display text-xl text-white">4.2</p>
+            </div>
+            <div className="p-3 rounded-xl bg-eco-black/50 border border-white/5 text-center">
+              <p className="text-[10px] font-mono text-eco-muted uppercase">Assists (APG)</p>
+              <p className="font-display text-xl text-eco-blue font-bold">5.8</p>
+            </div>
+            <div className="p-3 rounded-xl bg-eco-black/50 border border-white/5 text-center">
+              <p className="text-[10px] font-mono text-eco-muted uppercase">Shooting %</p>
+              <p className="font-display text-xl text-emerald-400">48.5%</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isParent && (
+        <div className="glow-card p-6 md:p-8 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2 border border-eco-blue/30">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase font-bold tracking-wider">
+                PARENT PORTAL
+              </span>
+              <h2 className="font-display text-2xl text-white uppercase tracking-tight">
+                Welcome, {userProfile?.name || 'Sarah Jenkins'}
+              </h2>
+              <p className="text-xs text-eco-muted font-mono">
+                Tracking: <strong className="text-white">{userProfile?.childName || 'Maya Jenkins'}</strong>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                ✓ Account Status: Active & Paid
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[

@@ -21,17 +21,54 @@ export default function GirlsLandingPage() {
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
+    setErrorMessage('')
+
+    const payload = {
+      access_key: "933bf5e4-2815-45e1-853f-a58c9fb77a2f",
+      subject: "New Girls Rep Tryout Registration!",
+      "Parent Name": formData.parentName,
+      "Parent Email": formData.parentEmail,
+      "Parent Phone": formData.parentPhone,
+      "Player Name": formData.playerName,
+      "Player DOB": formData.playerDob,
+      "Grade / Birth Year": formData.grade,
+      "Played Rep Before": formData.playedRep,
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+      const result = await response.json()
+      if (result.success) {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'Lead', {
+            content_name: 'Girls Rep Tryout Registration',
+          })
+        }
+        setSubmitted(true)
+      } else {
+        setErrorMessage(result.message || "Something went wrong. Please try again.")
+      }
+    } catch (error) {
+      console.error("Submission error:", error)
+      setErrorMessage("Network error. Please try again.")
+    } finally {
       setLoading(false)
-      setSubmitted(true)
-    }, 1000)
+    }
   }
 
   const faqs = [
@@ -232,6 +269,11 @@ export default function GirlsLandingPage() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
+                    {errorMessage && (
+                      <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 font-mono text-center">
+                        {errorMessage}
+                      </div>
+                    )}
                     
                     <div>
                       <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
