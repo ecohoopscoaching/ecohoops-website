@@ -12,7 +12,7 @@ import JrProgram from '../components/home/JrProgram'
 import RepTeams from '../components/home/RepTeams'
 import Pillars from '../components/home/Pillars'
 import Features from '../components/home/Features'
-import Videos from './Videos'
+import Videos from '../components/home/Videos'
 import Podcasts from '../components/home/Podcasts'
 import CoachAdrian from '../components/home/CoachAdrian'
 import Testimonials from '../components/home/Testimonials'
@@ -23,6 +23,7 @@ import ProgramCards from '../components/home/ProgramCards'
 import FeaturedReview from '../components/home/FeaturedReview'
 import FAQ from '../components/home/FAQ'
 import SafeSportBanner from '../components/home/SafeSportBanner'
+import JrNbaAnnouncement from '../components/home/JrNbaAnnouncement'
 
 export default function Home() {
   useDocumentTitle('Kids First. Always.')
@@ -119,6 +120,11 @@ export default function Home() {
     <>
       {/* 1. HERO & INTRO */}
       <Hero onRegisterClick={() => setShowModal(true)} />
+
+      {/* NEW FROM ECOHOOPS JR. - JR. NBA / JR. WNBA ANNOUNCEMENT & WAITLIST */}
+      <JrNbaAnnouncement />
+      <div className="section-divider" />
+
       <Marquee />
 
       {/* 1b. FIND YOUR FIT */}

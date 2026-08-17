@@ -10,8 +10,8 @@ import {
 type Step = 1 | 2 | 3 | 4 | 5
 
 const PROGRAMS = [
-  { id: 'rep-boys', name: 'Rep Team — Boys', price: 1850, spots: 'Open', billing: 'per season + HST' },
-  { id: 'rep-girls', name: 'Rep Team — Girls', price: 1850, spots: 'Open', billing: 'per season + HST' },
+  { id: 'rep-boys', name: 'Rep Team — Boys (2 Leagues)', price: 1950, spots: 'Open', billing: 'per season + HST' },
+  { id: 'rep-girls', name: 'Rep Team — Girls (2 Leagues)', price: 1950, spots: 'Open', billing: 'per season + HST' },
   { id: 'camp-summer', name: 'Summer Camp (Ages 6-16)', price: 199, spots: 'Open', billing: '+ HST' },
   { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all', billing: '' },
   { id: 'skills', name: 'Skills Development Program', price: 149, spots: '1 session per week', billing: 'per month + HST' },

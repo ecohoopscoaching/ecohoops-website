@@ -137,7 +137,7 @@ export default function Rep() {
             <span className="gradient-text">BRACKETS</span>
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
-            We are currently fielding our 2011 Boys Team and 2012 Girls Team. Our squads play in different leagues around the GTA like the Coalition League and others.
+            We are currently fielding our 2011 Boys Team and 2012 Girls Team. Our squads play in 2 competitive leagues around the GTA (such as the Coalition League and secondary circuit) to maximize development and game reps.
           </p>
         </motion.div>
 
@@ -285,7 +285,7 @@ export default function Rep() {
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
-                  <span><strong>League Play:</strong> We play in different leagues around the GTA like the Coalition League and others.</span>
+                  <span><strong>Dual League Play:</strong> Complete entry into 2 competitive GTA leagues (like the Coalition League and secondary circuit) for maximum game experience.</span>
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
@@ -325,42 +325,43 @@ export default function Rep() {
             
             <div>
               <span className="bg-eco-blue/10 border border-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase px-2 py-1 rounded inline-block mb-4">
-                Full-Season Package
+                Full-Season Package (2 Leagues)
               </span>
               <h4 className="font-heading font-semibold text-eco-muted-light text-sm uppercase tracking-wider mb-2">Tuition Fee</h4>
-              <div className="flex items-baseline justify-center gap-1 mb-2">
+              <div className="flex items-baseline justify-center gap-1 mb-1">
                 <span className="text-xl font-heading font-bold text-eco-muted">$</span>
-                <span className="text-5xl font-display text-white">1,850</span>
+                <span className="text-5xl font-display text-white">1,950</span>
                 <span className="text-sm font-heading font-semibold text-eco-muted">CAD</span>
               </div>
+              <p className="text-[11px] text-eco-blue font-medium mb-2">+ HST / Tax</p>
               <p className="text-xs text-eco-muted mb-6">Payment installment structures available</p>
             </div>
 
             <div className="space-y-4">
               <div className="text-left text-xs bg-eco-black/40 border border-white/5 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-white font-semibold">
-                  <span>Registration Deposit (Sept 1st)</span>
-                  <span>$350</span>
+                  <span>Installment #1 / Deposit (Sept 1st)</span>
+                  <span>$325</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #1 (Oct 1st)</span>
-                  <span>$300</span>
+                  <span>Installment #2 (Oct 1st)</span>
+                  <span>$325</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #2 (Nov 1st)</span>
-                  <span>$300</span>
+                  <span>Installment #3 (Nov 1st)</span>
+                  <span>$325</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #3 (Dec 1st)</span>
-                  <span>$300</span>
+                  <span>Installment #4 (Dec 1st)</span>
+                  <span>$325</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #4 (Jan 1st)</span>
-                  <span>$300</span>
+                  <span>Installment #5 (Jan 1st)</span>
+                  <span>$325</span>
                 </div>
                 <div className="flex justify-between text-eco-muted-light">
-                  <span>Installment #5 (Feb 1st)</span>
-                  <span>$300</span>
+                  <span>Installment #6 (Feb 1st)</span>
+                  <span>$325</span>
                 </div>
               </div>
               

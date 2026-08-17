@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import AnnouncementBar from '../home/AnnouncementBar'
 
 interface NavLinkItem {
   label: string;
@@ -113,13 +114,14 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 flex flex-col ${
           scrolled || isOpen
-            ? 'bg-eco-black/90 backdrop-blur-xl border-b border-eco-border py-3'
-            : 'bg-transparent py-5'
+            ? 'bg-eco-black/95 backdrop-blur-xl border-b border-eco-border'
+            : 'bg-eco-black/80 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        {location.pathname === '/' && <AnnouncementBar />}
+        <div className={`max-w-7xl mx-auto px-6 lg:px-8 w-full transition-all duration-300 ${scrolled || isOpen ? 'py-3' : 'py-4'}`}>
           <div className="relative flex items-center justify-between">
             
             {/* Desktop Brand Logo */}

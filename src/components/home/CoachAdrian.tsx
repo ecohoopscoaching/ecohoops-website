@@ -15,7 +15,13 @@ export default function CoachAdrian() {
             transition={{ duration: 0.7 }}
             className="glow-card overflow-hidden rounded-3xl"
           >
-            <img src="/images/coach_adrian_new.jpg" alt="Coach Adrian" className="w-full h-full object-cover" />
+            <img
+              src="/images/coach_adrian_new.jpg"
+              alt="Coach Adrian"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 30 }}

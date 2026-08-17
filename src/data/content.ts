@@ -190,14 +190,14 @@ export const MESSAGES: Message[] = [
 ]
 
 export const PAYMENTS: PaymentRecord[] = [
-  { id: 'p1', player: 'Miles Carter', amount: 1850, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p2', player: 'Jaylen Brooks', amount: 1850, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p3', player: 'Kai Thompson', amount: 1850, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
-  { id: 'p4', player: 'Darius Mitchell', amount: 1850, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
-  { id: 'p5', player: 'Nico Alvarez', amount: 1850, status: 'overdue', dueDate: '2026-03-01', description: 'Spring Season Registration' },
-  { id: 'p6', player: 'Ava Richardson', amount: 1850, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p7', player: 'Maya Chen', amount: 1850, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p8', player: 'Sophia Grant', amount: 1850, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
+  { id: 'p1', player: 'Miles Carter', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
+  { id: 'p2', player: 'Jaylen Brooks', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
+  { id: 'p3', player: 'Kai Thompson', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
+  { id: 'p4', player: 'Darius Mitchell', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
+  { id: 'p5', player: 'Nico Alvarez', amount: 1950, status: 'overdue', dueDate: '2026-03-01', description: 'Spring Season Registration' },
+  { id: 'p6', player: 'Ava Richardson', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
+  { id: 'p7', player: 'Maya Chen', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
+  { id: 'p8', player: 'Sophia Grant', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
 ]
 
 export const PHILOSOPHY_CONTENT = {

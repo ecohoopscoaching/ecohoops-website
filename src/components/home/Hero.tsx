@@ -23,7 +23,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-44 sm:pt-44 md:pt-48 pb-16">
       {/* Background Image Slideshow */}
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence mode="popLayout">
@@ -31,6 +31,8 @@ export default function Hero({ onRegisterClick }: HeroProps) {
             key={bgIndex}
             src={BACKGROUND_IMAGES[bgIndex].src}
             alt={BACKGROUND_IMAGES[bgIndex].alt}
+            decoding="async"
+            loading={bgIndex === 0 ? "eager" : "lazy"}
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
