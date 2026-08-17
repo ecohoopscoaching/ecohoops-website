@@ -19,7 +19,7 @@ interface FormState {
   parentName: string
   email: string
   phone: string
-  childAge: string
+  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Both (Ages 5–6 & 7–9)' | ''
   programInterest: 'Jr. NBA' | 'Jr. WNBA' | 'Not Sure Yet'
   childCount: string
   consent: boolean
@@ -29,7 +29,7 @@ const INITIAL_FORM_STATE: FormState = {
   parentName: '',
   email: '',
   phone: '',
-  childAge: '',
+  ageGroup: 'Ages 5–6',
   programInterest: 'Not Sure Yet',
   childCount: '1',
   consent: false,
@@ -55,8 +55,8 @@ export default function JrNbaAnnouncement() {
       errors.email = 'Please enter a valid email address.'
     }
 
-    if (!formData.childAge.trim()) {
-      errors.childAge = "Please specify your child's age."
+    if (!formData.ageGroup) {
+      errors.ageGroup = "Please select an age group (Ages 5–6 or Ages 7–9)."
     }
 
     if (!formData.consent) {
@@ -102,7 +102,7 @@ export default function JrNbaAnnouncement() {
       'Parent / Guardian Name': formData.parentName.trim(),
       'Email Address': formData.email.trim(),
       'Phone Number': formData.phone.trim() || 'Not provided',
-      "Child's Age": formData.childAge.trim(),
+      'Child Age Group': formData.ageGroup,
       'Program Interest': formData.programInterest,
       'Number of Children Interested': formData.childCount || '1',
       'Consent to Updates': formData.consent ? 'Yes' : 'No',
@@ -164,10 +164,15 @@ export default function JrNbaAnnouncement() {
           
           {/* LEFT COLUMN: ANNOUNCEMENT COPY & BENEFITS */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Eyebrow badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
-              <Sparkles size={14} className="text-[#97B3D2]" />
-              NEW FROM ECOHOOPS JR.
+            {/* Eyebrow badges */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
+                <Sparkles size={14} className="text-[#97B3D2]" />
+                NEW FROM ECOHOOPS JR.
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-eco-blue/15 border border-eco-blue/35 text-eco-blue-light text-xs font-mono font-bold uppercase tracking-wider">
+                Ages 5–6 & Ages 7–9
+              </div>
             </div>
 
             {/* Headline */}
@@ -178,13 +183,13 @@ export default function JrNbaAnnouncement() {
 
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
-              A fun, welcoming place for kids to play, learn, and grow.
+              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 & Ages 7–9).
             </p>
 
             {/* Body */}
             <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
               <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to our community.
+                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to our community, offered specifically for two age divisions: <strong className="text-white font-semibold">Ages 5–6</strong> and <strong className="text-white font-semibold">Ages 7–9</strong>.
               </p>
               <p>
                 Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first.
@@ -403,39 +408,40 @@ export default function JrNbaAnnouncement() {
 
                   {/* Child's Age & Number of Children */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {/* Child's Age */}
+                    {/* Child's Age Group */}
                     <div>
                       <label
-                        htmlFor="childAge"
-                        className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium"
+                        className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between"
                       >
-                        Child’s Age <span className="text-red-400">*</span>
+                        <span>Age Group <span className="text-red-400">*</span></span>
                       </label>
-                      <div className="relative">
-                        <Calendar
-                          size={16}
-                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted"
-                        />
-                        <input
-                          id="childAge"
-                          name="childAge"
-                          type="text"
-                          required
-                          value={formData.childAge}
-                          onChange={handleInputChange}
-                          placeholder="e.g. 7"
-                          aria-invalid={!!fieldErrors.childAge}
-                          aria-describedby={fieldErrors.childAge ? 'childAge-error' : undefined}
-                          className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
-                            fieldErrors.childAge
-                              ? 'border-red-500/80 focus:ring-red-500/30'
-                              : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
-                          }`}
-                        />
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { id: 'Ages 5–6', label: 'Ages 5–6' },
+                          { id: 'Ages 7–9', label: 'Ages 7–9' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({ ...prev, ageGroup: opt.id as any }))
+                              if (fieldErrors.ageGroup) {
+                                setFieldErrors((prev) => ({ ...prev, ageGroup: '' }))
+                              }
+                            }}
+                            className={`py-2.5 px-2 rounded-xl font-heading text-xs uppercase font-bold transition-all duration-200 border cursor-pointer text-center ${
+                              formData.ageGroup === opt.id
+                                ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
+                                : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
                       </div>
-                      {fieldErrors.childAge && (
-                        <p id="childAge-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-                          <AlertCircle size={12} /> {fieldErrors.childAge}
+                      {fieldErrors.ageGroup && (
+                        <p id="ageGroup-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+                          <AlertCircle size={12} /> {fieldErrors.ageGroup}
                         </p>
                       )}
                     </div>

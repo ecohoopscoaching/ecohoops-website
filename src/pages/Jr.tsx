@@ -7,9 +7,9 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Jr() {
-  useDocumentTitle('EcoHoops Jr. (Ages 4-11)')
+  useDocumentTitle('EcoHoops Jr. | Jr. NBA & Jr. WNBA (Ages 5–6 & Ages 7–9)')
   const { ref, isVisible } = useScrollReveal(0.05)
-  const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies' | 'hoopers'>('minis')
+  const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies'>('minis')
   const [psychologySlide, setPsychologySlide] = useState(0)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [parentEmail, setParentEmail] = useState('')
@@ -175,19 +175,14 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
 
   const cohorts = {
     minis: {
-      title: "Mini Movers (Ages 5-6)",
-      desc: "Every child gets their own ball. No standing in lines, and no long speeches. We use fun tag games, balance games, and simple challenges to teach running, stopping, and looking around. Kids leave sweating, smiling, and asking to come back.",
-      focus: "Basic movement, balance, and having fun on the court."
+      title: "Mini Movers (Ages 5–6)",
+      desc: "Every child gets their own ball. No standing in lines, and no long speeches. We use fun tag games, balance challenges, and guided play to teach running, stopping, coordination, and fundamental movement. Kids leave sweating, smiling, and asking to come back.",
+      focus: "Basic movement, balance, ball familiarity, and joyful play."
     },
     rookies: {
-      title: "Rookie Ballers (Ages 7-8)",
-      desc: "We use a simple 2v2 game (two kids against two kids) on a small court. It feels like playing in the backyard. Every kid gets to pass, shoot, and defend. Everyone is active, and they learn very fast.",
-      focus: "Dribbling under pressure, finding open space, and solving game problems."
-    },
-    hoopers: {
-      title: "Junior Hoopers (Ages 9-10)",
-      desc: "We move up to 3v3 games (three kids against three kids) on small courts. This is the best way for kids to grow. They touch the ball three times more than in a big 5v5 game. They learn to read the court and work together without boring, robotic plays.",
-      focus: "Reading the court fast, spacing out, and shooting many times."
+      title: "Rookie Ballers (Ages 7–9)",
+      desc: "Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
+      focus: "Dribbling under light pressure, finding open space, decision making, and team chemistry."
     }
   }
 
@@ -536,7 +531,7 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
             <span className="tag mb-3 inline-block">The Right Fit</span>
             <h2 className="font-display text-3xl uppercase tracking-wide text-white">Our Age Groups</h2>
             <p className="text-eco-muted-light text-sm max-w-xl mx-auto mt-2">
-              We group children into three bands to make sure they get the perfect level of challenge.
+              We group children into two focused age divisions (Ages 5–6 and Ages 7–9) to make sure they get the perfect level of fun, challenge, and development.
             </p>
           </div>
 

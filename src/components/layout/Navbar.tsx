@@ -32,7 +32,7 @@ const NAV_LINKS: NavLinkItem[] = [
         title: 'Youth Programs',
         links: [
           { label: 'EcoHoops for Kids Canada', path: '/nonprofit', description: 'Our community programs & subsidies' },
-          { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA programming for ages 5-11' },
+          { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA programming for Ages 5–6 & Ages 7–9' },
           { label: 'All Girls Program', path: '/girls', description: 'Empowering spaces & female leadership' }
         ]
       },
