@@ -204,13 +204,25 @@ Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">EcoHoops Jr. (Ages 5–10)</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider mb-4">
+            <Sparkles size={14} className="text-[#97B3D2]" />
+            Jr. NBA / Jr. WNBA Coming to EcoHoops Jr.
+          </div>
           <h1 className="font-display text-hero uppercase tracking-tighter mb-4 text-white leading-none">
             ECOHOOPS <span className="gradient-text">JUNIOR</span>
           </h1>
           <p className="text-eco-blue font-heading font-semibold text-lg max-w-3xl mx-auto tracking-wide">
             Imagine buying your 6-year-old a new video game, and the first level is an impossible boss fight with ten adults screaming instructions from the couch. They’d throw the controller down. Yet that's exactly how we teach kids basketball. We’re changing that.
           </p>
+          <div className="mt-6 flex justify-center">
+            <a
+              href="/#jr-nba-waitlist"
+              className="btn-glow inline-flex items-center gap-2 text-sm !py-2.5 !px-6"
+            >
+              <Sparkles size={16} />
+              Join the Jr. NBA / Jr. WNBA Waitlist
+            </a>
+          </div>
         </motion.div>
 
         {/* 1. What EcoHoops Jr is About */}

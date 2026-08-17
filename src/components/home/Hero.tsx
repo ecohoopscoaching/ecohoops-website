@@ -115,13 +115,17 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <button
-            onClick={onRegisterClick}
+          <a
+            href="#jr-nba-waitlist"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('jr-nba-waitlist')?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className="btn-glow flex items-center gap-2 text-base cursor-pointer"
           >
-            Register for Tryouts
+            Join Jr. NBA / Jr. WNBA Waitlist
             <ArrowRight size={18} />
-          </button>
+          </a>
           <a
             href="#programs"
             className="btn-ghost flex items-center gap-2 text-base cursor-pointer"

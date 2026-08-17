@@ -32,7 +32,7 @@ const NAV_LINKS: NavLinkItem[] = [
         title: 'Youth Programs',
         links: [
           { label: 'EcoHoops for Kids Canada', path: '/nonprofit', description: 'Our community programs & subsidies' },
-          { label: 'EcoHoops Jr.', path: '/jr', description: 'Play & learn for ages 5-11' },
+          { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA programming for ages 5-11' },
           { label: 'All Girls Program', path: '/girls', description: 'Empowering spaces & female leadership' }
         ]
       },
@@ -316,12 +316,18 @@ export default function Navbar() {
 
             {/* Desktop Call-to-Action Button */}
             <div className="hidden lg:block flex-shrink-0">
-              <Link 
-                to="/register" 
-                className="px-6 py-2.5 text-sm font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] hover:shadow-[0_0_25px_rgba(151,179,210,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 inline-block text-center"
+              <a 
+                href="/#jr-nba-waitlist" 
+                onClick={(e) => {
+                  if (location.pathname === '/') {
+                    e.preventDefault();
+                    document.getElementById('jr-nba-waitlist')?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="px-6 py-2.5 text-sm font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] hover:shadow-[0_0_25px_rgba(151,179,210,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 inline-block text-center cursor-pointer"
               >
-                Register for Tryouts
-              </Link>
+                Jr. NBA / Jr. WNBA
+              </a>
             </div>
 
             {/* Mobile Navigation Header */}
@@ -622,13 +628,19 @@ export default function Navbar() {
                     <Link to="/login" className="text-sm font-heading font-bold uppercase tracking-widest text-eco-muted-light hover:text-white transition-colors" onClick={() => setIsOpen(false)}>
                       Member Login
                     </Link>
-                    <Link 
-                      to="/register" 
-                      className="px-5 py-2.5 text-xs font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] transition-colors" 
-                      onClick={() => setIsOpen(false)}
+                    <a 
+                      href="/#jr-nba-waitlist" 
+                      className="px-5 py-2.5 text-xs font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] transition-colors cursor-pointer" 
+                      onClick={(e) => {
+                        setIsOpen(false)
+                        if (location.pathname === '/') {
+                          e.preventDefault()
+                          document.getElementById('jr-nba-waitlist')?.scrollIntoView({ behavior: 'smooth' })
+                        }
+                      }}
                     >
-                      Register for Tryouts
-                    </Link>
+                      Jr. NBA / Jr. WNBA
+                    </a>
                   </div>
                 </motion.div>
 

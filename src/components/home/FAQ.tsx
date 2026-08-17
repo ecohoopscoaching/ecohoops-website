@@ -25,12 +25,12 @@ const FAQS = [
     answer: 'Yes! We have a dedicated girls basketball in Mississauga designed to build confidence, skill, and leadership in a highly supportive, pressure-free environment.'
   },
   {
-    question: 'How do tryouts work?',
-    answer: 'Our Mississauga basketball tryouts are held annually. We focus on player potential, decision-making, and attitude, providing a supportive, game-like environment for kids to showcase their skills.'
+    question: 'How do I sign up for Jr. NBA/Jr. WNBA programming?',
+    answer: 'You can join the parent priority waitlist directly on our homepage! We will notify you first as soon as program dates, age divisions, and registration details are finalized.'
   },
   {
-    question: 'How do parents register?',
-    answer: 'You can easily register by clicking any of the "Register for Tryouts" buttons on this site, which will open our application forms, or by visiting our Contact page.'
+    question: 'How do parents register for EcoHoops programs?',
+    answer: 'You can register online through our website, join the Jr. NBA/Jr. WNBA waitlist, or contact our coaching team directly at ecohoopscoaching@gmail.com.'
   }
 ]
 

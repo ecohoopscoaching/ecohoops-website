@@ -14,13 +14,13 @@ const PROGRAMS = [
     cta: 'View Divisions'
   },
   {
-    title: 'EcoHoops Jr.',
-    description: 'Fun, play-based training designed to introduce fundamentals, build coordination, and spark a lifelong love for the game.',
-    target: 'Beginner & intermediate players aged 6-12.',
+    title: 'EcoHoops Jr. (Jr. NBA/WNBA)',
+    description: 'Jr. NBA & Jr. WNBA programming and fun, play-based training designed to introduce fundamentals, build coordination, and spark a lifelong love for the game.',
+    target: 'Beginner & intermediate players aged 5-11.',
     path: '/jr',
     icon: Sparkles,
     color: '#6A9BC7',
-    cta: 'See Junior Program'
+    cta: 'Explore EcoHoops Jr.'
   },
   {
     title: 'All-Girls Basketball',
