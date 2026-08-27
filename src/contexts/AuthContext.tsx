@@ -89,16 +89,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const savedRole = (localStorage.getItem('ecohoops_user_role') as UserRole) || (localStorage.getItem('mock_admin') === 'true' ? 'admin' : null)
   const savedProfile = localStorage.getItem('ecohoops_user_profile')
 
-  const [userRole, setUserRole] = useState<UserRole>(savedRole || 'admin')
+  const [userRole, setUserRole] = useState<UserRole>(savedRole || 'player')
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     if (savedProfile) {
       try {
         return JSON.parse(savedProfile)
       } catch {
-        return DEFAULT_PROFILES[userRole || 'admin']
+        return DEFAULT_PROFILES[userRole || 'player']
       }
     }
-    return DEFAULT_PROFILES[userRole || 'admin']
+    return DEFAULT_PROFILES[userRole || 'player']
   })
 
   const isAdmin = userRole === 'admin' || currentUser !== null
