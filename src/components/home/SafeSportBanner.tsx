@@ -31,7 +31,7 @@ export default function SafeSportBanner() {
             </h2>
 
             <p className="text-eco-muted-light text-base md:text-lg leading-relaxed max-w-3xl">
-              EcoHoops adheres to Canada's Responsible Coaching Movement (Rule of Two), Abuse-Free Sport helpline reporting, and active Jumpstart & KidSport financial assistance. Every child deserves a safe, supportive, and accessible court.
+              EcoHoops adheres to Canada's Responsible Coaching Movement (Rule of Two) and Abuse-Free Sport helpline reporting. For families seeking tuition support, independent community grants like Jumpstart and KidSport are great external resources for parents to explore.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -45,7 +45,7 @@ export default function SafeSportBanner() {
               </div>
               <div className="flex items-center gap-3 bg-eco-black/40 border border-white/5 rounded-xl p-3">
                 <DollarSign className="text-emerald-400 h-6 w-6 flex-shrink-0" />
-                <span className="text-xs text-white font-medium">Jumpstart & KidSport Grants</span>
+                <span className="text-xs text-white font-medium">Jumpstart & KidSport Resources</span>
               </div>
             </div>
           </div>

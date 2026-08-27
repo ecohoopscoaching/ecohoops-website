@@ -90,17 +90,22 @@ export default function SafeSport() {
                 <span className="text-[10px] font-mono text-eco-orange border border-eco-orange/20 bg-eco-orange/10 px-2 py-0.5 rounded uppercase">Canadian Sport Helpline</span>
               </div>
               <h3 className="font-display text-2xl uppercase text-white mb-4">Report Maltreatment</h3>
-              <p className="text-eco-muted-light leading-relaxed mb-6">
+              <p className="text-eco-muted-light leading-relaxed mb-4">
                 If you need to report any sports misconduct, abuse, or behavior that violates safety standards, you can contact the Canadian Sport Helpline (Abuse-Free Sport) directly. They provide a free, confidential, and independent system to ensure accountability and safety.
               </p>
+              <div className="bg-eco-black/50 border border-white/10 rounded-xl p-4 text-xs text-eco-muted-light font-mono space-y-1.5 mb-6">
+                <p><span className="text-eco-blue">Phone / Text:</span> <strong className="text-white">1-888-83-SPORT (1-888-837-7678)</strong></p>
+                <p><span className="text-eco-blue">Email:</span> <strong className="text-white">info@abuse-free-sport.ca</strong></p>
+                <p><span className="text-eco-blue">Hours:</span> <strong className="text-white">8 AM – 8 PM ET (7 Days/Week)</strong></p>
+              </div>
             </div>
             <a
-              href="https://abuse-free-sport.ca/"
+              href="https://www.abuse-free-sport.ca"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-glow inline-flex items-center justify-center gap-2 w-full text-center text-eco-black font-bold"
             >
-              Access Helpline <ExternalLink size={14} />
+              Visit Abuse-Free Sport Website <ExternalLink size={14} />
             </a>
           </motion.div>
 
@@ -144,10 +149,10 @@ export default function SafeSport() {
           transition={{ duration: 0.7 }}
           className="text-center mb-12"
         >
-          <span className="tag mb-4 inline-block">Accessibility</span>
-          <h2 className="font-display text-4xl uppercase text-white">FINANCIAL SUPPORT</h2>
-          <p className="text-eco-muted-light max-w-xl mx-auto mt-4">
-            We want every kid to have the opportunity to play. Families can access financial help through these trusted national and provincial programs.
+          <span className="tag mb-4 inline-block">External Resources</span>
+          <h2 className="font-display text-4xl uppercase text-white">FINANCIAL GRANTS & RESOURCES</h2>
+          <p className="text-eco-muted-light max-w-2xl mx-auto mt-4 leading-relaxed">
+            While EcoHoops is an independent organization, we encourage families seeking tuition assistance to explore these external national and provincial grant resources.
           </p>
         </motion.div>
 
@@ -165,10 +170,13 @@ export default function SafeSport() {
                 <div className="w-12 h-12 rounded-xl bg-eco-blue/10 flex items-center justify-center border border-eco-blue/20">
                   <DollarSign className="text-eco-blue h-6 w-6" />
                 </div>
-                <h4 className="font-heading font-bold text-lg text-white">Canadian Tire Jumpstart</h4>
+                <div>
+                  <h4 className="font-heading font-bold text-lg text-white">Canadian Tire Jumpstart</h4>
+                  <span className="text-[10px] font-mono text-eco-muted uppercase">External Parent Resource</span>
+                </div>
               </div>
               <p className="text-eco-muted-light leading-relaxed mb-6">
-                Jumpstart is a national charity committed to giving all kids the chance to be active. They help cover registration, equipment, and transportation costs for children aged 4 to 18.
+                Jumpstart is an independent national charity committed to giving all kids the chance to be active. Parents can apply directly for individual grants to assist with sports registration, gear, and transportation costs.
               </p>
             </div>
             <a
@@ -177,7 +185,7 @@ export default function SafeSport() {
               rel="noopener noreferrer"
               className="btn-glow inline-flex items-center justify-center gap-2 w-full text-center text-eco-black font-bold"
             >
-              Apply for Jumpstart <ExternalLink size={14} />
+              Explore Jumpstart Grants <ExternalLink size={14} />
             </a>
           </motion.div>
 
@@ -194,10 +202,13 @@ export default function SafeSport() {
                 <div className="w-12 h-12 rounded-xl bg-[#97B3D2]/10 flex items-center justify-center border border-[#97B3D2]/20">
                   <HeartHandshake className="text-[#97B3D2] h-6 w-6" />
                 </div>
-                <h4 className="font-heading font-bold text-lg text-white">KidSport Ontario</h4>
+                <div>
+                  <h4 className="font-heading font-bold text-lg text-white">KidSport Ontario</h4>
+                  <span className="text-[10px] font-mono text-eco-muted uppercase">External Parent Resource</span>
+                </div>
               </div>
               <p className="text-eco-muted-light leading-relaxed mb-6">
-                KidSport provides grants to help cover the costs of registration fees so children aged 18 and under in Ontario can participate in season-long sports programs.
+                KidSport is an independent provincial program providing grants to help families cover sports registration fees so children aged 18 and under in Ontario can participate in season-long activities.
               </p>
             </div>
             <a
@@ -206,7 +217,7 @@ export default function SafeSport() {
               rel="noopener noreferrer"
               className="btn-ghost inline-flex items-center justify-center gap-2 w-full text-center"
             >
-              Apply for KidSport <ExternalLink size={14} />
+              Explore KidSport Ontario <ExternalLink size={14} />
             </a>
           </motion.div>
         </div>

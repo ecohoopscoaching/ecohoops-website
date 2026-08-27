@@ -52,14 +52,16 @@ export default function Nonprofit() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">Our Nonprofit Arm</span>
+          <span className="tag mb-4 inline-block !bg-[#003366]/80 !border-[#97B3D2]/40 !text-[#97B3D2]">
+            FEDERAL NONPROFIT ARM
+          </span>
           <h2 className="font-display text-section uppercase mb-4">
             <span className="text-white">ECOHOOPS FOR KIDS </span>
             <span className="gradient-text">CANADA</span>
           </h2>
           <p className="text-eco-muted-light text-lg max-w-3xl mx-auto mb-6 leading-relaxed">
-            <strong>EcoHoops Basketball</strong> offers training, rep teams, and youth basketball programs. 
-            <strong> EcoHoops for Kids Canada</strong> is our nonprofit arm, focused on access, belonging, and community impact. We believe every kid deserves a place on the court, regardless of financial barriers.
+            <strong>EcoHoops Inc.</strong> delivers paid basketball activities, rep teams, and player development. 
+            <strong className="text-white"> EcoHoops for Kids Canada</strong> is our registered federal non-profit side, dedicated to expanding community access, free open gyms, equipment support, girls' sports initiatives, and mental health education.
           </p>
           <Link
             to="/nonprofit"

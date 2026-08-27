@@ -128,9 +128,14 @@ export default function Navbar() {
             <div className="hidden lg:block flex-shrink-0">
               <Link 
                 to="/" 
-                className="font-display text-2xl uppercase tracking-wider text-white hover:text-[#97B3D2] transition-colors font-bold"
+                className="flex flex-col group"
               >
-                ECOHOOPS
+                <span className="font-display text-2xl uppercase tracking-wider text-white group-hover:text-[#97B3D2] transition-colors font-bold leading-none">
+                  ECOHOOPS
+                </span>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#97B3D2]/80 mt-0.5">
+                  Inc. & EcoHoops for Kids Canada
+                </span>
               </Link>
             </div>
 
@@ -336,10 +341,15 @@ export default function Navbar() {
               <div className="flex items-center">
                 <Link 
                   to="/" 
-                  className="font-display text-2xl uppercase tracking-wider text-white hover:text-[#97B3D2] transition-colors"
+                  className="flex flex-col"
                   onClick={() => setIsOpen(false)}
                 >
-                  ECOHOOPS
+                  <span className="font-display text-xl uppercase tracking-wider text-white font-bold leading-none">
+                    ECOHOOPS
+                  </span>
+                  <span className="text-[8px] font-mono uppercase tracking-widest text-[#97B3D2]/80 mt-0.5">
+                    EcoHoops for Kids Canada
+                  </span>
                 </Link>
               </div>
 

@@ -1,6 +1,14 @@
 import { Testimonial, Pillar, Message, PaymentRecord } from '../types'
 
-export const POSITIONING_STATEMENT = `EcoHoops helps players become smarter, more confident competitors by teaching basketball the way it's actually played. Our practices are built around real game situations, so learning sticks, improvement transfers to games, and players develop faster where it matters most. We don't just build better basketball players. We build competitors who can think, adapt, and perform under pressure.`
+export const POSITIONING_STATEMENT = `EcoHoops is a Mississauga-based youth basketball organization built around game-like learning, player independence, high standards without humiliation, and long-term human development. We don't care where your child ranks today. We care about where they can go.`
+
+export const MASTER_MESSAGE = {
+  headline: "WE RAISE CEILINGS.",
+  subheadline: "The Anti-Elite Program",
+  corePromise: "The child will never become less important than the result.",
+  quote: "Kids First, Always.",
+  badgeText: "ONTARIO BASKETBALL (OBA) AFFILIATE CLUB • CANADA BASKETBALL JR. NBA / JR. WNBA"
+}
 
 export const TRANSLATION_DICTIONARY = [
   { neverSay: "Ecological Dynamics", sayInstead: "We help players become smarter on the court", note: "Focus on court intelligence and instinct" },

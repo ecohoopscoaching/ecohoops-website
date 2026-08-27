@@ -17,10 +17,12 @@ import {
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 
 const BENEFITS = [
-  'Play-based learning with low player-to-coach ratios',
-  'Skill growth with maximum ball touches & active movement',
-  'A supportive, encouraging environment where kids gain confidence',
-  'No yelling, fear, or pressure to be “elite”',
+  'First program launching October 2026 in Mississauga',
+  'Ages 5–6 and 7–9 (separated into girls and boys groups)',
+  '10 weeks, 60 minutes each Saturday (max 12 kids per group)',
+  'Planned price: $249 per player',
+  'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball',
+  'Includes Canada Basketball & Ontario Basketball membership/insurance',
 ]
 
 interface FormState {

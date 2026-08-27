@@ -308,7 +308,7 @@ export default function Rep() {
                 <span>Scholarships & subsidies available</span>
               </div>
               <p className="text-xs text-eco-muted-light max-w-sm leading-relaxed">
-                As a community-focused non-profit, we help parents coordinate funding from programs like Jumpstart and KidSport. Contact our staff to learn more.
+                While EcoHoops is an independent organization, external community grants such as Canadian Tire Jumpstart and KidSport Ontario are great financial assistance resources for parents to explore.
               </p>
             </div>
           </motion.div>

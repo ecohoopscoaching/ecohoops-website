@@ -73,14 +73,16 @@ export default function Hero({ onRegisterClick }: HeroProps) {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-        {/* Tag */}
+        {/* Single Clean Eyebrow Tag */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
+          className="mb-6 flex items-center justify-center"
         >
-          <span className="tag">ECOHOOPS BASKETBALL MISSISSAUGA</span>
+          <span className="tag">
+            ECOHOOPS BASKETBALL • MISSISSAUGA, ON
+          </span>
         </motion.div>
 
         {/* Main Headline */}
@@ -90,23 +92,28 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="font-display text-hero uppercase mb-6 leading-none"
         >
-          <span className="text-[clamp(1.2rem,3vw,2.5rem)] text-eco-blue tracking-[0.2em] block mb-4 font-heading font-extrabold">
-            ECOHOOPS MISSISSAUGA
+          <span className="text-[clamp(1.2rem,3.2vw,2.8rem)] text-[#97B3D2] tracking-[0.25em] block mb-3 font-heading font-black">
+            WE RAISE CEILINGS.
           </span>
           <span className="text-white">KIDS FIRST.</span>
           <br />
           <span className="gradient-text">ALWAYS.</span>
         </motion.h1>
 
-        {/* Subtitle */}
-        <motion.p
+        {/* Subtitle & Core Promise */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-lg md:text-xl text-eco-muted-light max-w-3xl mx-auto mb-10 font-body leading-relaxed"
+          className="max-w-3xl mx-auto mb-10 space-y-4"
         >
-          We help players become smarter, more confident competitors by teaching basketball the way it's actually played — so improvement transfers directly to real games.
-        </motion.p>
+          <p className="text-lg md:text-xl text-eco-muted-light font-body leading-relaxed">
+            We don't care where your child ranks today. We care about where they can go. EcoHoops is built around game-like learning, player independence, and long-term human development.
+          </p>
+          <div className="inline-block px-4 py-2 rounded-xl bg-[#003366]/40 border border-[#97B3D2]/30 text-white text-xs md:text-sm font-heading font-semibold tracking-wide">
+            "The child will never become less important than the result."
+          </div>
+        </motion.div>
 
         {/* CTAs */}
         <motion.div
@@ -130,7 +137,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
             href="#programs"
             className="btn-ghost flex items-center gap-2 text-base cursor-pointer"
           >
-            View Programs
+            View Programs & Rep Teams
           </a>
         </motion.div>
 
@@ -141,15 +148,15 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="max-w-4xl mx-auto mt-8"
         >
-          <div className="bg-eco-surface/50 backdrop-blur-md border border-white/5 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
+          <div className="bg-eco-surface/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
             {/* Subtle internal border dividing elements on desktop */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#97B3D2]/5 to-transparent pointer-events-none" />
             
             {[
-              { value: '2', label: 'Years Strong' },
-              { value: 'Nonprofit', label: 'Arm' },
-              { value: 'Science', label: 'Built With Sports Science' },
-              { value: 'Belonging', label: 'Every Kid Belongs' },
+              { value: 'OBA Club', label: 'Ontario Basketball' },
+              { value: 'Jr. NBA', label: 'Canada Basketball' },
+              { value: 'Coalition', label: 'League Participant' },
+              { value: 'Dual Entity', label: 'Inc. + Non-Profit Arm' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -158,7 +165,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
                 transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
                 className="text-center flex flex-col justify-center items-center"
               >
-                <div className="font-display text-3xl md:text-4xl font-bold text-white mb-2 leading-none">
+                <div className="font-display text-2xl md:text-3xl font-bold text-white mb-2 leading-none">
                   {stat.value}
                 </div>
                 <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#97B3D2] font-heading font-medium text-balance">
