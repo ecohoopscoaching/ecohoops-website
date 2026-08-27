@@ -87,7 +87,7 @@ Why it helps: This adds a bit of action right before you shoot. It teaches your 
 Change how you look at the hoop: (a) aim, close both eyes, and shoot; (b) close only one eye; (c) blink your eyes super fast while shooting; (d) start with your back to the hoop, spin around to find it, and shoot right away.
 Why it helps: This stops you from just staring. It trains your **proprioception** (which is **your body's inner sense of where it is and how it is moving**).
 
-Visit EcoHoops Jr. at http://localhost:3000/jr for more resources.`;
+Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
 
     const blob = new Blob([drillsText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
