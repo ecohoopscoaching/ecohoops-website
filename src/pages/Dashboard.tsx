@@ -4,7 +4,9 @@ import {
   LayoutDashboard, Calendar, MessageCircle, CreditCard, Users,
   TrendingUp, Trophy, Clock, Check, X, Send, Bot,
   ChevronRight, Bell, ArrowUpRight, Search, UploadCloud, BarChart2, FileText,
-  Plus, Newspaper, Key, Loader2, Settings, Sparkles, AlertTriangle
+  Plus, Newspaper, Key, Loader2, Settings, Sparkles, AlertTriangle,
+  Download, ExternalLink, Volume2, Play, SkipForward, SkipBack, CheckCircle2,
+  Radio, ShieldAlert, HeartHandshake, Phone
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -19,6 +21,29 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 type Tab = 'overview' | 'messages' | 'payments' | 'ai-coach' | 'analytics'
+
+const MusicPlayerWidget = () => {
+  const [isPlaying, setIsPlaying] = useState(false)
+  return (
+    <div className="fixed bottom-6 right-6 z-40">
+      <div className="bg-eco-surface2 text-white p-3 rounded-2xl border border-eco-blue/30 shadow-2xl backdrop-blur-md flex items-center gap-3 w-64">
+        <div className="w-10 h-10 rounded-xl bg-eco-blue/20 flex items-center justify-center flex-shrink-0 text-eco-blue">
+          <Radio size={18} className={isPlaying ? 'animate-pulse text-eco-blue' : 'text-eco-muted'} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-heading font-bold text-xs uppercase tracking-wider text-white truncate">The Lab Sessions</div>
+          <div className="text-[10px] font-mono text-eco-blue truncate">EcoHoops High-Freq Vibe</div>
+        </div>
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className="w-8 h-8 rounded-full bg-eco-blue text-eco-black flex items-center justify-center hover:scale-105 transition-transform"
+        >
+          {isPlaying ? <span className="block w-2.5 h-2.5 bg-eco-black rounded-sm" /> : <Play size={12} fill="currentColor" />}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 export default function Dashboard() {
   useDocumentTitle('Member Dashboard')
@@ -96,20 +121,32 @@ export default function Dashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <MusicPlayerWidget />
     </section>
   )
 }
 
 /* ─── OVERVIEW TAB ─── */
 function OverviewTab() {
-  const { isAdmin, isPlayer, isParent, userRole, userProfile } = useAuth()
+  const { isAdmin, isCoach, isPlayer, isParent, userRole, userProfile } = useAuth()
   const navigate = useNavigate()
-  const { teams, schedule, messages } = useData()
+  const { teams, schedule, messages, downloadCalendarIcs, recordAttendance, checkInPlayer, sendMessage } = useData()
 
+  // Multi-child state for parents
+  const defaultChildId = userProfile?.children?.[0]?.id || 'child-1'
+  const [selectedChildId, setSelectedChildId] = useState<string>(defaultChildId)
+  const [urgentAlertInput, setUrgentAlertInput] = useState('')
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false)
+  const [checkedInState, setCheckedInState] = useState<Record<string, boolean>>({})
+
+  const selectedChild = userProfile?.children?.find(c => c.id === selectedChildId) || userProfile?.children?.[0]
+
+  // Filter events based on role/selected child
   const upcomingEvents = schedule
     .filter((e) => !e.result)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 3)
+    .slice(0, 4)
 
   const totalPlayers = teams.reduce((sum, t) => sum + t.roster.length, 0)
   
@@ -126,16 +163,109 @@ function OverviewTab() {
   const totalGames = totalWins + totalLosses
   const winRate = totalGames > 0 ? `${Math.round((totalWins / totalGames) * 100)}%` : '0%'
 
-  // Next game date
-  const nextGameDate = upcomingEvents[0]
-    ? new Date(upcomingEvents[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const nextGame = upcomingEvents[0]
+  const nextGameDate = nextGame
+    ? new Date(nextGame.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : 'None'
 
   const unreadCount = messages.filter(m => m.unread).length
 
+  // Quick RSVP handler for child/player
+  const handleQuickRsvp = (eventId: string, status: 'going' | 'maybe' | 'notGoing') => {
+    const targetPlayerId = isParent ? selectedChildId : (userProfile?.playerId || 'player-1')
+    recordAttendance(eventId, targetPlayerId, status)
+  }
+
+  // Urgent broadcast sender
+  const handleSendUrgentAlert = () => {
+    if (!urgentAlertInput.trim()) return
+    sendMessage('general', `🚨 URGENT ALERT: ${urgentAlertInput.trim()}`, isAdmin ? 'Head Coach Adrian' : 'Coach')
+    setUrgentAlertInput('')
+    setShowBroadcastModal(false)
+  }
+
+  // Get active roster for next event
+  const activeTeamForNextEvent = teams.find(t => t.id === 'u15-boys') || teams[0]
+
   return (
     <div className="space-y-8">
       
+      {/* Urgent Broadcast Alert Banner */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-red-950/40 via-eco-surface2 to-red-950/20 border border-red-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle size={20} className="animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-400 bg-red-500/20 px-2 py-0.5 rounded">
+                Live Broadcast
+              </span>
+              <span className="text-xs text-eco-muted font-mono">Today &middot; 4:15 PM</span>
+            </div>
+            <p className="text-sm font-semibold text-white mt-0.5">
+              Practice gym update: Hershey Centre Court 3 available 30 min early for warm-ups & shooting lab.
+            </p>
+          </div>
+        </div>
+
+        {(isAdmin || isCoach) && (
+          <button
+            onClick={() => setShowBroadcastModal(true)}
+            className="px-4 py-2 bg-red-500/20 border border-red-500/40 text-red-300 hover:bg-red-500 hover:text-white rounded-xl text-xs font-heading font-bold uppercase tracking-wider transition-all whitespace-nowrap self-start md:self-auto"
+          >
+            + Send Team Alert
+          </button>
+        )}
+      </div>
+
+      {/* Broadcast Modal */}
+      <AnimatePresence>
+        {showBroadcastModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-eco-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-eco-surface border border-red-500/40 rounded-2xl p-6 max-w-lg w-full shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading font-bold text-lg text-white flex items-center gap-2">
+                  <AlertTriangle className="text-red-400" size={18} />
+                  Send Urgent Push Alert
+                </h3>
+                <button onClick={() => setShowBroadcastModal(false)} className="text-eco-muted hover:text-white">
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="text-xs text-eco-muted-light mb-4">
+                This will send an instant high-priority broadcast to all parents and players for game cancellations, venue changes, or weather delays.
+              </p>
+              <textarea
+                value={urgentAlertInput}
+                onChange={(e) => setUrgentAlertInput(e.target.value)}
+                placeholder="e.g. Saturday's tournament time moved to 10:30 AM at Court B..."
+                className="w-full h-24 bg-eco-surface2 border border-eco-border rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-500/50 mb-4"
+              />
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowBroadcastModal(false)}
+                  className="px-4 py-2 bg-eco-surface2 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-bold uppercase"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendUrgentAlert}
+                  className="px-4 py-2 bg-red-500 text-white rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-red-600 transition-colors"
+                >
+                  Broadcast Alert
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Role Banner / Player Card */}
       {isPlayer && (
         <div className="glow-card p-6 md:p-8 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2 border border-eco-orange/30">
@@ -162,8 +292,14 @@ function OverviewTab() {
 
             <div className="flex items-center gap-3">
               <button
+                onClick={() => downloadCalendarIcs('EcoHoops Player Schedule')}
+                className="px-3.5 py-2.5 rounded-xl bg-eco-surface border border-white/10 text-white hover:border-eco-orange/40 text-xs font-heading font-bold uppercase flex items-center gap-2 transition-all"
+              >
+                <Download size={14} /> Sync Schedule (.ics)
+              </button>
+              <button
                 onClick={() => navigate('/coach')}
-                className="btn-glow py-3 px-4 text-xs font-bold font-heading uppercase tracking-wider flex items-center gap-2"
+                className="btn-glow py-2.5 px-4 text-xs font-bold font-heading uppercase tracking-wider flex items-center gap-2"
               >
                 <Bot size={16} /> Ask AI Coach
               </button>
@@ -192,26 +328,132 @@ function OverviewTab() {
         </div>
       )}
 
+      {/* Parent Family Hub (Multi-Child Switcher & Status) */}
       {isParent && (
-        <div className="glow-card p-6 md:p-8 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2 border border-eco-blue/30">
+        <div className="glow-card p-6 md:p-8 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2 border border-eco-blue/30 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="px-2.5 py-0.5 rounded-full bg-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase font-bold tracking-wider">
-                PARENT PORTAL
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase font-bold tracking-wider">
+                  TEAMSNAP FAMILY HUB
+                </span>
+                <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
+                  ✓ Season Fees: Paid in Full
+                </span>
+              </div>
               <h2 className="font-display text-2xl text-white uppercase tracking-tight">
-                Welcome, {userProfile?.name || 'Sarah Jenkins'}
+                Family Portal &middot; {userProfile?.name || 'Sarah Jenkins'}
               </h2>
               <p className="text-xs text-eco-muted font-mono">
-                Tracking: <strong className="text-white">{userProfile?.childName || 'Maya Jenkins'}</strong>
+                Manage RSVPs, calendars, and schedules for all your athletes in one place.
               </p>
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => downloadCalendarIcs('EcoHoops Family Schedule')}
+                className="px-4 py-2.5 rounded-xl bg-eco-surface border border-eco-blue/30 text-white hover:bg-eco-blue hover:text-eco-black text-xs font-heading font-bold uppercase flex items-center gap-2 transition-all shadow-glow-sm"
+              >
+                <Download size={14} /> Sync Family Calendar (.ics)
+              </button>
+            </div>
+          </div>
+
+          {/* Child Switcher Tabs */}
+          {userProfile?.children && userProfile.children.length > 0 && (
+            <div className="pt-4 border-t border-white/10">
+              <span className="text-xs font-mono text-eco-muted uppercase tracking-wider block mb-3">Select Athlete:</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {userProfile.children.map((child) => {
+                  const isSelected = selectedChildId === child.id
+                  return (
+                    <button
+                      key={child.id}
+                      onClick={() => setSelectedChildId(child.id)}
+                      className={`p-4 rounded-xl text-left border transition-all ${
+                        isSelected
+                          ? 'bg-eco-blue/15 border-eco-blue shadow-glow-sm'
+                          : 'bg-eco-surface2 border-eco-border hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-display text-lg text-white">
+                          #{child.number || '0'} {child.name}
+                        </span>
+                        <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${
+                          isSelected ? 'bg-eco-blue text-eco-black font-bold' : 'bg-white/10 text-eco-muted'
+                        }`}>
+                          {child.teamId.toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-eco-muted-light">
+                        Rep Division &middot; Attendance: <span className="text-emerald-400 font-bold">100% (6/6)</span>
+                      </p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Coach & Admin Live Attendance Check-In Card */}
+      {(isAdmin || isCoach) && nextGame && (
+        <div className="glow-card p-6 border border-eco-blue/40 bg-gradient-to-r from-eco-surface2 via-eco-surface to-eco-surface2">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded-full bg-eco-blue text-eco-black font-mono font-bold text-[10px] uppercase">
+                  Live Attendance Check-In
+                </span>
+                <span className="text-xs font-mono text-eco-muted">
+                  Next Event: {nextGame.title} ({nextGame.time})
+                </span>
+              </div>
+              <h3 className="font-display text-xl text-white uppercase">
+                Coach Practice / Game Arrival Roster
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
-                ✓ Account Status: Active & Paid
+                {nextGame.rsvp.going} Confirmed Coming
               </span>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {activeTeamForNextEvent.roster.slice(0, 6).map((player) => {
+              const isCheckedIn = checkedInState[player.id] || false
+              return (
+                <div
+                  key={player.id}
+                  className="flex items-center justify-between p-3 rounded-xl bg-eco-surface2 border border-white/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-sm text-eco-blue">#{player.number}</span>
+                    <div>
+                      <p className="font-heading font-bold text-xs text-white">{player.name}</p>
+                      <p className="text-[10px] text-emerald-400 font-mono">RSVP: Going</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const nextState = !isCheckedIn
+                      setCheckedInState(prev => ({ ...prev, [player.id]: nextState }))
+                      checkInPlayer(nextGame.id, player.id, nextState)
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-heading font-bold uppercase transition-all ${
+                      isCheckedIn
+                        ? 'bg-emerald-500 text-eco-black font-bold'
+                        : 'bg-eco-surface border border-eco-border text-eco-muted hover:text-white'
+                    }`}
+                  >
+                    {isCheckedIn ? '✓ Checked In' : 'Check In'}
+                  </button>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
@@ -240,41 +482,68 @@ function OverviewTab() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Upcoming Events */}
+        {/* Upcoming Events with 1-Click RSVP for Parent/Player */}
         <div className="glow-card p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xs font-mono uppercase tracking-widest text-eco-blue flex items-center gap-2">
               <Calendar size={14} />
-              Upcoming
+              Upcoming Schedule & RSVPs
             </h3>
-            {isAdmin && (
-               <button 
-                onClick={() => navigate('/admin/blog/new')}
-                className="text-[10px] font-mono uppercase tracking-widest text-eco-muted hover:text-eco-blue transition-colors flex items-center gap-1 bg-eco-surface2 px-2 py-1 rounded-md border border-white/5"
-              >
-                <Plus size={10} /> New Post
-              </button>
-            )}
+            <button
+              onClick={() => navigate('/schedule')}
+              className="text-[10px] font-mono uppercase tracking-widest text-eco-muted hover:text-eco-blue transition-colors flex items-center gap-1 bg-eco-surface2 px-2 py-1 rounded-md border border-white/5"
+            >
+              Full Calendar &rarr;
+            </button>
           </div>
           <div className="space-y-3">
             {upcomingEvents.length > 0 ? (
               upcomingEvents.map((event) => (
-                <div key={event.id} className="flex items-center gap-4 p-3 rounded-xl bg-eco-surface2 border border-eco-border">
-                  <div className="text-center w-10">
-                    <p className="font-display text-lg text-white">{new Date(event.date).getDate()}</p>
-                    <p className="text-[10px] text-eco-muted uppercase">
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
-                    </p>
+                <div key={event.id} className="p-4 rounded-xl bg-eco-surface2 border border-eco-border space-y-3">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center w-10 flex-shrink-0">
+                      <p className="font-display text-lg text-white">{new Date(event.date).getDate()}</p>
+                      <p className="text-[10px] text-eco-muted uppercase">
+                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
+                      </p>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-heading font-bold text-sm text-white truncate">{event.title}</p>
+                      <p className="text-xs text-eco-muted flex items-center gap-1">
+                        <Clock size={10} /> {event.time} &middot; {event.location}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-eco-muted flex-shrink-0">
+                      <Check size={12} className="text-white" />
+                      <span>{event.rsvp.going}/{event.rsvp.total}</span>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-heading font-bold text-sm text-white truncate">{event.title}</p>
-                    <p className="text-xs text-eco-muted flex items-center gap-1">
-                      <Clock size={10} /> {event.time}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <Check size={10} className="text-white" />
-                    <span className="text-xs text-eco-muted">{event.rsvp.going}/{event.rsvp.total}</span>
+
+                  {/* 1-Click Fast RSVP Action for logged-in parents and players */}
+                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5">
+                    <span className="text-[10px] font-mono text-eco-muted uppercase">
+                      {isParent ? `RSVP for ${selectedChild?.name || 'Child'}:` : 'My RSVP:'}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleQuickRsvp(event.id, 'going')}
+                        className="px-2.5 py-1 rounded-md bg-eco-blue/20 hover:bg-eco-blue hover:text-eco-black text-white text-[10px] font-heading font-bold uppercase transition-all"
+                      >
+                        ✓ Going
+                      </button>
+                      <button
+                        onClick={() => handleQuickRsvp(event.id, 'maybe')}
+                        className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white hover:text-eco-black text-white/80 text-[10px] font-heading font-bold uppercase transition-all"
+                      >
+                        ? Maybe
+                      </button>
+                      <button
+                        onClick={() => handleQuickRsvp(event.id, 'notGoing')}
+                        className="px-2.5 py-1 rounded-md bg-eco-muted/20 hover:bg-red-500 hover:text-white text-eco-muted-light text-[10px] font-heading font-bold uppercase transition-all"
+                      >
+                        ✕ Can't Go
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -288,7 +557,7 @@ function OverviewTab() {
         <div className="glow-card p-6">
           <h3 className="text-xs font-mono uppercase tracking-widest text-eco-blue mb-4 flex items-center gap-2">
             <Trophy size={14} />
-            Teams
+            Teams & Rosters
           </h3>
           <div className="space-y-3">
             {teams.map((team) => (

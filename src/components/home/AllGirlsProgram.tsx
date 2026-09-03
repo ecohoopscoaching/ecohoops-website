@@ -53,7 +53,19 @@ export default function AllGirlsProgram() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7 }}
             >
-              <span className="tag mb-4 inline-block">All Girls</span>
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="tag inline-block">All Girls</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30">
+                  <img
+                    src="/images/branding/jr-nba-wnba-dark.png"
+                    alt="Jr. WNBA Pathway"
+                    className="h-4 w-auto object-contain"
+                  />
+                  <span className="text-[10px] font-mono text-orange-400 font-bold uppercase tracking-wider">
+                    Official Jr. WNBA Pathway
+                  </span>
+                </div>
+              </div>
               <h2 className="font-display text-section uppercase tracking-tight mb-6">
                 <span className="text-white">BUILT FOR </span>
                 <span className="gradient-text">GIRLS.</span>

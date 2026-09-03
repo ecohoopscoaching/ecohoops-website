@@ -10,7 +10,7 @@ import {
 type Step = 1 | 2 | 3 | 4 | 5
 
 const PROGRAMS = [
-  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Launch Oct 2026)', price: 249, spots: 'Waitlist Open', billing: '10 weeks, gear kit included' },
+  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Ages 5–11 • 5–6 Co-Ed, 7–9 & 10–11)', price: 249, spots: 'Waitlist Open', billing: '10 weeks, gear kit included' },
   { id: 'rep-boys', name: 'Rep Team — U16 Boys (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
   { id: 'rep-girls', name: 'Rep Team — U15 Girls (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
   { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all', billing: '' },

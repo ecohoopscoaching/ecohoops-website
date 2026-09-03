@@ -16,7 +16,7 @@ const PROGRAMS = [
   {
     title: 'EcoHoops Jr. (Jr. NBA/WNBA)',
     description: 'Jr. NBA & Jr. WNBA programming and fun, play-based training designed to introduce fundamentals, build coordination, and spark a lifelong love for the game.',
-    target: 'Two divisions: Ages 5–6 and Ages 7–9.',
+    target: 'Three divisions: 5–6 Co-Ed, 7–9 (Girls ONLY + Boys), and 10–11 (Girls ONLY + Boys).',
     path: '/jr',
     icon: Sparkles,
     color: '#6A9BC7',
@@ -114,9 +114,22 @@ function Card({ prog, index, isVisible }: { prog: typeof PROGRAMS[number]; index
           <span className="text-[10px] font-mono uppercase tracking-wider text-eco-muted">0{index + 1}</span>
         </div>
 
-        <h3 className="font-display text-2xl uppercase text-white mb-4 group-hover:text-eco-blue-light transition-colors">
+        <h3 className="font-display text-2xl uppercase text-white mb-3 group-hover:text-eco-blue-light transition-colors">
           {prog.title}
         </h3>
+
+        {prog.title.includes('Jr. NBA') && (
+          <div className="mb-4 inline-flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">
+            <img
+              src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+              alt="Jr. NBA • WNBA • Canada Basketball"
+              className="h-4 sm:h-5 w-auto object-contain"
+            />
+            <span className="text-[10px] font-mono text-[#97B3D2] uppercase tracking-wider font-semibold">
+              Official Program
+            </span>
+          </div>
+        )}
         
         <p className="text-sm text-eco-muted-light leading-relaxed mb-6">
           {prog.description}

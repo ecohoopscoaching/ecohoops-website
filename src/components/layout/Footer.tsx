@@ -240,8 +240,35 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Official Affiliations & Sanctioned Programs Badge Row */}
+        <div className="mt-14 pt-8 border-t border-eco-border">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="text-center md:text-left space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
+                Official Affiliations & Sanctioned Programs
+              </div>
+              <p className="text-xs text-eco-muted-light max-w-xl">
+                EcoHoops is an Ontario Basketball Association (OBA) affiliate club and proud host of official Canada Basketball Jr. NBA & Jr. WNBA youth development programs.
+              </p>
+            </div>
+            <div className="flex items-center gap-6 sm:gap-8 flex-wrap justify-center">
+              <img
+                src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+                alt="Jr. NBA • WNBA • Canada Basketball"
+                className="h-8 sm:h-9 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+              />
+              <div className="h-7 w-px bg-white/10 hidden sm:block" />
+              <img
+                src="/images/branding/canada-basketball-dark-horizontal-tight.png"
+                alt="Canada Basketball"
+                className="h-6 sm:h-7 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-eco-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-8 border-t border-eco-border flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-eco-muted">
             <span>&copy; 2026 EcoHoops Inc. All rights reserved.</span>
             <span className="hidden sm:inline">&bull;</span>

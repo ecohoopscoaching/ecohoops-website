@@ -7,9 +7,9 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Jr() {
-  useDocumentTitle('EcoHoops Jr. | Jr. NBA & Jr. WNBA (Ages 5–6 & Ages 7–9)')
+  useDocumentTitle('EcoHoops Jr. | Jr. NBA & Jr. WNBA (Ages 5–6, 7–9 & 10–11)')
   const { ref, isVisible } = useScrollReveal(0.05)
-  const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies'>('minis')
+  const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies' | 'rising'>('minis')
   const [psychologySlide, setPsychologySlide] = useState(0)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [parentEmail, setParentEmail] = useState('')
@@ -175,14 +175,19 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
 
   const cohorts = {
     minis: {
-      title: "Mini Movers (Ages 5–6)",
-      desc: "Every child gets their own ball. No standing in lines, and no long speeches. We use fun tag games, balance challenges, and guided play to teach running, stopping, coordination, and fundamental movement. Kids leave sweating, smiling, and asking to come back.",
+      title: "Mini Movers (5–6 Co-Ed)",
+      desc: "Every child gets their own ball in a joyful co-ed environment. No standing in lines, and no long speeches. We use fun tag games, balance challenges, and guided play to teach running, stopping, coordination, and fundamental movement. Kids leave sweating, smiling, and asking to come back.",
       focus: "Basic movement, balance, ball familiarity, and joyful play."
     },
     rookies: {
-      title: "Rookie Ballers (Ages 7–9)",
-      desc: "Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
+      title: "Rookie Ballers (7–9 Girls ONLY + Boys)",
+      desc: "Separated into dedicated Girls-only groups and Boys groups. Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
       focus: "Dribbling under light pressure, finding open space, decision making, and team chemistry."
+    },
+    rising: {
+      title: "Rising Stars (10–11 Girls ONLY + Boys)",
+      desc: "Separated into dedicated Girls-only groups and Boys groups. Designed for pre-teens building court IQ, live advantage play, shooting mechanics, and defensive footwork before competitive rep ball. High energy, zero toxicity.",
+      focus: "Advantage creation, court awareness, dynamic spacing, and communication."
     }
   }
 
@@ -199,9 +204,25 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider mb-4">
-            <Sparkles size={14} className="text-[#97B3D2]" />
-            Jr. NBA / Jr. WNBA Coming to EcoHoops Jr.
+          {/* Official Branding Header Lockup */}
+          <div className="flex flex-col items-center justify-center gap-3 mb-6">
+            <div className="bg-[#050B14]/90 backdrop-blur-md border border-white/10 rounded-2xl px-6 py-3.5 inline-flex items-center gap-4 sm:gap-6 shadow-2xl">
+              <img
+                src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+                alt="Official Jr. NBA • WNBA • Canada Basketball"
+                className="h-10 sm:h-12 w-auto object-contain"
+              />
+              <div className="h-8 w-px bg-white/15 hidden sm:block" />
+              <img
+                src="/images/branding/canada-basketball-dark-vertical-tight.png"
+                alt="Canada Basketball Official Crest"
+                className="h-10 sm:h-12 w-auto object-contain hidden xs:block"
+              />
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
+              <Sparkles size={14} className="text-[#97B3D2]" />
+              Official Jr. NBA / Jr. WNBA Program • 5–6 Co-Ed • 7–9 & 10–11 (Girls ONLY + Boys)
+            </div>
           </div>
           <h1 className="font-display text-hero uppercase tracking-tighter mb-4 text-white leading-none">
             ECOHOOPS <span className="gradient-text">JUNIOR</span>
@@ -531,7 +552,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             <span className="tag mb-3 inline-block">The Right Fit</span>
             <h2 className="font-display text-3xl uppercase tracking-wide text-white">Our Age Groups</h2>
             <p className="text-eco-muted-light text-sm max-w-xl mx-auto mt-2">
-              We group children into two focused age divisions (Ages 5–6 and Ages 7–9) to make sure they get the perfect level of fun, challenge, and development.
+              We group children into three focused divisions — 5–6 Co-Ed, 7–9 (Girls ONLY + Boys), and 10–11 (Girls ONLY + Boys) — to make sure they get the perfect level of fun, challenge, and development.
             </p>
           </div>
 
@@ -761,6 +782,135 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             <span className="tag border-eco-blue/30 text-eco-blue">Cheer Effort</span>
             <span className="tag border-eco-blue/30 text-eco-blue">Praise Creativity</span>
             <span className="tag border-eco-blue/30 text-eco-blue">Quiet Sidelines</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Official Jr. NBA Gear & Sanctioning Package */}
+      <div className="mb-24">
+        <div className="text-center mb-12">
+          <span className="tag mb-3 inline-block">Official Licensing & Gear</span>
+          <h2 className="font-display text-section uppercase tracking-wide text-white">
+            WHAT EVERY REGISTERED PLAYER GETS
+          </h2>
+          <p className="text-eco-muted-light text-base max-w-2xl mx-auto mt-3 leading-relaxed">
+            As an official Canada Basketball Jr. NBA & Jr. WNBA affiliate, our program includes authentic player gear, proper child-sized equipment, and full provincial coverage.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Light Mode Official Certificate & Gear Preview Card */}
+          <div className="lg:col-span-5 bg-white text-[#0A1120] rounded-3xl p-8 shadow-2xl flex flex-col justify-between border border-white/20 relative overflow-hidden group">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-gray-200 pb-5">
+                <img
+                  src="/images/branding/jr-nba-wnba-light.png"
+                  alt="Official Jr. NBA & Jr. WNBA"
+                  className="h-9 sm:h-10 w-auto object-contain"
+                />
+                <img
+                  src="/images/branding/canada-basketball-horizontal-red.png"
+                  alt="Canada Basketball Official Logo"
+                  className="h-7 sm:h-8 w-auto object-contain"
+                />
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#003366] font-bold block mb-1">
+                  Official Participant Kit
+                </span>
+                <h3 className="font-display text-2xl uppercase tracking-tight text-[#0A1120] font-bold">
+                  Official Gear & Membership
+                </h3>
+                <p className="text-xs text-gray-600 mt-2 leading-relaxed font-body">
+                  Every player registered in EcoHoops Jr. receives authentic gear straight from Canada Basketball and the Jr. NBA / WNBA program.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {[
+                  { title: 'Official Jr. NBA Reversible Uniform', desc: 'Custom reversible jersey & performance shorts' },
+                  { title: 'Wilson Basketball', desc: 'Proper youth size (Size 5) for developing true shooting touch' },
+                  { title: 'Canada Basketball Membership', desc: 'Official player registration & insurance coverage' },
+                  { title: 'Development Certificate', desc: 'End-of-program recognition & milestone celebration' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 bg-gray-50 border border-gray-200/80 rounded-xl p-3">
+                    <CheckCircle className="text-[#003366] mt-0.5 flex-shrink-0" size={16} />
+                    <div>
+                      <div className="text-xs font-heading font-bold text-[#0A1120]">{item.title}</div>
+                      <div className="text-[11px] text-gray-500 font-body">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between text-[11px] font-mono text-gray-500 uppercase tracking-wider">
+              <span>Sanctioned by Canada Basketball</span>
+              <span className="font-bold text-[#003366]">October 2026</span>
+            </div>
+          </div>
+
+          {/* Program Specifications & Sanctioning Highlights */}
+          <div className="lg:col-span-7 flex flex-col justify-between gap-6">
+            <div className="glow-card p-8 bg-eco-surface border border-eco-border rounded-3xl space-y-6">
+              <div className="flex items-center gap-3">
+                <Shield className="text-eco-blue" size={24} />
+                <h3 className="font-display text-2xl uppercase text-white">
+                  Canada Basketball & OBA Sanctioned
+                </h3>
+              </div>
+              <p className="text-sm text-eco-muted-light leading-relaxed">
+                EcoHoops Jr. follows the nationally recognized Long-Term Development (LTD) curriculum established by Canada Basketball. Rather than treating young kids like miniature professional athletes, the curriculum emphasizes physical literacy, agility, multi-directional movement, and spontaneous problem-solving through play.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
+                <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
+                  <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
+                    Division 1: Minis
+                  </div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">5–6 Co-Ed</div>
+                  <p className="text-xs text-eco-muted-light leading-relaxed">
+                    60-minute weekly sessions focused on joy, movement exploration, ball balance, and play-based games.
+                  </p>
+                </div>
+                <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
+                  <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
+                    Division 2: Rookies
+                  </div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">7–9 (Girls ONLY + Boys)</div>
+                  <p className="text-xs text-eco-muted-light leading-relaxed">
+                    Small-sided 2v2 and 3v3 mini-games ensuring maximum touches, decision-making, and confidence.
+                  </p>
+                </div>
+                <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
+                  <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
+                    Division 3: Rising Stars
+                  </div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">10–11 (Girls ONLY + Boys)</div>
+                  <p className="text-xs text-eco-muted-light leading-relaxed">
+                    Dynamic spacing, advantage play, and live game reads for pre-teens building true court IQ.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="glow-card p-6 sm:p-8 bg-gradient-to-r from-[#003366]/30 via-eco-surface to-eco-surface border border-eco-blue/20 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div>
+                <h4 className="font-display text-xl uppercase text-white mb-1">
+                  Ready to Reserve Your Spot?
+                </h4>
+                <p className="text-xs text-eco-muted-light max-w-md">
+                  Spots are capped at 12 players per coach to ensure personalized attention and optimal ball touches.
+                </p>
+              </div>
+              <a
+                href="/#jr-nba-waitlist"
+                className="btn-glow !py-3 !px-6 text-xs uppercase tracking-wider font-heading font-bold flex-shrink-0 flex items-center gap-2"
+              >
+                <Sparkles size={14} />
+                Join the Waitlist
+              </a>
+            </div>
           </div>
         </div>
       </div>

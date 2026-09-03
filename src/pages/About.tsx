@@ -31,8 +31,8 @@ export default function About() {
     },
     {
       year: '2026',
-      title: 'The Movement Today',
-      desc: 'Today we support our 2011 Boys and 2012 Girls competitive rep teams alongside developmental training groups. As a young organization, we are actively expanding and seeking coaches (especially female mentors) to grow with us.',
+      title: 'Canada Basketball & Jr. NBA Affiliation',
+      desc: 'Today we host official Canada Basketball Jr. NBA & Jr. WNBA youth programs alongside our 2011 Boys and 2012 Girls competitive rep teams. As an Ontario Basketball Association (OBA) affiliate club, we prioritize joy, emotional safety, and community access.',
       icon: Trophy,
       color: '#4A7FB5'
     }

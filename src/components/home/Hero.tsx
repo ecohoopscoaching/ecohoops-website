@@ -120,7 +120,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
           <a
             href="#jr-nba-waitlist"
@@ -141,12 +141,47 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           </a>
         </motion.div>
 
+        {/* Official Affiliations Trust Strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="max-w-3xl mx-auto mb-10 px-4"
+        >
+          <div className="bg-[#050B14]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-2 text-center sm:text-left">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+              <div>
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
+                  Official Affiliation & Sanctioned Programs
+                </div>
+                <div className="text-xs text-white/80 font-heading font-medium">
+                  Canada Basketball • Jr. NBA • Jr. WNBA
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-5 sm:gap-6 flex-wrap justify-center">
+              <img
+                src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+                alt="Jr. NBA • WNBA • Canada Basketball"
+                className="h-8 sm:h-9 w-auto object-contain opacity-95 hover:opacity-100 transition-opacity"
+              />
+              <div className="h-6 w-px bg-white/15 hidden sm:block" />
+              <img
+                src="/images/branding/canada-basketball-dark-horizontal-tight.png"
+                alt="Canada Basketball"
+                className="h-6 sm:h-7 w-auto object-contain opacity-95 hover:opacity-100 transition-opacity"
+              />
+            </div>
+          </div>
+        </motion.div>
+
         {/* Stats Bar */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="max-w-4xl mx-auto mt-8"
+          className="max-w-4xl mx-auto mt-4"
         >
           <div className="bg-eco-surface/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
             {/* Subtle internal border dividing elements on desktop */}

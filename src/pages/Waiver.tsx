@@ -43,12 +43,27 @@ export default function Waiver() {
         >
           {/* Highlights Card */}
           <div ref={glowRef} className="glow-card p-8 md:p-10 border border-eco-blue/20 bg-eco-blue/5">
-            <div className="flex items-center gap-3 mb-4">
-              <FileCheck className="text-eco-blue h-8 w-8" />
-              <h2 className="font-display text-2xl uppercase text-white">Participation Terms & Safety</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <FileCheck className="text-eco-blue h-8 w-8" />
+                <h2 className="font-display text-2xl uppercase text-white">Participation Terms & Safety</h2>
+              </div>
+              <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-2 self-start sm:self-auto">
+                <img
+                  src="/images/branding/canada-basketball-dark-horizontal-tight.png"
+                  alt="Canada Basketball Sanctioned"
+                  className="h-5 w-auto object-contain"
+                />
+                <div className="h-4 w-px bg-white/20" />
+                <img
+                  src="/images/branding/jr-nba-wnba-dark.png"
+                  alt="Jr. NBA & Jr. WNBA"
+                  className="h-5 w-auto object-contain"
+                />
+              </div>
             </div>
             <p className="text-eco-muted-light leading-relaxed text-sm">
-              All registered players and their legal guardians acknowledge and accept these terms upon completing program registration or entering an EcoHoops event facility.
+              All registered players and their legal guardians acknowledge and accept these terms upon completing program registration or entering an EcoHoops event facility. EcoHoops operates under Ontario Basketball Association (OBA) and Canada Basketball sanctioning frameworks.
             </p>
           </div>
 

@@ -1,5 +1,13 @@
 export type UserRole = 'admin' | 'coach' | 'parent' | 'player'
 
+export interface ChildProfile {
+  id: string
+  name: string
+  teamId: string
+  number?: number
+  avatar?: string
+}
+
 export interface UserProfile {
   id: string
   name: string
@@ -8,6 +16,7 @@ export interface UserProfile {
   teamId?: string
   playerId?: string
   childName?: string
+  children?: ChildProfile[]
   avatar?: string
 }
 
@@ -19,6 +28,8 @@ export interface Player {
   height: string
   age: number
   avatar?: string
+  emergencyContact?: string
+  medicalNotes?: string
   stats: PlayerStats
 }
 
@@ -44,6 +55,13 @@ export interface Team {
   nextGame?: ScheduleEvent
 }
 
+export interface AttendanceRecord {
+  status: 'going' | 'maybe' | 'notGoing'
+  note?: string
+  checkedIn?: boolean
+  updatedAt?: string
+}
+
 export interface ScheduleEvent {
   id: string
   type: 'game' | 'practice' | 'tournament' | 'event'
@@ -51,14 +69,18 @@ export interface ScheduleEvent {
   date: string
   time: string
   location: string
+  mapUrl?: string
+  venueDetails?: string
   opponent?: string
   homeAway?: 'home' | 'away'
+  teamId?: string
   rsvp: {
     going: number
     maybe: number
     notGoing: number
     total: number
   }
+  attendance?: Record<string, AttendanceRecord>
   result?: {
     score: string
     outcome: 'W' | 'L' | 'T'

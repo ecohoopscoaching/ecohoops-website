@@ -21,9 +21,18 @@ export default function SafeSportBanner() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
           <div className="lg:col-span-8 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-blue/15 border border-eco-blue/30 text-eco-blue text-xs font-mono font-bold uppercase tracking-wider">
-              <ShieldCheck size={16} />
-              <span>Athlete Safety & Community Care</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-blue/15 border border-eco-blue/30 text-eco-blue text-xs font-mono font-bold uppercase tracking-wider">
+                <ShieldCheck size={16} />
+                <span>Athlete Safety & Community Care</span>
+              </div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+                <img
+                  src="/images/branding/canada-basketball-dark-horizontal-tight.png"
+                  alt="Canada Basketball Safe Sport"
+                  className="h-3.5 sm:h-4 w-auto object-contain opacity-90"
+                />
+              </div>
             </div>
             
             <h2 className="font-display text-3xl md:text-5xl uppercase text-white leading-tight">

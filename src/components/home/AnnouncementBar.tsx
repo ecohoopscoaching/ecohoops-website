@@ -14,7 +14,7 @@ export default function AnnouncementBar() {
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs sm:text-sm font-heading">
         <div className="flex items-center gap-2 font-semibold tracking-wide">
           <Sparkles size={14} className="text-[#97B3D2] animate-pulse flex-shrink-0" />
-          <span>Jr. NBA/Jr. WNBA is coming to EcoHoops Jr. (Ages 5–6 & Ages 7–9)</span>
+          <span>Jr. NBA/Jr. WNBA is coming to EcoHoops Jr. (Ages 5–6 Co-Ed, 7–9 & 10–11)</span>
         </div>
 
         <button

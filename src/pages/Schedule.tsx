@@ -5,7 +5,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import {
   Calendar, MapPin, Clock, Users, Check, X, HelpCircle,
   Trophy, Dumbbell, Star, PartyPopper, Filter,
-  ChevronDown, Plus, Trash2
+  ChevronDown, Plus, Trash2, Download, ExternalLink, MessageSquare, CheckCircle2
 } from 'lucide-react'
 import type { ScheduleEvent } from '../types'
 import { useData } from '../contexts/DataContext'
@@ -30,33 +30,18 @@ export default function Schedule() {
   const [filter, setFilter] = useState<FilterType>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const { ref, isVisible } = useScrollReveal(0.05)
-  const { isAdmin } = useAuth()
-  const { schedule, addEvent, deleteEvent, updateEvent } = useData()
+  const { isAdmin, isCoach, isParent, userProfile } = useAuth()
+  const { schedule, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [selectedChildId, setSelectedChildId] = useState<string>(
+    userProfile?.children?.[0]?.id || userProfile?.playerId || 'child-1'
+  )
   const [userRsvps, setUserRsvps] = useState<Record<string, 'going'|'maybe'|'notGoing'>>({})
+  const [rsvpNotes, setRsvpNotes] = useState<Record<string, string>>({})
 
-  const handleRsvp = (eventId: string, newStatus: 'going'|'maybe'|'notGoing') => {
-    const currentStatus = userRsvps[eventId]
-    if (currentStatus === newStatus) return
-
-    const event = schedule.find(e => e.id === eventId)
-    if (!event) return
-
-    const updatedRsvp = { ...event.rsvp }
-    
-    if (currentStatus === 'going') updatedRsvp.going--
-    if (currentStatus === 'maybe') updatedRsvp.maybe--
-    if (currentStatus === 'notGoing') updatedRsvp.notGoing--
-    
-    if (newStatus === 'going') updatedRsvp.going++
-    if (newStatus === 'maybe') updatedRsvp.maybe++
-    if (newStatus === 'notGoing') updatedRsvp.notGoing++
-
-    if (!currentStatus) {
-       updatedRsvp.total++
-    }
-
-    updateEvent({ ...event, rsvp: updatedRsvp })
+  const handleRsvp = (eventId: string, newStatus: 'going'|'maybe'|'notGoing', note?: string) => {
+    const playerId = isParent ? selectedChildId : (userProfile?.playerId || 'player-1')
+    recordAttendance(eventId, playerId, newStatus, note)
     setUserRsvps(prev => ({ ...prev, [eventId]: newStatus }))
   }
 
@@ -87,13 +72,13 @@ export default function Schedule() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7 }}
           >
-            <span className="tag mb-3 inline-block">Calendar</span>
+            <span className="tag mb-3 inline-block">TeamSnap Calendar</span>
             <h1 className="font-display text-section uppercase mb-2">
               <span className="text-white">THE </span>
               <span className="gradient-text">SCHEDULE</span>
             </h1>
             <p className="text-eco-muted-light text-base max-w-md">
-              Games, practices, tournaments, and events. Stay locked in.
+              Games, practices, tournaments, and live team RSVPs. Stay locked in.
             </p>
           </motion.div>
         </div>
@@ -101,18 +86,54 @@ export default function Schedule() {
 
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
 
-        {/* Admin Actions */}
-        {isAdmin && (
-          <div className="flex justify-end mb-6">
+        {/* Top Control Bar: Parent Child Switcher + Sync Calendar + Admin Add */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 p-4 bg-eco-surface2/60 border border-eco-border rounded-2xl">
+          {isParent && userProfile?.children && userProfile.children.length > 0 ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono text-eco-muted uppercase tracking-wider">RSVP for:</span>
+              <div className="flex gap-2">
+                {userProfile.children.map((child) => (
+                  <button
+                    key={child.id}
+                    onClick={() => setSelectedChildId(child.id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase transition-all ${
+                      selectedChildId === child.id
+                        ? 'bg-eco-blue text-eco-black shadow-glow-sm'
+                        : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white'
+                    }`}
+                  >
+                    #{child.number || ''} {child.name} ({child.teamId.toUpperCase()})
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs font-mono text-eco-muted">
+              Live Team Availability & Schedule Feed
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-eco-blue text-eco-black rounded-xl text-sm font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm"
+              onClick={() => downloadCalendarIcs('EcoHoops Team Calendar')}
+              className="flex items-center gap-2 px-4 py-2 bg-eco-surface border border-eco-blue/30 text-white rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue hover:text-eco-black transition-all shadow-glow-sm"
+              title="Download iCal (.ics) file to sync with iPhone, Android, or Outlook calendar"
             >
-              <Plus size={16} />
-              Add Event
+              <Download size={14} />
+              Sync to Phone (.ics)
             </button>
+
+            {isAdmin && (
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-eco-blue text-eco-black rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm"
+              >
+                <Plus size={14} />
+                Add Event
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Filters */}
         {schedule.length > 0 && (
@@ -459,36 +480,56 @@ function EventCard({
                 </div>
               </div>
 
-              {/* RSVP Buttons */}
+              {/* Location Directions & Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6 p-3 rounded-xl bg-eco-surface2 border border-white/5">
+                <div className="flex items-center gap-2 text-xs text-eco-muted-light">
+                  <MapPin size={14} className="text-eco-blue" />
+                  <span>{event.location}</span>
+                </div>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-eco-surface border border-eco-border text-xs font-mono text-white hover:text-eco-blue hover:border-eco-blue/40 transition-colors"
+                >
+                  <ExternalLink size={12} />
+                  Get Directions
+                </a>
+              </div>
+
+              {/* RSVP Buttons & Note */}
               {!event.result && onRsvp && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onRsvp('going'); }}
-                    className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors ${
-                      currentRsvp === 'going' 
-                        ? 'bg-eco-blue text-white border-eco-blue shadow-glow-sm' 
-                        : 'bg-eco-blue/20 border-eco-blue/30 text-white hover:bg-eco-blue/30'
-                    }`}>
-                    I'm Going
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onRsvp('maybe'); }}
-                    className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors ${
-                      currentRsvp === 'maybe' 
-                        ? 'bg-white text-eco-black border-white shadow-glow-sm' 
-                        : 'bg-white/20 border-white/30 text-white/70 hover:bg-white/30'
-                    }`}>
-                    Maybe
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onRsvp('notGoing'); }}
-                    className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors ${
-                      currentRsvp === 'notGoing' 
-                        ? 'bg-eco-muted text-white border-eco-muted' 
-                        : 'bg-eco-muted/20 border-eco-muted/30 text-eco-muted-light hover:bg-eco-muted/30'
-                    }`}>
-                    Can't Go
-                  </button>
+                <div className="space-y-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onRsvp('going'); }}
+                      className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors flex items-center justify-center gap-2 ${
+                        currentRsvp === 'going' 
+                          ? 'bg-eco-blue text-eco-black border-eco-blue font-bold shadow-glow-sm' 
+                          : 'bg-eco-blue/20 border-eco-blue/30 text-white hover:bg-eco-blue/30'
+                      }`}>
+                      <Check size={16} /> I'm Going
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onRsvp('maybe'); }}
+                      className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors flex items-center justify-center gap-2 ${
+                        currentRsvp === 'maybe' 
+                          ? 'bg-white text-eco-black border-white font-bold shadow-glow-sm' 
+                          : 'bg-white/20 border-white/30 text-white/70 hover:bg-white/30'
+                      }`}>
+                      <HelpCircle size={16} /> Maybe
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onRsvp('notGoing'); }}
+                      className={`flex-1 py-2.5 rounded-xl border text-sm font-heading font-semibold transition-colors flex items-center justify-center gap-2 ${
+                        currentRsvp === 'notGoing' 
+                          ? 'bg-eco-muted text-white border-eco-muted font-bold' 
+                          : 'bg-eco-muted/20 border-eco-muted/30 text-eco-muted-light hover:bg-eco-muted/30'
+                      }`}>
+                      <X size={16} /> Can't Go
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

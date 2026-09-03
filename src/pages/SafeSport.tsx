@@ -41,6 +41,18 @@ export default function SafeSport() {
               EcoHoops is dedicated to a safe, clean, and fair basketball environment for everyone. 
               We ensure our athletes are protected, our environment is positive, and our programs are accessible to all families.
             </p>
+
+            <div className="mt-6 inline-flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-2.5">
+              <img
+                src="/images/branding/canada-basketball-dark-horizontal-tight.png"
+                alt="Canada Basketball Safe Sport"
+                className="h-6 w-auto object-contain opacity-95"
+              />
+              <div className="h-5 w-px bg-white/15" />
+              <span className="text-[11px] font-mono text-[#97B3D2] uppercase tracking-wider font-semibold">
+                Canada Basketball & Responsible Coaching Standards
+              </span>
+            </div>
           </motion.div>
 
           <motion.div

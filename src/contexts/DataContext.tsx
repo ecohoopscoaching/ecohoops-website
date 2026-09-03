@@ -18,6 +18,9 @@ interface DataContextType {
   updatePlayerDetails: (teamId: string, playerId: string, details: Partial<Omit<Player, 'id' | 'stats'>>) => void
   deletePlayerFromTeam: (teamId: string, playerId: string) => void
   uploadScoresheet: (teamId: string, csvContent: string, gameOutcome?: 'W' | 'L', gameScore?: string) => string
+  recordAttendance: (eventId: string, playerId: string, status: 'going' | 'maybe' | 'notGoing', note?: string) => void
+  checkInPlayer: (eventId: string, playerId: string, checkedIn: boolean) => void
+  downloadCalendarIcs: (calendarTitle?: string) => void
   sendMessage: (channel: string, content: string, sender: string) => void
   updatePaymentStatus: (paymentId: string, status: PaymentRecord['status']) => void
 }
@@ -53,6 +56,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('ecohoops_messages')
     return saved ? JSON.parse(saved) : MESSAGES
   })
+
+
 
   // Synchronize state changes to localStorage
   useEffect(() => {
@@ -244,6 +249,113 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return `Success: Processed scoresheet. Recalculated averages for ${updatedCount} players.`
   }
 
+  /* ─── ATTENDANCE & RSVP MODIFIERS ─── */
+  const recordAttendance = (
+    eventId: string,
+    playerId: string,
+    status: 'going' | 'maybe' | 'notGoing',
+    note?: string
+  ) => {
+    setSchedule((prev) =>
+      prev.map((e) => {
+        if (e.id !== eventId) return e
+
+        const currentAttendance = e.attendance || {}
+        const prevRecord = currentAttendance[playerId]
+        const prevStatus = prevRecord?.status
+
+        // Recalculate RSVP counter numbers
+        const rsvp = { ...e.rsvp }
+        if (prevStatus === 'going') rsvp.going = Math.max(0, rsvp.going - 1)
+        if (prevStatus === 'maybe') rsvp.maybe = Math.max(0, rsvp.maybe - 1)
+        if (prevStatus === 'notGoing') rsvp.notGoing = Math.max(0, rsvp.notGoing - 1)
+
+        if (status === 'going') rsvp.going++
+        if (status === 'maybe') rsvp.maybe++
+        if (status === 'notGoing') rsvp.notGoing++
+
+        if (!prevStatus) {
+          rsvp.total++
+        }
+
+        const newAttendance = {
+          ...currentAttendance,
+          [playerId]: {
+            status,
+            note: note ?? prevRecord?.note,
+            checkedIn: prevRecord?.checkedIn ?? false,
+            updatedAt: new Date().toISOString(),
+          },
+        }
+
+        return {
+          ...e,
+          rsvp,
+          attendance: newAttendance,
+        }
+      })
+    )
+  }
+
+  const checkInPlayer = (eventId: string, playerId: string, checkedIn: boolean) => {
+    setSchedule((prev) =>
+      prev.map((e) => {
+        if (e.id !== eventId) return e
+        const currentAttendance = e.attendance || {}
+        const existing = currentAttendance[playerId] || { status: 'going' }
+
+        return {
+          ...e,
+          attendance: {
+            ...currentAttendance,
+            [playerId]: {
+              ...existing,
+              checkedIn,
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        }
+      })
+    )
+  }
+
+  const downloadCalendarIcs = (calendarTitle = 'EcoHoops Schedule') => {
+    const sanitize = (str: string) => (str || '').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n')
+    const icsLines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//EcoHoops Coaching//Team Calendar//EN',
+      `X-WR-CALNAME:${calendarTitle}`,
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+    ]
+
+    schedule.forEach((ev) => {
+      const dt = ev.date.replace(/-/g, '')
+      icsLines.push(
+        'BEGIN:VEVENT',
+        `UID:${ev.id}@ecohoops.ca`,
+        `DTSTAMP:${dt}T120000Z`,
+        `DTSTART:${dt}T180000Z`,
+        `DTEND:${dt}T193000Z`,
+        `SUMMARY:${sanitize(ev.title)}`,
+        `LOCATION:${sanitize(ev.location)}`,
+        `DESCRIPTION:${sanitize(`${ev.type.toUpperCase()} - ${ev.time} at ${ev.location}${ev.opponent ? ` vs ${ev.opponent}` : ''}`)}`,
+        'STATUS:CONFIRMED',
+        'END:VEVENT'
+      )
+    })
+
+    icsLines.push('END:VCALENDAR')
+    const blob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.setAttribute('download', 'ecohoops-team-schedule.ics')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   /* ─── MESSAGING MODIFIERS ─── */
   const sendMessage = (channel: string, content: string, sender: string) => {
     const newMsg: Message = {
@@ -252,7 +364,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       content,
       timestamp: 'Just now',
       channel,
-      unread: sender !== 'Coach Adrian' // Unread for others if sent by coach
+      unread: sender !== 'Coach Adrian'
     }
     setMessages((prev) => [...prev, newMsg])
   }
@@ -278,6 +390,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
     updatePlayerDetails,
     deletePlayerFromTeam,
     uploadScoresheet,
+    recordAttendance,
+    checkInPlayer,
+    downloadCalendarIcs,
     sendMessage,
     updatePaymentStatus,
   }

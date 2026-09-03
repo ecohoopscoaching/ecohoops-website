@@ -17,8 +17,8 @@ import {
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 
 const BENEFITS = [
-  'First program launching October 2026 in Mississauga',
-  'Ages 5–6 and 7–9 (separated into girls and boys groups)',
+  'Starting October 2026 in Mississauga',
+  'Ages 5–6 (Co-Ed), Ages 7–9 (Girls ONLY + Boys), and Ages 10–11 (Girls ONLY + Boys)',
   '10 weeks, 60 minutes each Saturday (max 12 kids per group)',
   'Planned price: $249 per player',
   'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball',
@@ -29,7 +29,7 @@ interface FormState {
   parentName: string
   email: string
   phone: string
-  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Both'
+  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Ages 10–11' | 'Multiple'
   programInterest: 'Jr. NBA' | 'Jr. WNBA' | 'Not Sure Yet'
   childCount: string
   consent: boolean
@@ -312,13 +312,13 @@ const WaitlistForm = memo(function WaitlistForm() {
           <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
             <span>Age Group <span className="text-red-400">*</span></span>
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            {(['Ages 5–6', 'Ages 7–9'] as const).map((group) => {
+          <div className="grid grid-cols-3 gap-1.5">
+            {(['Ages 5–6', 'Ages 7–9', 'Ages 10–11'] as const).map((group) => {
               const isSelected = formData.ageGroup === group
               return (
                 <label
                   key={group}
-                  className={`py-2.5 px-2 rounded-xl font-heading text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                  className={`py-2 px-1 rounded-xl font-heading text-[11px] sm:text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                     isSelected
                       ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                       : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
@@ -337,6 +337,9 @@ const WaitlistForm = memo(function WaitlistForm() {
               )
             })}
           </div>
+          <p className="text-[10px] text-eco-muted mt-1 font-heading">
+            5–6 Co-Ed • 7–9 & 10–11 (Girls ONLY + Boys)
+          </p>
           {fieldErrors.ageGroup && (
             <p id="ageGroup-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
               <AlertCircle size={12} /> {fieldErrors.ageGroup}
@@ -488,6 +491,30 @@ export default function JrNbaAnnouncement() {
           
           {/* LEFT COLUMN: ANNOUNCEMENT COPY & BENEFITS */}
           <div className="lg:col-span-7 space-y-6">
+            {/* Official Branding Header Lockup Banner */}
+            <div className="bg-[#050B14]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+              <img
+                src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+                alt="Jr. NBA • WNBA • Canada Basketball"
+                className="h-9 sm:h-11 w-auto object-contain"
+              />
+              <div className="flex items-center gap-3">
+                <img
+                  src="/images/branding/canada-basketball-dark-vertical-tight.png"
+                  alt="Canada Basketball Official Crest"
+                  className="h-10 sm:h-12 w-auto object-contain"
+                />
+                <div className="text-left hidden xs:block">
+                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#97B3D2]">
+                    Official Sanctioning
+                  </div>
+                  <div className="text-xs font-heading font-semibold text-white">
+                    Canada Basketball & OBA
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Eyebrow badges */}
             <div className="flex flex-wrap items-center gap-2.5">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
@@ -495,7 +522,7 @@ export default function JrNbaAnnouncement() {
                 NEW FROM ECOHOOPS JR.
               </div>
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-eco-blue/15 border border-eco-blue/35 text-eco-blue-light text-xs font-mono font-bold uppercase tracking-wider">
-                Ages 5–6 & Ages 7–9
+                Ages 5–6 Co-Ed • 7–9 & 10–11
               </div>
             </div>
 
@@ -507,13 +534,13 @@ export default function JrNbaAnnouncement() {
 
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
-              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 & Ages 7–9).
+              A fun, welcoming place for kids to play, learn, and grow (5–6 Co-Ed, 7–9 & 10–11 Girls ONLY + Boys).
             </p>
 
             {/* Body */}
             <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
               <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to our community, offered specifically for two age divisions: <strong className="text-white font-semibold">Ages 5–6</strong> and <strong className="text-white font-semibold">Ages 7–9</strong>.
+                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to our community, offered specifically across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (Co-Ed)</strong>, <strong className="text-white font-semibold">Ages 7–9 (Girls ONLY & Boys)</strong>, and <strong className="text-white font-semibold">Ages 10–11 (Girls ONLY & Boys)</strong>.
               </p>
               <p>
                 Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first.
@@ -524,7 +551,7 @@ export default function JrNbaAnnouncement() {
             </div>
 
             {/* Benefits List */}
-            <div className="pt-4 space-y-3">
+            <div className="pt-2 space-y-3">
               <h3 className="text-xs font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
                 Why Families Love EcoHoops Jr.
               </h3>
@@ -543,8 +570,28 @@ export default function JrNbaAnnouncement() {
               </ul>
             </div>
 
+            {/* Official Gear & Sanctioning Seal */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#003366]/40 via-eco-surface to-[#003366]/20 border border-white/10 flex flex-col sm:flex-row items-center gap-4 shadow-lg">
+              <img
+                src="/images/branding/canada-basketball-vertical-red.png"
+                alt="Canada Basketball Official Partner"
+                className="h-16 w-auto object-contain flex-shrink-0"
+              />
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Official Sanctioned Youth Program
+                </div>
+                <h4 className="text-white font-heading font-bold text-sm">
+                  Official Jr. NBA Reversible Kit & Canada Basketball Membership
+                </h4>
+                <p className="text-eco-muted-light text-xs leading-relaxed">
+                  Every registered player receives an official Jr. NBA reversible uniform, Wilson basketball, and full player insurance coverage through Canada Basketball & Ontario Basketball.
+                </p>
+              </div>
+            </div>
+
             {/* Authentic photo card */}
-            <div className="pt-4">
+            <div className="pt-2">
               <div className="relative rounded-2xl overflow-hidden border border-eco-border/60 shadow-xl group">
                 <img
                   src="/images/13.png"
@@ -574,9 +621,16 @@ export default function JrNbaAnnouncement() {
               {/* Card top accent */}
               <div className="flex items-center justify-between pb-5 mb-6 border-b border-white/10">
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-[#97B3D2] font-semibold block mb-1">
-                    Priority Notification
-                  </span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <img
+                      src="/images/branding/jr-nba-wnba-dark.png"
+                      alt="Jr. NBA & Jr. WNBA"
+                      className="h-6 w-auto object-contain"
+                    />
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
+                      Priority Notification
+                    </span>
+                  </div>
                   <h3 className="font-display text-xl sm:text-2xl text-white uppercase font-bold">
                     Join the Parent Waitlist
                   </h3>
