@@ -71,6 +71,18 @@ const WaitlistForm = memo(function WaitlistForm() {
       if (fieldErrors[name]) {
         setFieldErrors((prev) => ({ ...prev, [name]: '' }))
       }
+    } else if (type === 'radio') {
+      // INP optimization: use startTransition for non-blocking UI updates
+      React.startTransition(() => {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+          ...(name === 'ageGroup' && value === 'Ages 5–6' ? { groupPreference: '' } : {})
+        }))
+        if (fieldErrors[name]) {
+          setFieldErrors((prev) => ({ ...prev, [name]: '' }))
+        }
+      })
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }))
       if (fieldErrors[name]) {
@@ -394,27 +406,28 @@ const WaitlistForm = memo(function WaitlistForm() {
         <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
           <span>Child's Age Group <span className="text-red-400">*</span></span>
         </label>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div role="radiogroup" aria-label="Child's Age Group" className="grid grid-cols-3 gap-1.5">
           {(['Ages 5–6', 'Ages 7–9', 'Ages 10–11'] as const).map((group) => {
             const isSelected = formData.ageGroup === group
             return (
-              <button
-                type="button"
+              <label
                 key={group}
-                onClick={() => {
-                  setFieldValue('ageGroup', group)
-                  if (group === 'Ages 5–6') {
-                    setFieldValue('groupPreference', '')
-                  }
-                }}
                 className={`py-2.5 px-1 rounded-xl font-heading text-[11px] sm:text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                   isSelected
                     ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                     : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
                 }`}
               >
-                {group}
-              </button>
+                <input
+                  type="radio"
+                  name="ageGroup"
+                  value={group}
+                  checked={isSelected}
+                  onChange={handleInputChange}
+                  className="sr-only"
+                />
+                <span>{group}</span>
+              </label>
             )
           })}
         </div>
@@ -436,22 +449,28 @@ const WaitlistForm = memo(function WaitlistForm() {
           <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium">
             Which group are you interested in? <span className="text-red-400">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div role="radiogroup" aria-label="Which group are you interested in?" className="grid grid-cols-2 gap-2">
             {(['Boys’ group', 'Girls’ group'] as const).map((opt) => {
               const isSelected = formData.groupPreference === opt
               return (
-                <button
-                  type="button"
+                <label
                   key={opt}
-                  onClick={() => setFieldValue('groupPreference', opt)}
                   className={`py-2.5 px-3 rounded-xl font-heading text-xs sm:text-sm font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                     isSelected
                       ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                       : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
                   }`}
                 >
-                  {opt}
-                </button>
+                  <input
+                    type="radio"
+                    name="groupPreference"
+                    value={opt}
+                    checked={isSelected}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <span>{opt}</span>
+                </label>
               )
             })}
           </div>
@@ -472,22 +491,28 @@ const WaitlistForm = memo(function WaitlistForm() {
           </span>
           <span className="text-[10px] text-eco-muted">Permit pending</span>
         </label>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div role="radiogroup" aria-label="Which days could work?" className="grid grid-cols-3 gap-1.5">
           {(['Friday', 'Saturday', 'Either'] as const).map((day) => {
             const isSelected = formData.daysAvailable === day
             return (
-              <button
-                type="button"
+              <label
                 key={day}
-                onClick={() => setFieldValue('daysAvailable', day)}
                 className={`py-2.5 px-2 rounded-xl font-heading text-[11px] sm:text-xs font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                   isSelected
                     ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                     : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
                 }`}
               >
-                {day}
-              </button>
+                <input
+                  type="radio"
+                  name="daysAvailable"
+                  value={day}
+                  checked={isSelected}
+                  onChange={handleInputChange}
+                  className="sr-only"
+                />
+                <span>{day}</span>
+              </label>
             )
           })}
         </div>
