@@ -16,7 +16,7 @@ const PROGRAMS = [
   {
     title: 'EcoHoops Jr. (Jr. NBA/WNBA)',
     description: 'Jr. NBA & Jr. WNBA programming and fun, play-based training designed to introduce fundamentals, build coordination, and spark a lifelong love for the game.',
-    target: 'Three divisions: 5–6 Co-Ed, 7–9 (Girls ONLY + Boys), and 10–11 (Girls ONLY + Boys).',
+    target: 'Three divisions: Ages 5–6 (co-ed), Ages 7–9 & 10–11 (separate girls’ and boys’ groups).',
     path: '/jr',
     icon: Sparkles,
     color: '#6A9BC7',

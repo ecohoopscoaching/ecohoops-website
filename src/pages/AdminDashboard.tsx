@@ -5,15 +5,19 @@ import { useAuth } from '../contexts/AuthContext'
 import { useData } from '../contexts/DataContext'
 import { 
   LayoutDashboard, Users, Calendar, Settings, FileText, 
-  ChevronRight, Plus, Edit2, Shield, AlertTriangle, Trash2
+  ChevronRight, Plus, Edit2, Shield, AlertTriangle, Trash2,
+  Sparkles, Download, Copy, Check, Search, Filter, Phone, Mail, MapPin, CalendarDays, CheckCircle2, Info
 } from 'lucide-react'
 import { blogService } from '../lib/blog-service'
 import { BLOG_POSTS } from '../data/blogs'
 import { BlogPost } from '../types'
+import { 
+  WaitlistEntry, getStoredWaitlist, calculateWaitlistMetrics, exportWaitlistToCsv 
+} from '../data/waitlist'
 
 import MarketingPlaybook from './MarketingPlaybook'
 
-type Tab = 'overview' | 'content' | 'teams' | 'schedule' | 'marketing'
+type Tab = 'overview' | 'waitlist' | 'content' | 'teams' | 'schedule' | 'marketing'
 
 export default function AdminDashboard() {
   const { isAdmin, loading: authLoading } = useAuth()
@@ -30,6 +34,7 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: 'overview' as Tab, label: 'Overview', icon: LayoutDashboard },
+    { id: 'waitlist' as Tab, label: 'Jr. Waitlist & Leads', icon: Sparkles },
     { id: 'content' as Tab, label: 'Content', icon: FileText },
     { id: 'teams' as Tab, label: 'Teams', icon: Users },
     { id: 'schedule' as Tab, label: 'Schedule', icon: Calendar },
@@ -83,7 +88,8 @@ export default function AdminDashboard() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            {activeTab === 'overview' && <OverviewTab />}
+            {activeTab === 'overview' && <OverviewTab onNavigateWaitlist={() => setActiveTab('waitlist')} />}
+            {activeTab === 'waitlist' && <WaitlistTab />}
             {activeTab === 'content' && <ContentTab navigate={navigate} />}
             {activeTab === 'teams' && <TeamsTab />}
             {activeTab === 'schedule' && <ScheduleTab />}
@@ -95,17 +101,21 @@ export default function AdminDashboard() {
   )
 }
 
-function OverviewTab() {
+function OverviewTab({ onNavigateWaitlist }: { onNavigateWaitlist?: () => void }) {
   const { teams, schedule } = useData()
   const totalPlayers = teams.reduce((acc, team) => acc + team.roster.length, 0)
+  const waitlistEntries = getStoredWaitlist()
+  const waitlistMetrics = calculateWaitlistMetrics(waitlistEntries)
+
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
+          { label: 'Real Waitlist Leads', value: waitlistMetrics.realSubmissions, icon: Sparkles, color: '#00D26A' },
+          { label: 'Unique Families', value: waitlistMetrics.uniqueParentContacts, icon: Users, color: '#97B3D2' },
           { label: 'Total Players', value: totalPlayers, icon: Users, color: '#97B3D2' },
           { label: 'Active Teams', value: teams.filter(t => t.isActive).length, icon: Shield, color: '#97B3D2' },
           { label: 'Total Events', value: schedule.length, icon: Calendar, color: '#6A9BC7' },
-          { label: 'System Status', value: 'Live', icon: Settings, color: '#4CAF50' },
         ].map((stat) => (
           <div key={stat.label} className="stat-card">
             <div className="flex items-center gap-3 mb-3">
@@ -122,7 +132,28 @@ function OverviewTab() {
         ))}
       </div>
       
-      <div className="glow-card p-6 border border-eco-blue/20 bg-eco-surface rounded-2xl">
+      <div className="glow-card p-6 border border-eco-blue/20 bg-eco-surface rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Sparkles className="text-eco-blue" size={18} />
+            <h3 className="font-heading font-bold text-lg text-white">Jr. NBA / Jr. WNBA Waitlist Active</h3>
+          </div>
+          <p className="text-eco-muted-light text-sm max-w-2xl">
+            {waitlistMetrics.realSubmissions} real parent leads received across {waitlistMetrics.uniqueParentContacts} unique families. 1 test record excluded. Missing historical fields displayed as "Not provided".
+          </p>
+        </div>
+        {onNavigateWaitlist && (
+          <button
+            onClick={onNavigateWaitlist}
+            className="btn-glow text-xs flex items-center gap-1.5 flex-shrink-0"
+          >
+            <span>View Full Waitlist</span>
+            <ChevronRight size={14} />
+          </button>
+        )}
+      </div>
+
+      <div className="glow-card p-6 border border-eco-border bg-eco-surface rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
           <Shield className="text-eco-blue" size={20} />
           <h3 className="font-heading font-bold text-lg text-white">Live Data System Active</h3>
@@ -130,6 +161,342 @@ function OverviewTab() {
         <p className="text-eco-muted-light">
           Welcome to the EcoHoops Command Center. Roster management and event planning changes are immediately written to local storage and propagate across all public sections of the web application (Schedule, Teams, and Player Profiles).
         </p>
+      </div>
+    </div>
+  )
+}
+
+function WaitlistTab() {
+  const [entries, setEntries] = useState<WaitlistEntry[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterAge, setFilterAge] = useState<string>('All')
+  const [filterStatus, setFilterStatus] = useState<'All' | 'Real' | 'Test'>('All')
+  const [copiedEmails, setCopiedEmails] = useState(false)
+
+  useEffect(() => {
+    setEntries(getStoredWaitlist())
+  }, [])
+
+  const metrics = calculateWaitlistMetrics(entries)
+
+  const filteredEntries = entries.filter((entry) => {
+    if (filterAge !== 'All' && entry.ageGroup !== filterAge) return false
+    if (filterStatus === 'Real' && entry.isTest) return false
+    if (filterStatus === 'Test' && !entry.isTest) return false
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      const matchesName = entry.parentName.toLowerCase().includes(q)
+      const matchesEmail = entry.email.toLowerCase().includes(q)
+      const matchesPhone = entry.phone.toLowerCase().includes(q)
+      const matchesNeighbourhood = entry.neighbourhood.toLowerCase().includes(q)
+      const matchesDays = entry.daysAvailable.toLowerCase().includes(q)
+      return matchesName || matchesEmail || matchesPhone || matchesNeighbourhood || matchesDays
+    }
+    return true
+  })
+
+  const handleCopyEmails = () => {
+    const realEmails = Array.from(
+      new Set(entries.filter((e) => !e.isTest).map((e) => e.email.trim()).filter(Boolean))
+    )
+    navigator.clipboard.writeText(realEmails.join(', '))
+    setCopiedEmails(true)
+    setTimeout(() => setCopiedEmails(false), 2500)
+  }
+
+  const handleExportCsv = () => {
+    exportWaitlistToCsv(filteredEntries)
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* KPI METRIC CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="stat-card">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-eco-blue/15 flex items-center justify-center text-eco-blue">
+              <Sparkles size={15} />
+            </div>
+            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Total Subs</span>
+          </div>
+          <p className="font-display text-2xl sm:text-3xl text-white">{metrics.totalSubmissions}</p>
+          <p className="text-[10px] text-eco-muted mt-1">Includes 1 test entry</p>
+        </div>
+
+        <div className="stat-card border-emerald-500/30">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+              <CheckCircle2 size={15} />
+            </div>
+            <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-mono">Real Leads</span>
+          </div>
+          <p className="font-display text-2xl sm:text-3xl text-emerald-300">{metrics.realSubmissions}</p>
+          <p className="text-[10px] text-eco-muted mt-1">Adrian test excluded</p>
+        </div>
+
+        <div className="stat-card">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-[#003366] flex items-center justify-center text-[#97B3D2]">
+              <Users size={15} />
+            </div>
+            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Unique Parents</span>
+          </div>
+          <p className="font-display text-2xl sm:text-3xl text-white">{metrics.uniqueParentContacts}</p>
+          <p className="text-[10px] text-eco-muted mt-1">Deduplicated contacts</p>
+        </div>
+
+        <div className="stat-card">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 flex items-center justify-center text-indigo-400">
+              <Users size={15} />
+            </div>
+            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Est. Children</span>
+          </div>
+          <p className="font-display text-2xl sm:text-3xl text-white">
+            {metrics.estimatedChildrenMin === metrics.estimatedChildrenMax 
+              ? metrics.estimatedChildrenMin 
+              : `${metrics.estimatedChildrenMin}–${metrics.estimatedChildrenMax}`}
+          </p>
+          <p className="text-[10px] text-eco-muted mt-1">Unresolved sibling count</p>
+        </div>
+
+        <div className="stat-card">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400">
+              <Shield size={15} />
+            </div>
+            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Paid Regs</span>
+          </div>
+          <p className="font-display text-2xl sm:text-3xl text-white">{metrics.paidRegistrations}</p>
+          <p className="text-[10px] text-eco-muted mt-1">Waitlist distinct from paid</p>
+        </div>
+      </div>
+
+      {/* DIVISION BREAKDOWN STRIP */}
+      <div className="p-4 rounded-2xl bg-eco-surface border border-eco-border flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-eco-muted">
+            Division Breakdown (Real Leads):
+          </span>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="px-3 py-1 rounded-xl bg-eco-blue/15 border border-eco-blue/30 text-eco-blue-light font-heading font-bold">
+              Ages 5–6 (Co-Ed): {metrics.divisionBreakdown['Ages 5–6']}
+            </span>
+            <span className="px-3 py-1 rounded-xl bg-[#003366]/40 border border-[#97B3D2]/30 text-[#97B3D2] font-heading font-bold">
+              Ages 7–9: {metrics.divisionBreakdown['Ages 7–9']}
+            </span>
+            <span className="px-3 py-1 rounded-xl bg-eco-surface2 border border-eco-border text-eco-muted font-heading font-bold">
+              Ages 10–11: {metrics.divisionBreakdown['Ages 10–11']}
+            </span>
+          </div>
+        </div>
+        <div className="text-xs text-eco-muted font-mono">
+          Programs run based on registration numbers
+        </div>
+      </div>
+
+      {/* AUDIT & RECONCILIATION EXPLANATION ALERT */}
+      <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs sm:text-sm text-amber-200/90 space-y-2">
+        <div className="flex items-center gap-2 font-bold text-amber-300">
+          <AlertTriangle size={17} className="flex-shrink-0" />
+          <span>Audit Reconciliation & Child Count Uncertainty Notice</span>
+        </div>
+        <p className="leading-relaxed">
+          • <strong>5 Submissions in Total:</strong> 1 submission from “Dre” was Adrian testing (marked <span className="font-mono text-amber-400 font-bold">TEST</span> and excluded from real metrics).<br />
+          • <strong>4 Real Submissions across 3 Unique Parent Contacts:</strong> One parent submitted twice (once for Ages 5–6 and once for Ages 7–9). These are preserved as separate records representing either 2 sibling children or a correction; they are flagged with uncertainty and not merged or deleted.<br />
+          • <strong>Historical Fields:</strong> For historical records submitted prior to today's form update, missing fields (days available, group preference, neighbourhood) are clearly displayed as <span className="font-mono italic text-eco-muted">Not provided</span>.<br />
+          • <strong>Attribution:</strong> Historical records are organic and not attributed to Meta ads.
+        </p>
+      </div>
+
+      {/* SEARCH, FILTERS & ACTION CONTROLS */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Age group filter */}
+          <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
+            {['All', 'Ages 5–6', 'Ages 7–9', 'Ages 10–11'].map((age) => (
+              <button
+                key={age}
+                onClick={() => setFilterAge(age)}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  filterAge === age
+                    ? 'bg-eco-blue text-eco-black font-bold shadow-sm'
+                    : 'text-eco-muted hover:text-white'
+                }`}
+              >
+                {age}
+              </button>
+            ))}
+          </div>
+
+          {/* Status filter */}
+          <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
+            {(['All', 'Real', 'Test'] as const).map((st) => (
+              <button
+                key={st}
+                onClick={() => setFilterStatus(st)}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  filterStatus === st
+                    ? 'bg-[#003366] text-white font-bold shadow-sm'
+                    : 'text-eco-muted hover:text-white'
+                }`}
+              >
+                {st === 'All' ? 'All Records' : st === 'Real' ? 'Real Leads' : 'Tests'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search & Export Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 sm:w-64">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search parent, email, area..."
+              className="w-full bg-eco-surface border border-eco-border rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-eco-muted/60 focus:outline-none focus:border-eco-blue"
+            />
+          </div>
+
+          <button
+            onClick={handleCopyEmails}
+            className="px-3.5 py-2 rounded-xl bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white text-xs font-heading font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Copy real parent email addresses"
+          >
+            {copiedEmails ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+            <span>{copiedEmails ? 'Copied!' : 'Copy Emails'}</span>
+          </button>
+
+          <button
+            onClick={handleExportCsv}
+            className="btn-glow text-xs !py-2 !px-4 flex items-center gap-1.5 cursor-pointer"
+            title="Download CSV of filtered entries"
+          >
+            <Download size={14} />
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      {/* SUBMISSIONS TABLE */}
+      <div className="glow-card overflow-hidden bg-eco-surface border border-eco-border rounded-2xl">
+        <div className="overflow-x-auto scrollbar-thin">
+          <table className="w-full text-left text-xs text-eco-muted-light">
+            <thead className="bg-[#050B14] border-b border-eco-border text-[10px] font-mono uppercase tracking-wider text-eco-muted">
+              <tr>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Parent / Guardian</th>
+                <th className="py-3 px-4">Phone</th>
+                <th className="py-3 px-4">Division & Group</th>
+                <th className="py-3 px-4">Days Available</th>
+                <th className="py-3 px-4">Neighbourhood</th>
+                <th className="py-3 px-4">Kids</th>
+                <th className="py-3 px-4">Source & Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-eco-border/60">
+              {filteredEntries.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-eco-muted">
+                    No waitlist submissions match your current filters.
+                  </td>
+                </tr>
+              ) : (
+                filteredEntries.map((entry) => (
+                  <tr
+                    key={entry.id}
+                    className={`hover:bg-eco-surface2/50 transition-colors ${
+                      entry.isTest ? 'bg-amber-500/5' : ''
+                    }`}
+                  >
+                    {/* Status */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      {entry.isTest ? (
+                        <span className="inline-block px-2 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                          TEST
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          REAL LEAD
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Parent Name & Email */}
+                    <td className="py-3.5 px-4 min-w-[180px]">
+                      <div className="font-heading font-bold text-white text-xs">
+                        {entry.parentName}
+                      </div>
+                      <a
+                        href={`mailto:${entry.email}`}
+                        className="text-[11px] text-eco-blue hover:underline font-mono"
+                      >
+                        {entry.email}
+                      </a>
+                      {entry.uncertaintyFlag && (
+                        <div className="mt-1 text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                          <AlertTriangle size={11} className="flex-shrink-0" />
+                          <span>{entry.uncertaintyFlag}</span>
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Phone */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      {entry.phone && entry.phone !== 'Not provided' ? (
+                        <span className="font-mono text-white">{entry.phone}</span>
+                      ) : (
+                        <span className="text-eco-muted italic">Not provided</span>
+                      )}
+                    </td>
+
+                    {/* Division & Group */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="font-medium text-white">{entry.ageGroup}</div>
+                      <div className="text-[11px] text-eco-muted">
+                        Pref: <span className="text-eco-muted-light font-semibold">{entry.groupPreference}</span>
+                      </div>
+                    </td>
+
+                    {/* Days Available */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      {entry.daysAvailable && entry.daysAvailable !== 'Not provided' ? (
+                        <span className="px-2 py-0.5 rounded bg-eco-surface2 border border-eco-border text-eco-blue-light font-medium">
+                          {entry.daysAvailable}
+                        </span>
+                      ) : (
+                        <span className="text-eco-muted italic">Not provided</span>
+                      )}
+                    </td>
+
+                    {/* Neighbourhood / Postal */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      {entry.neighbourhood && entry.neighbourhood !== 'Not provided' ? (
+                        <span className="text-white">{entry.neighbourhood}</span>
+                      ) : (
+                        <span className="text-eco-muted italic">Not provided</span>
+                      )}
+                    </td>
+
+                    {/* Kids */}
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <span className="font-mono text-white">{entry.childCount || '1'}</span>
+                    </td>
+
+                    {/* Source & Date */}
+                    <td className="py-3.5 px-4 whitespace-nowrap text-[11px]">
+                      <div className="text-eco-muted-light">{entry.source}</div>
+                      <div className="text-[10px] font-mono text-eco-muted">{entry.submissionTime}</div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

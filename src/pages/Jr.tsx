@@ -180,13 +180,13 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
       focus: "Basic movement, balance, ball familiarity, and joyful play."
     },
     rookies: {
-      title: "Rookie Ballers (7–9 Girls ONLY + Boys)",
-      desc: "Separated into dedicated Girls-only groups and Boys groups. Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
+      title: "Rookie Ballers (Ages 7–9 Separate Girls’ and Boys’ Groups)",
+      desc: "Separated into dedicated girls’ and boys’ groups. Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
       focus: "Dribbling under light pressure, finding open space, decision making, and team chemistry."
     },
     rising: {
-      title: "Rising Stars (10–11 Girls ONLY + Boys)",
-      desc: "Separated into dedicated Girls-only groups and Boys groups. Designed for pre-teens building court IQ, live advantage play, shooting mechanics, and defensive footwork before competitive rep ball. High energy, zero toxicity.",
+      title: "Rising Stars (Ages 10–11 Separate Girls’ and Boys’ Groups)",
+      desc: "Separated into dedicated girls’ and boys’ groups. Designed for pre-teens building court IQ, live advantage play, shooting mechanics, and defensive footwork before competitive rep ball. High energy, zero toxicity.",
       focus: "Advantage creation, court awareness, dynamic spacing, and communication."
     }
   }
@@ -221,7 +221,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             </div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
               <Sparkles size={14} className="text-[#97B3D2]" />
-              Official Jr. NBA / Jr. WNBA Program • 5–6 Co-Ed • 7–9 & 10–11 (Girls ONLY + Boys)
+              Official Jr. NBA / Jr. WNBA Program • Ages 5–6 (Co-Ed) • Ages 7–9 & 10–11 (Separate Groups)
             </div>
           </div>
           <h1 className="font-display text-hero uppercase tracking-tighter mb-4 text-white leading-none">
@@ -236,7 +236,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
               className="btn-glow inline-flex items-center gap-2 text-sm !py-2.5 !px-6"
             >
               <Sparkles size={16} />
-              Join the Jr. NBA / Jr. WNBA Waitlist
+              Join the Waitlist
             </a>
           </div>
         </motion.div>
@@ -552,7 +552,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             <span className="tag mb-3 inline-block">The Right Fit</span>
             <h2 className="font-display text-3xl uppercase tracking-wide text-white">Our Age Groups</h2>
             <p className="text-eco-muted-light text-sm max-w-xl mx-auto mt-2">
-              We group children into three focused divisions — 5–6 Co-Ed, 7–9 (Girls ONLY + Boys), and 10–11 (Girls ONLY + Boys) — to make sure they get the perfect level of fun, challenge, and development.
+              We group children into three focused divisions — Ages 5–6 (co-ed), Ages 7–9 (separate girls’ and boys’ groups), and Ages 10–11 (separate girls’ and boys’ groups). Groups will run based on registration numbers.
             </p>
           </div>
 
@@ -877,7 +877,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
                   <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
                     Division 2: Rookies
                   </div>
-                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">7–9 (Girls ONLY + Boys)</div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Ages 7–9 (Separate Groups)</div>
                   <p className="text-xs text-eco-muted-light leading-relaxed">
                     Small-sided 2v2 and 3v3 mini-games ensuring maximum touches, decision-making, and confidence.
                   </p>
@@ -886,7 +886,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
                   <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
                     Division 3: Rising Stars
                   </div>
-                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">10–11 (Girls ONLY + Boys)</div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Ages 10–11 (Separate Groups)</div>
                   <p className="text-xs text-eco-muted-light leading-relaxed">
                     Dynamic spacing, advantage play, and live game reads for pre-teens building true court IQ.
                   </p>

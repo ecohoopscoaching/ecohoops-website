@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -11,8 +11,15 @@ declare global {
 
 export default function Layout() {
   const location = useLocation()
+  const isInitialRender = useRef(true)
 
   useEffect(() => {
+    // index.html already fires the initial PageView on page load.
+    // Only fire PageView on subsequent client route transitions to prevent duplicate counts.
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      return
+    }
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView')
     }

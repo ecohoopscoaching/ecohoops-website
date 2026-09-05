@@ -111,7 +111,7 @@ export default function Home() {
         }}
       >
         <Sparkles size={13} className="animate-pulse text-eco-blue" />
-        <span>Jr. NBA / Jr. WNBA Waitlist</span>
+        <span>Join the Waitlist</span>
         <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#00D26A]" />
       </motion.a>
     </>

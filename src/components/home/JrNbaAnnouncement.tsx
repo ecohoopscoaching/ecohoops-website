@@ -13,15 +13,20 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  MapPin,
+  CalendarDays,
 } from 'lucide-react'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
+import { getTrackingParams, saveWaitlistEntry } from '../../data/waitlist'
 
 const BENEFITS = [
-  'Starting October 2026 in Mississauga',
-  'Ages 5–6 (Co-Ed), Ages 7–9 (Girls ONLY + Boys), and Ages 10–11 (Girls ONLY + Boys)',
-  '10 weeks, 60 minutes each Saturday (max 12 kids per group)',
-  'Planned price: $249 per player',
-  'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball',
+  'Targeting a mid-October 2026 start in Southwest Mississauga',
+  'Weekly session day and venue to be confirmed (Friday or Saturday options pending permit)',
+  '10 weekly sessions, 60 minutes each (max 12 children per group)',
+  'Ages 5–6 (co-ed), Ages 7–9 & 10–11 (separate girls’ and boys’ groups)',
+  'Groups will run based on registration numbers',
+  'Confirmed price: $249 per player',
+  'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball included',
   'Includes Canada Basketball & Ontario Basketball membership/insurance',
 ]
 
@@ -29,8 +34,10 @@ interface FormState {
   parentName: string
   email: string
   phone: string
-  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Ages 10–11' | 'Multiple'
-  programInterest: 'Jr. NBA' | 'Jr. WNBA' | 'Not Sure Yet'
+  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Ages 10–11'
+  groupPreference: 'Boys’ group' | 'Girls’ group' | ''
+  daysAvailable: 'Friday' | 'Saturday' | 'Either' | ''
+  neighbourhood: string
   childCount: string
   consent: boolean
 }
@@ -40,7 +47,9 @@ const INITIAL_FORM_STATE: FormState = {
   email: '',
   phone: '',
   ageGroup: 'Ages 5–6',
-  programInterest: 'Not Sure Yet',
+  groupPreference: '',
+  daysAvailable: '', // Do not preselect an answer
+  neighbourhood: '',
   childCount: '1',
   consent: false,
 }
@@ -70,6 +79,13 @@ const WaitlistForm = memo(function WaitlistForm() {
     }
   }
 
+  const setFieldValue = (name: keyof FormState, value: any) => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
   const validate = () => {
     const errors: { [key: string]: string } = {}
 
@@ -83,8 +99,26 @@ const WaitlistForm = memo(function WaitlistForm() {
       errors.email = 'Please enter a valid email address.'
     }
 
+    // Phone validation: optional, but if supplied validate format
+    if (formData.phone.trim()) {
+      const digits = formData.phone.replace(/\D/g, '')
+      if (digits.length < 10) {
+        errors.phone = 'Please enter a valid 10-digit phone number or leave blank.'
+      }
+    }
+
     if (!formData.ageGroup) {
       errors.ageGroup = 'Please select an age group.'
+    }
+
+    // For Ages 7–9 and 10–11, require group preference
+    if (formData.ageGroup !== 'Ages 5–6' && !formData.groupPreference) {
+      errors.groupPreference = 'Please select which group you are interested in.'
+    }
+
+    // "Which days could work?" - do not preselect, require a selection
+    if (!formData.daysAvailable) {
+      errors.daysAvailable = 'Please select which days could work.'
     }
 
     if (!formData.consent) {
@@ -103,9 +137,21 @@ const WaitlistForm = memo(function WaitlistForm() {
     setStatus('submitting')
     setErrorMessage('')
 
+    const trackingParams = getTrackingParams()
+    const isTest = Boolean(
+      formData.parentName.trim().toLowerCase() === 'dre' ||
+      formData.parentName.trim().toLowerCase().includes('test') ||
+      formData.email.toLowerCase().includes('test@') ||
+      formData.parentName.trim().toLowerCase() === 'adrian test'
+    )
+
+    const resolvedGroupPref = formData.ageGroup === 'Ages 5–6' 
+      ? 'Co-ed' 
+      : (formData.groupPreference || 'Not provided')
+
     const payload = {
       access_key: '933bf5e4-2815-45e1-853f-a58c9fb77a2f',
-      subject: `New EcoHoops Jr. NBA/Jr. WNBA Waitlist Registration - ${formData.parentName.trim()}`,
+      subject: `New EcoHoops Jr. Waitlist - ${formData.parentName.trim()} (${formData.ageGroup})`,
       from_name: 'EcoHoops Jr. Waitlist',
       to: 'ecohoopscoaching@gmail.com',
       replyto: formData.email.trim(),
@@ -113,24 +159,39 @@ const WaitlistForm = memo(function WaitlistForm() {
       'Email Address': formData.email.trim(),
       'Phone Number': formData.phone.trim() || 'Not provided',
       'Child Age Group': formData.ageGroup,
-      'Program Interest': formData.programInterest,
-      'Number of Children Interested': formData.childCount || '1',
+      'Group Preference': resolvedGroupPref,
+      'Days That Could Work': formData.daysAvailable || 'Not provided',
+      'Neighbourhood / Postal Area': formData.neighbourhood.trim() || 'Not provided',
+      'Number of Children': formData.childCount || '1',
       'Consent to Updates': formData.consent ? 'Yes' : 'No',
       'Submission Time': new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
+      'Campaign Source': trackingParams.utm_source || 'Direct / organic',
+      'Campaign Medium': trackingParams.utm_medium || 'Not provided',
+      'Campaign Name': trackingParams.utm_campaign || 'Not provided',
+      'Meta Click ID (fbclid)': trackingParams.fbclid || 'Not provided',
+      'Test Status': isTest ? 'TEST' : 'REAL LEAD',
     }
 
     try {
-      // 1. Store locally for backup
-      const existingWaitlist = JSON.parse(
-        localStorage.getItem('ecohoops_jr_waitlist') || '[]'
-      )
-      existingWaitlist.push(payload)
-      localStorage.setItem(
-        'ecohoops_jr_waitlist',
-        JSON.stringify(existingWaitlist)
-      )
+      // 1. Store locally with full fields for backup & Admin Dashboard
+      saveWaitlistEntry({
+        id: `entry-${Date.now()}`,
+        parentName: formData.parentName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || 'Not provided',
+        ageGroup: formData.ageGroup,
+        groupPreference: resolvedGroupPref as any,
+        daysAvailable: (formData.daysAvailable || 'Not provided') as any,
+        neighbourhood: formData.neighbourhood.trim() || 'Not provided',
+        childCount: (formData.childCount || '1') as any,
+        consent: formData.consent,
+        submissionTime: new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
+        source: trackingParams.utm_source ? `Meta / ${trackingParams.utm_source}` : 'Website direct',
+        utmParams: trackingParams,
+        isTest,
+      })
 
-      // 2. Deliver via Web3Forms
+      // 2. Deliver via Web3Forms to Adrian's email
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
@@ -143,6 +204,18 @@ const WaitlistForm = memo(function WaitlistForm() {
       const result = await response.json()
 
       if (result.success) {
+        // 3. Meta Pixel Lead tracking:
+        // ONLY fire after successfully confirmed API submission.
+        // Never fire on button click, failed submission, page reload, or internal test.
+        if (!isTest && typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'Lead', {
+            content_name: 'EcoHoops Jr. Waitlist',
+            content_category: formData.ageGroup,
+            currency: 'CAD',
+            value: 0,
+          })
+        }
+
         setStatus('success')
         setFormData(INITIAL_FORM_STATE)
       } else {
@@ -300,58 +373,167 @@ const WaitlistForm = memo(function WaitlistForm() {
             value={formData.phone}
             onChange={handleInputChange}
             placeholder="(416) 555-0199"
-            className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all placeholder:text-eco-muted/60"
+            aria-invalid={!!fieldErrors.phone}
+            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
+              fieldErrors.phone
+                ? 'border-red-500/80 focus:ring-red-500/30'
+                : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
+            }`}
           />
         </div>
+        {fieldErrors.phone && (
+          <p id="phone-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+            <AlertCircle size={12} /> {fieldErrors.phone}
+          </p>
+        )}
       </div>
 
-      {/* Child's Age Group & Number of Children */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {/* Child's Age Group (Ultra low INP radio group) */}
+      {/* Child's Age Group */}
+      <div>
+        <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
+          <span>Child's Age Group <span className="text-red-400">*</span></span>
+        </label>
+        <div className="grid grid-cols-3 gap-1.5">
+          {(['Ages 5–6', 'Ages 7–9', 'Ages 10–11'] as const).map((group) => {
+            const isSelected = formData.ageGroup === group
+            return (
+              <button
+                type="button"
+                key={group}
+                onClick={() => {
+                  setFieldValue('ageGroup', group)
+                  if (group === 'Ages 5–6') {
+                    setFieldValue('groupPreference', '')
+                  }
+                }}
+                className={`py-2.5 px-1 rounded-xl font-heading text-[11px] sm:text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
+                    : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
+                }`}
+              >
+                {group}
+              </button>
+            )
+          })}
+        </div>
+        {fieldErrors.ageGroup && (
+          <p id="ageGroup-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+            <AlertCircle size={12} /> {fieldErrors.ageGroup}
+          </p>
+        )}
+      </div>
+
+      {/* Conditional Group Preference */}
+      {formData.ageGroup === 'Ages 5–6' ? (
+        <div className="p-2.5 rounded-xl bg-[#003366]/20 border border-eco-blue/30 flex items-center gap-2 text-xs text-eco-blue-light">
+          <span className="w-2 h-2 rounded-full bg-eco-blue flex-shrink-0" />
+          <span><strong>Co-ed group:</strong> Boys and girls play and learn together in Ages 5–6.</span>
+        </div>
+      ) : (
         <div>
-          <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
-            <span>Age Group <span className="text-red-400">*</span></span>
+          <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium">
+            Which group are you interested in? <span className="text-red-400">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-1.5">
-            {(['Ages 5–6', 'Ages 7–9', 'Ages 10–11'] as const).map((group) => {
-              const isSelected = formData.ageGroup === group
+          <div className="grid grid-cols-2 gap-2">
+            {(['Boys’ group', 'Girls’ group'] as const).map((opt) => {
+              const isSelected = formData.groupPreference === opt
               return (
-                <label
-                  key={group}
-                  className={`py-2 px-1 rounded-xl font-heading text-[11px] sm:text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => setFieldValue('groupPreference', opt)}
+                  className={`py-2.5 px-3 rounded-xl font-heading text-xs sm:text-sm font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                     isSelected
                       ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                       : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
                   }`}
                 >
-                  <input
-                    type="radio"
-                    name="ageGroup"
-                    value={group}
-                    checked={isSelected}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <span>{group}</span>
-                </label>
+                  {opt}
+                </button>
               )
             })}
           </div>
-          <p className="text-[10px] text-eco-muted mt-1 font-heading">
-            5–6 Co-Ed • 7–9 & 10–11 (Girls ONLY + Boys)
-          </p>
-          {fieldErrors.ageGroup && (
-            <p id="ageGroup-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-              <AlertCircle size={12} /> {fieldErrors.ageGroup}
+          {fieldErrors.groupPreference && (
+            <p className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+              <AlertCircle size={12} /> {fieldErrors.groupPreference}
             </p>
           )}
         </div>
+      )}
 
-        {/* Number of Children Interested */}
+      {/* Which days could work? */}
+      <div>
+        <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <CalendarDays size={14} className="text-eco-blue" />
+            <span>Which days could work? <span className="text-red-400">*</span></span>
+          </span>
+          <span className="text-[10px] text-eco-muted">Permit pending</span>
+        </label>
+        <div className="grid grid-cols-3 gap-1.5">
+          {(['Friday', 'Saturday', 'Either'] as const).map((day) => {
+            const isSelected = formData.daysAvailable === day
+            return (
+              <button
+                type="button"
+                key={day}
+                onClick={() => setFieldValue('daysAvailable', day)}
+                className={`py-2.5 px-2 rounded-xl font-heading text-[11px] sm:text-xs font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
+                    : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
+                }`}
+              >
+                {day}
+              </button>
+            )
+          })}
+        </div>
+        {fieldErrors.daysAvailable && (
+          <p className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+            <AlertCircle size={12} /> {fieldErrors.daysAvailable}
+          </p>
+        )}
+      </div>
+
+      {/* Neighbourhood & Number of Children */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        {/* Your Neighbourhood */}
+        <div>
+          <label
+            htmlFor="neighbourhood"
+            className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium flex items-center justify-between"
+          >
+            <span>Your Neighbourhood</span>
+            <span className="text-[10px] text-eco-muted uppercase">Optional</span>
+          </label>
+          <div className="relative">
+            <MapPin
+              size={16}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+            />
+            <input
+              id="neighbourhood"
+              name="neighbourhood"
+              type="text"
+              value={formData.neighbourhood}
+              onChange={handleInputChange}
+              placeholder="e.g. Churchill Meadows or L5M"
+              className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all placeholder:text-eco-muted/60"
+            />
+          </div>
+          <p className="text-[10px] text-eco-muted mt-1 leading-tight">
+            Or enter the first three characters of your postal code.
+          </p>
+        </div>
+
+        {/* Number of Kids */}
         <div>
           <label
             htmlFor="childCount"
-            className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between"
+            className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium flex items-center justify-between"
           >
             <span>Number of Kids</span>
             <span className="text-[10px] text-eco-muted uppercase">Optional</span>
@@ -374,38 +556,6 @@ const WaitlistForm = memo(function WaitlistForm() {
               <option value="4+" className="bg-eco-surface text-white">4+ Children</option>
             </select>
           </div>
-        </div>
-      </div>
-
-      {/* Program Interest */}
-      <div>
-        <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-2 font-medium">
-          Program Interest
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {(['Jr. NBA', 'Jr. WNBA', 'Not Sure Yet'] as const).map((option) => {
-            const isSelected = formData.programInterest === option
-            return (
-              <label
-                key={option}
-                className={`flex items-center justify-center px-3 py-2.5 rounded-xl border text-xs font-heading font-bold cursor-pointer transition-colors duration-150 text-center select-none ${
-                  isSelected
-                    ? 'bg-[#003366] border-[#97B3D2] text-white shadow-glow-sm'
-                    : 'bg-[#060A10]/60 border-eco-border text-eco-muted-light hover:border-eco-blue/40'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="programInterest"
-                  value={option}
-                  checked={isSelected}
-                  onChange={handleInputChange}
-                  className="sr-only"
-                />
-                <span>{option}</span>
-              </label>
-            )
-          })}
         </div>
       </div>
 
@@ -460,14 +610,14 @@ const WaitlistForm = memo(function WaitlistForm() {
           </>
         ) : (
           <>
-            <span>Keep Me Updated</span>
+            <span>Join the Waitlist</span>
             <ArrowRight size={16} />
           </>
         )}
       </button>
 
       <p className="text-[11px] text-eco-muted text-center pt-1 font-mono">
-        Program dates & details are TBD. You'll be notified first.
+        Joining provides registration updates and does not reserve a place.
       </p>
     </form>
   )
@@ -522,7 +672,7 @@ export default function JrNbaAnnouncement() {
                 NEW FROM ECOHOOPS JR.
               </div>
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-eco-blue/15 border border-eco-blue/35 text-eco-blue-light text-xs font-mono font-bold uppercase tracking-wider">
-                Ages 5–6 Co-Ed • 7–9 & 10–11
+                Ages 5–6 (Co-Ed) • Ages 7–9 & 10–11 (Separate Groups)
               </div>
             </div>
 
@@ -534,19 +684,22 @@ export default function JrNbaAnnouncement() {
 
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
-              A fun, welcoming place for kids to play, learn, and grow (5–6 Co-Ed, 7–9 & 10–11 Girls ONLY + Boys).
+              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 Co-Ed, Ages 7–9 & 10–11 Separate Girls’ and Boys’ Groups).
             </p>
 
             {/* Body */}
             <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
               <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to our community, offered specifically across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (Co-Ed)</strong>, <strong className="text-white font-semibold">Ages 7–9 (Girls ONLY & Boys)</strong>, and <strong className="text-white font-semibold">Ages 10–11 (Girls ONLY & Boys)</strong>.
+                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a mid-October 2026 start across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, <strong className="text-white font-semibold">Ages 7–9 (separate girls’ and boys’ groups)</strong>, and <strong className="text-white font-semibold">Ages 10–11 (separate girls’ and boys’ groups)</strong>.
               </p>
               <p>
-                Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first.
+                Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first. Groups will run based on registration numbers.
               </p>
               <p className="text-white font-medium">
-                Program dates and details are still being finalized. Join the parent waitlist and be the first to know when registration opens.
+                Weekly session day and venue to be confirmed. (A school permit would most likely mean Friday; Saturday is another possibility under review. Churchill Meadows Community Centre is a possible venue, not a confirmed booking).
+              </p>
+              <p className="text-eco-muted-light text-sm">
+                Joining the waitlist provides registration updates and does not reserve a place.
               </p>
             </div>
 
@@ -632,7 +785,7 @@ export default function JrNbaAnnouncement() {
                     </span>
                   </div>
                   <h3 className="font-display text-xl sm:text-2xl text-white uppercase font-bold">
-                    Join the Parent Waitlist
+                    Join the Waitlist
                   </h3>
                 </div>
                 <div className="w-10 h-10 rounded-2xl bg-[#003366] border border-eco-blue/30 flex items-center justify-center text-eco-blue flex-shrink-0">

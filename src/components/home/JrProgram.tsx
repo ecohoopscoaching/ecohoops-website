@@ -31,13 +31,13 @@ export default function JrProgram() {
             </div>
           </div>
 
-          <span className="tag mb-4 inline-block">EcoHoops Jr. • Ages 5–6 Co-Ed, 7–9 & 10–11</span>
+          <span className="tag mb-4 inline-block">EcoHoops Jr. • Ages 5–6 (Co-Ed), Ages 7–9 & 10–11</span>
           <h2 className="font-display text-section uppercase tracking-tight mb-6">
             <span className="text-white">WHERE KIDS FALL IN LOVE </span>
             <span className="gradient-text">WITH BASKETBALL.</span>
           </h2>
           <p className="text-eco-muted-light text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-            Ages 5–11 across three divisions: 5–6 Co-Ed, 7–9 (Girls ONLY + Boys), and 10–11 (Girls ONLY + Boys). Our grassroots program designed to build foundational skills through play. Official Jr. NBA/WNBA gear kit and Canada Basketball membership included.
+            Ages 5–11 across three divisions: Ages 5–6 (co-ed), Ages 7–9 (separate girls’ and boys’ groups), and Ages 10–11 (separate girls’ and boys’ groups). Groups will run based on registration numbers. Official Jr. NBA/WNBA gear kit and Canada Basketball membership included.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/jr" className="btn-glow inline-flex items-center justify-center gap-2">
@@ -48,7 +48,7 @@ export default function JrProgram() {
               href="/#jr-nba-waitlist"
               className="btn-ghost inline-flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
             >
-              Join Jr. NBA Waitlist
+              Join the Waitlist
             </a>
           </div>
         </motion.div>
