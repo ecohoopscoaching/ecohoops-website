@@ -46,11 +46,11 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
   },
   player: {
     id: 'player-1',
-    name: 'Marcus Vance',
-    email: 'marcus.vance@ecohoops.ca',
+    name: 'Jacob Sagat',
+    email: 'jacob.sagat@ecohoops.ca',
     role: 'player',
-    teamId: 'u15-boys',
-    playerId: 'p1'
+    teamId: 'u15-boys-ss26',
+    playerId: 'b7-ss'
   }
 }
 

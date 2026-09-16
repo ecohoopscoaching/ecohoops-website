@@ -185,7 +185,7 @@ function OverviewTab() {
   }
 
   // Get active roster for next event
-  const activeTeamForNextEvent = teams.find(t => t.id === 'u15-boys') || teams[0]
+  const activeTeamForNextEvent = teams.find(t => t.id === 'u15-boys-ss26') || teams[0]
 
   return (
     <div className="space-y-8">
