@@ -12,9 +12,9 @@ import { blogService } from '../lib/blog-service'
 import { BLOG_POSTS } from '../data/blogs'
 import { BlogPost, ScheduleEvent } from '../types'
 import { 
-  WaitlistEntry, getStoredWaitlist, calculateWaitlistMetrics, exportWaitlistToCsv 
+  WaitlistEntry, getStoredWaitlist, calculateWaitlistMetrics, exportWaitlistToCsv, clearStoredWaitlist 
 } from '../data/waitlist'
-import { dispatchTeamNotification } from '../lib/email-service'
+import { dispatchTeamNotification, clearSentNotifications } from '../lib/email-service'
 import EventNotificationModal from '../components/schedule/EventNotificationModal'
 import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
 
@@ -105,13 +105,42 @@ export default function AdminDashboard() {
 }
 
 function OverviewTab({ onNavigateWaitlist }: { onNavigateWaitlist?: () => void }) {
-  const { teams, schedule } = useData()
+  const { teams, schedule, clearAllData } = useData()
   const totalPlayers = teams.reduce((acc, team) => acc + team.roster.length, 0)
-  const waitlistEntries = getStoredWaitlist()
+  const [waitlistEntries, setWaitlistEntries] = useState(() => getStoredWaitlist())
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
   const waitlistMetrics = calculateWaitlistMetrics(waitlistEntries)
+
+  const handleResetEverything = () => {
+    const ok = confirm(
+      'Are you sure you want to clear all data and start testing with a clean slate?\n\nThis will remove:\n- All waitlist submissions\n- All calendar events and test RSVPs\n- All sent notification history'
+    )
+    if (!ok) return
+    clearAllData()
+    clearStoredWaitlist()
+    clearSentNotifications()
+    setWaitlistEntries([])
+    setToastMessage('✓ Platform reset to 100% clean state. 0 fake records, ready for testing.')
+    setTimeout(() => setToastMessage(null), 5000)
+  }
 
   return (
     <div className="space-y-8">
+      {/* Toast Alert */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="p-4 rounded-xl bg-[#00D26A]/20 border border-[#00D26A]/40 text-[#00D26A] font-heading font-semibold text-sm flex items-center justify-between shadow-glow-sm"
+          >
+            <span>{toastMessage}</span>
+            <button onClick={() => setToastMessage(null)} className="text-white hover:text-eco-muted ml-2">✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           { label: 'Real Waitlist Leads', value: waitlistMetrics.realSubmissions, icon: Sparkles, color: '#00D26A' },
@@ -135,14 +164,37 @@ function OverviewTab({ onNavigateWaitlist }: { onNavigateWaitlist?: () => void }
         ))}
       </div>
       
+      {/* Testing Mode & Reset Banner */}
+      <div className="glow-card p-6 border border-emerald-500/30 bg-emerald-950/15 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="text-emerald-400" size={18} />
+            <h3 className="font-heading font-bold text-lg text-white">Testing Mode: Clean Slate Active</h3>
+          </div>
+          <p className="text-eco-muted-light text-sm max-w-2xl">
+            All fake baseline records and mock events have been cleared. All leads submitted via the waitlist form and all scheduled events created will be 100% real.
+          </p>
+        </div>
+        <button
+          onClick={handleResetEverything}
+          className="px-4 py-2.5 rounded-xl bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 text-red-300 text-xs font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer flex-shrink-0 shadow-glow-sm"
+        >
+          <Trash2 size={14} />
+          <span>Reset / Clear All Stored Data</span>
+        </button>
+      </div>
+
       <div className="glow-card p-6 border border-eco-blue/20 bg-eco-surface rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Sparkles className="text-eco-blue" size={18} />
-            <h3 className="font-heading font-bold text-lg text-white">Jr. NBA / Jr. WNBA Waitlist Active</h3>
+            <h3 className="font-heading font-bold text-lg text-white">Jr. NBA / Jr. WNBA Waitlist Ready</h3>
           </div>
           <p className="text-eco-muted-light text-sm max-w-2xl">
-            {waitlistMetrics.realSubmissions} real parent leads received across {waitlistMetrics.uniqueParentContacts} unique families. 1 test record excluded. Missing historical fields displayed as "Not provided".
+            {waitlistMetrics.realSubmissions === 0 
+              ? 'Currently 0 waitlist leads. Submit a test registration from the homepage to verify the complete parent confirmation and admin sync flow.'
+              : `${waitlistMetrics.realSubmissions} real parent leads received across ${waitlistMetrics.uniqueParentContacts} unique families.`
+            }
           </p>
         </div>
         {onNavigateWaitlist && (
@@ -154,16 +206,6 @@ function OverviewTab({ onNavigateWaitlist }: { onNavigateWaitlist?: () => void }
             <ChevronRight size={14} />
           </button>
         )}
-      </div>
-
-      <div className="glow-card p-6 border border-eco-border bg-eco-surface rounded-2xl">
-        <div className="flex items-center gap-3 mb-4">
-          <Shield className="text-eco-blue" size={20} />
-          <h3 className="font-heading font-bold text-lg text-white">Live Data System Active</h3>
-        </div>
-        <p className="text-eco-muted-light">
-          Welcome to the EcoHoops Command Center. Roster management and event planning changes are immediately written to local storage and propagate across all public sections of the web application (Schedule, Teams, and Player Profiles).
-        </p>
       </div>
     </div>
   )
@@ -181,6 +223,13 @@ function WaitlistTab() {
   }, [])
 
   const metrics = calculateWaitlistMetrics(entries)
+
+  const handleClearWaitlist = () => {
+    const ok = confirm('Are you sure you want to clear all waitlist entries and reset to 0?')
+    if (!ok) return
+    clearStoredWaitlist()
+    setEntries([])
+  }
 
   const filteredEntries = entries.filter((entry) => {
     if (filterAge !== 'All' && entry.ageGroup !== filterAge) return false
@@ -224,7 +273,7 @@ function WaitlistTab() {
             <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Total Subs</span>
           </div>
           <p className="font-display text-2xl sm:text-3xl text-white">{metrics.totalSubmissions}</p>
-          <p className="text-[10px] text-eco-muted mt-1">Includes 1 test entry</p>
+          <p className="text-[10px] text-eco-muted mt-1">Live submissions</p>
         </div>
 
         <div className="stat-card border-emerald-500/30">
@@ -235,7 +284,7 @@ function WaitlistTab() {
             <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-mono">Real Leads</span>
           </div>
           <p className="font-display text-2xl sm:text-3xl text-emerald-300">{metrics.realSubmissions}</p>
-          <p className="text-[10px] text-eco-muted mt-1">Adrian test excluded</p>
+          <p className="text-[10px] text-eco-muted mt-1">Verified registrations</p>
         </div>
 
         <div className="stat-card">
@@ -257,162 +306,156 @@ function WaitlistTab() {
             <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Est. Children</span>
           </div>
           <p className="font-display text-2xl sm:text-3xl text-white">
-            {metrics.estimatedChildrenMin === metrics.estimatedChildrenMax 
-              ? metrics.estimatedChildrenMin 
+            {metrics.estimatedChildrenMin === metrics.estimatedChildrenMax
+              ? metrics.estimatedChildrenMin
               : `${metrics.estimatedChildrenMin}–${metrics.estimatedChildrenMax}`}
           </p>
-          <p className="text-[10px] text-eco-muted mt-1">Unresolved sibling count</p>
+          <p className="text-[10px] text-eco-muted mt-1">Player pipeline</p>
         </div>
 
         <div className="stat-card">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400">
-              <Shield size={15} />
+            <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400">
+              <CalendarDays size={15} />
             </div>
-            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Paid Regs</span>
+            <span className="text-[11px] text-eco-muted uppercase tracking-wider font-mono">Ages 5–6</span>
           </div>
-          <p className="font-display text-2xl sm:text-3xl text-white">{metrics.paidRegistrations}</p>
-          <p className="text-[10px] text-eco-muted mt-1">Waitlist distinct from paid</p>
+          <p className="font-display text-2xl sm:text-3xl text-white">
+            {metrics.divisionBreakdown['Ages 5–6']}
+          </p>
+          <p className="text-[10px] text-eco-muted mt-1">Active age division</p>
         </div>
       </div>
 
-      {/* DIVISION BREAKDOWN STRIP */}
-      <div className="p-4 rounded-2xl bg-eco-surface border border-eco-border flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-eco-muted">
-            Division Breakdown (Real Leads):
-          </span>
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="px-3 py-1 rounded-xl bg-eco-blue/15 border border-eco-blue/30 text-eco-blue-light font-heading font-bold">
-              Ages 5–6 (Co-Ed): {metrics.divisionBreakdown['Ages 5–6']}
-            </span>
-            <span className="px-3 py-1 rounded-xl bg-[#003366]/40 border border-[#97B3D2]/30 text-[#97B3D2] font-heading font-bold">
-              Ages 7–9: {metrics.divisionBreakdown['Ages 7–9']}
-            </span>
-            <span className="px-3 py-1 rounded-xl bg-eco-surface2 border border-eco-border text-eco-muted font-heading font-bold">
-              Ages 10–11: {metrics.divisionBreakdown['Ages 10–11']}
-            </span>
-          </div>
+      {/* LIVE TESTING STATUS BANNER */}
+      <div className="p-4 rounded-2xl bg-eco-surface2 border border-eco-border text-xs text-eco-muted-light flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Sparkles size={16} className="text-emerald-400 flex-shrink-0" />
+          <span><strong>Live Testing Ready:</strong> 0 fake records. When parents submit the Jr. NBA / Jr. WNBA waitlist form on the website, their submissions will appear here instantly.</span>
         </div>
-        <div className="text-xs text-eco-muted font-mono">
-          Programs run based on registration numbers
-        </div>
-      </div>
-
-      {/* AUDIT & RECONCILIATION EXPLANATION ALERT */}
-      <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs sm:text-sm text-amber-200/90 space-y-2">
-        <div className="flex items-center gap-2 font-bold text-amber-300">
-          <AlertTriangle size={17} className="flex-shrink-0" />
-          <span>Audit Reconciliation & Child Count Uncertainty Notice</span>
-        </div>
-        <p className="leading-relaxed">
-          • <strong>5 Submissions in Total:</strong> 1 submission from “Dre” was Adrian testing (marked <span className="font-mono text-amber-400 font-bold">TEST</span> and excluded from real metrics).<br />
-          • <strong>4 Real Submissions across 3 Unique Parent Contacts:</strong> One parent submitted twice (once for Ages 5–6 and once for Ages 7–9). These are preserved as separate records representing either 2 sibling children or a correction; they are flagged with uncertainty and not merged or deleted.<br />
-          • <strong>Historical Fields:</strong> For historical records submitted prior to today's form update, missing fields (days available, group preference, neighbourhood) are clearly displayed as <span className="font-mono italic text-eco-muted">Not provided</span>.<br />
-          • <strong>Attribution:</strong> Historical records are organic and not attributed to Meta ads.
-        </p>
+        {entries.length > 0 && (
+          <button
+            onClick={handleClearWaitlist}
+            className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 text-xs font-heading font-semibold flex items-center gap-1.5 transition-all cursor-pointer self-start sm:self-auto flex-shrink-0"
+          >
+            <Trash2 size={13} />
+            <span>Clear Waitlist</span>
+          </button>
+        )}
       </div>
 
       {/* SEARCH, FILTERS & ACTION CONTROLS */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Age group filter */}
-          <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
-            {['All', 'Ages 5–6', 'Ages 7–9', 'Ages 10–11'].map((age) => (
-              <button
-                key={age}
-                onClick={() => setFilterAge(age)}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  filterAge === age
-                    ? 'bg-eco-blue text-eco-black font-bold shadow-sm'
-                    : 'text-eco-muted hover:text-white'
-                }`}
-              >
-                {age}
-              </button>
-            ))}
+      {entries.length > 0 && (
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Age group filter */}
+            <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
+              {['All', 'Ages 5–6', 'Ages 7–9', 'Ages 10–11'].map((age) => (
+                <button
+                  key={age}
+                  onClick={() => setFilterAge(age)}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    filterAge === age
+                      ? 'bg-eco-blue text-eco-black font-bold shadow-sm'
+                      : 'text-eco-muted hover:text-white'
+                  }`}
+                >
+                  {age}
+                </button>
+              ))}
+            </div>
+
+            {/* Status filter */}
+            <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
+              {(['All', 'Real', 'Test'] as const).map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setFilterStatus(st)}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    filterStatus === st
+                      ? 'bg-[#003366] text-white font-bold shadow-sm'
+                      : 'text-eco-muted hover:text-white'
+                  }`}
+                >
+                  {st === 'All' ? 'All Records' : st === 'Real' ? 'Real Leads' : 'Tests'}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Status filter */}
-          <div className="flex items-center gap-1 bg-eco-surface border border-eco-border rounded-xl p-1 text-xs font-heading">
-            {(['All', 'Real', 'Test'] as const).map((st) => (
-              <button
-                key={st}
-                onClick={() => setFilterStatus(st)}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  filterStatus === st
-                    ? 'bg-[#003366] text-white font-bold shadow-sm'
-                    : 'text-eco-muted hover:text-white'
-                }`}
-              >
-                {st === 'All' ? 'All Records' : st === 'Real' ? 'Real Leads' : 'Tests'}
-              </button>
-            ))}
+          {/* Search & Export Actions */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 sm:w-64">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search parent, email, area..."
+                className="w-full bg-eco-surface border border-eco-border rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-eco-muted/60 focus:outline-none focus:border-eco-blue"
+              />
+            </div>
+
+            <button
+              onClick={handleCopyEmails}
+              className="px-3.5 py-2 rounded-xl bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white text-xs font-heading font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Copy real parent email addresses"
+            >
+              {copiedEmails ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+              <span>{copiedEmails ? 'Copied!' : 'Copy Emails'}</span>
+            </button>
+
+            <button
+              onClick={handleExportCsv}
+              className="btn-glow text-xs !py-2 !px-4 flex items-center gap-1.5 cursor-pointer"
+              title="Download CSV of filtered entries"
+            >
+              <Download size={14} />
+              <span>Export CSV</span>
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Search & Export Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 sm:w-64">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search parent, email, area..."
-              className="w-full bg-eco-surface border border-eco-border rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-eco-muted/60 focus:outline-none focus:border-eco-blue"
-            />
-          </div>
-
-          <button
-            onClick={handleCopyEmails}
-            className="px-3.5 py-2 rounded-xl bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white text-xs font-heading font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Copy real parent email addresses"
+      {/* SUBMISSIONS TABLE OR CLEAN STATE */}
+      {entries.length === 0 ? (
+        <div className="p-12 text-center rounded-2xl bg-eco-surface border border-eco-border">
+          <Sparkles size={36} className="mx-auto text-emerald-400 mb-3 opacity-60" />
+          <h3 className="font-heading font-bold text-lg text-white mb-2">Waitlist is Clean & Ready for Testing</h3>
+          <p className="text-xs text-eco-muted max-w-md mx-auto mb-4">
+            0 fake baseline records. Submit a registration using the Jr. NBA / Jr. WNBA form on the homepage and watch the real lead, automated parent email, and admin metrics update in real time.
+          </p>
+          <a
+            href="/#waitlist"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-glow text-xs inline-flex items-center gap-2"
           >
-            {copiedEmails ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-            <span>{copiedEmails ? 'Copied!' : 'Copy Emails'}</span>
-          </button>
-
-          <button
-            onClick={handleExportCsv}
-            className="btn-glow text-xs !py-2 !px-4 flex items-center gap-1.5 cursor-pointer"
-            title="Download CSV of filtered entries"
-          >
-            <Download size={14} />
-            <span>Export CSV</span>
-          </button>
+            <span>Open Jr. NBA Waitlist Form →</span>
+          </a>
         </div>
-      </div>
-
-      {/* SUBMISSIONS TABLE */}
-      <div className="glow-card overflow-hidden bg-eco-surface border border-eco-border rounded-2xl">
-        <div className="overflow-x-auto scrollbar-thin">
-          <table className="w-full text-left text-xs text-eco-muted-light">
-            <thead className="bg-[#050B14] border-b border-eco-border text-[10px] font-mono uppercase tracking-wider text-eco-muted">
-              <tr>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Parent / Guardian</th>
-                <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Division & Group</th>
-                <th className="py-3 px-4">Days Available</th>
-                <th className="py-3 px-4">Neighbourhood</th>
-                <th className="py-3 px-4">Kids</th>
-                <th className="py-3 px-4">Source & Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-eco-border/60">
-              {filteredEntries.length === 0 ? (
+      ) : (
+        <div className="glow-card overflow-hidden bg-eco-surface border border-eco-border rounded-2xl">
+          <div className="overflow-x-auto scrollbar-thin">
+            <table className="w-full text-left text-xs text-eco-muted-light">
+              <thead className="bg-[#050B14] border-b border-eco-border text-[10px] font-mono uppercase tracking-wider text-eco-muted">
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-eco-muted">
-                    No waitlist submissions match your current filters.
-                  </td>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Parent / Guardian</th>
+                  <th className="py-3 px-4">Phone</th>
+                  <th className="py-3 px-4">Division & Group</th>
+                  <th className="py-3 px-4">Days Available</th>
+                  <th className="py-3 px-4">Neighbourhood</th>
+                  <th className="py-3 px-4">Kids</th>
+                  <th className="py-3 px-4">Source & Date</th>
                 </tr>
-              ) : (
-                filteredEntries.map((entry) => (
+              </thead>
+              <tbody className="divide-y divide-eco-border">
+                {entries.map((entry) => (
                   <tr
                     key={entry.id}
-                    className={`hover:bg-eco-surface2/50 transition-colors ${
-                      entry.isTest ? 'bg-amber-500/5' : ''
+                    className={`hover:bg-eco-surface2/60 transition-colors ${
+                      entry.isTest ? 'bg-amber-500/[0.02]' : ''
                     }`}
                   >
                     {/* Status */}
@@ -495,12 +538,12 @@ function WaitlistTab() {
                       <div className="text-[10px] font-mono text-eco-muted">{entry.submissionTime}</div>
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>
       </div>
+      )}
     </div>
   )
 }
@@ -914,7 +957,7 @@ function TeamsTab() {
 }
 
 function ScheduleTab() {
-  const { teams, schedule, addEvent, deleteEvent, updateEvent } = useData()
+  const { teams, schedule, addEvent, deleteEvent, updateEvent, clearSchedule } = useData()
   const navigate = useNavigate()
   const [showAddForm, setShowAddForm] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -1037,6 +1080,20 @@ function ScheduleTab() {
           <p className="text-xs text-eco-muted">Manage games, practices, and automated email updates for each rep squad.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          {schedule.length > 0 && (
+            <button
+              onClick={() => {
+                if (window.confirm(`Clear all ${schedule.length} scheduled event(s)? This will reset your testing calendar.`)) {
+                  clearSchedule()
+                  setToastMessage('✓ All scheduled events have been cleared.')
+                  setTimeout(() => setToastMessage(null), 3500)
+                }
+              }}
+              className="px-3.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Trash2 size={13} /> Clear Schedule ({schedule.length})
+            </button>
+          )}
           <button
             onClick={() => setShowEmergencyBroadcast(true)}
             className="px-4 py-2 rounded-xl bg-red-500/15 border border-red-500/35 text-red-300 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-red-500/25 transition-all cursor-pointer shadow-glow-sm"
@@ -1362,7 +1419,22 @@ function ScheduleTab() {
               )
             })
           ) : (
-            <p className="text-xs text-eco-muted p-8 text-center bg-eco-surface">No events found in calendar.</p>
+            <div className="py-16 px-6 text-center bg-eco-surface">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#97B3D2]/10 border border-[#97B3D2]/20 flex items-center justify-center text-[#97B3D2]">
+                <Calendar size={28} />
+              </div>
+              <h4 className="text-lg font-heading font-bold text-white mb-2">Schedule is 100% Clean & Empty</h4>
+              <p className="text-sm text-eco-muted-light max-w-md mx-auto mb-6">
+                All mock events have been purged. You can schedule games or practices below — when you create an event, automated email notifications will dispatch to real team contacts!
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                className="btn-glow inline-flex items-center gap-2 text-sm !px-6 !py-2.5"
+              >
+                <Plus size={16} /> Create First Event & Test Alert
+              </button>
+            </div>
           )}
         </div>
       </div>

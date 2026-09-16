@@ -203,10 +203,22 @@ export default function Schedule() {
         )}
 
         {schedule.length === 0 && (
-          <div className="text-center py-20">
-            <Calendar className="mx-auto text-eco-muted mb-4" size={48} />
-            <h3 className="text-xl font-heading font-bold text-white mb-2">No Upcoming Events</h3>
-            <p className="text-eco-muted-light">The schedule is currently being finalized.</p>
+          <div className="text-center py-20 max-w-lg mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-eco-surface border border-eco-border flex items-center justify-center mx-auto mb-4 text-[#97B3D2]">
+              <Calendar size={32} />
+            </div>
+            <h3 className="text-xl font-heading font-bold text-white mb-2">No Scheduled Events</h3>
+            <p className="text-eco-muted-light text-sm mb-6">
+              The schedule is currently being finalized for the upcoming season. Check back soon or download the iCal feed to stay synced.
+            </p>
+            {(isAdmin || isCoach) && (
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="btn-glow inline-flex items-center gap-2 text-sm !px-6 !py-2.5"
+              >
+                <Plus size={16} /> Add Schedule Event
+              </button>
+            )}
           </div>
         )}
 

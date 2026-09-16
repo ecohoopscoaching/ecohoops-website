@@ -71,12 +71,7 @@ export const TEAMS: Team[] = [
       }
     ],
     parentContacts: [
-      { id: 'p-jenk', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Maya Jenkins', linkedPlayerNumber: 7 },
-      { id: 'p-bark', name: 'David Barker', email: 'david.barker@example.com', phone: '(905) 555-2244', linkedPlayerName: 'Charlotte Barker', linkedPlayerNumber: 8 },
-      { id: 'p-elmo', name: 'Fatima Elmorshedy', email: 'fatima.e@example.com', phone: '(647) 555-4819', linkedPlayerName: 'Joury Elmorshedy', linkedPlayerNumber: 5 },
-      { id: 'p-quar', name: 'Mark Quarrington', email: 'mark.q@example.com', phone: '(905) 555-7312', linkedPlayerName: 'Quinn Quarrington', linkedPlayerNumber: 22 },
-      { id: 'p-azna', name: 'Jennifer Aznar', email: 'jennifer.a@example.com', phone: '(416) 555-6671', linkedPlayerName: 'Calista Aznar', linkedPlayerNumber: 12 },
-      { id: 'p-khaw', name: 'Tariq Khawja', email: 'tariq.k@example.com', phone: '(647) 555-3810', linkedPlayerName: 'Layla Khawja', linkedPlayerNumber: 10 }
+      { id: 'p-adrian-test', name: 'Adrian Sapp (Parent / Test Contact)', email: 'ecohoopscoaching@gmail.com', phone: '(647) 555-0194', linkedPlayerName: 'Alisha Sapp', linkedPlayerNumber: 3 }
     ]
   },
   {
@@ -129,11 +124,7 @@ export const TEAMS: Team[] = [
       }
     ],
     parentContacts: [
-      { id: 'p-jenk-b', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Leo Jenkins', linkedPlayerNumber: 12 },
-      { id: 'p-saga', name: 'Robert Sagat', email: 'robert.sagat@example.com', phone: '(905) 555-8812', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 },
-      { id: 'p-siso', name: 'Elena Sison', email: 'elena.sison@example.com', phone: '(647) 555-1940', linkedPlayerName: 'Ryder Sison', linkedPlayerNumber: 8 },
-      { id: 'p-uppa', name: 'Manpreet Uppal', email: 'm.uppal@example.com', phone: '(416) 555-4429', linkedPlayerName: 'Josh Uppal', linkedPlayerNumber: 13 },
-      { id: 'p-bhat', name: 'Harjit Bhathal', email: 'h.bhathal@example.com', phone: '(905) 555-7731', linkedPlayerName: 'Adole Bhathal', linkedPlayerNumber: 15 }
+      { id: 'p-adrian-test-b', name: 'Adrian Sapp (Parent / Test Contact)', email: 'ecohoopscoaching@gmail.com', phone: '(647) 555-0194', linkedPlayerName: 'Jordan McNally Romero', linkedPlayerNumber: 5 }
     ]
   },
   {
@@ -181,22 +172,7 @@ export const TEAMS: Team[] = [
         certifications: ['NCCP Trained', 'Safe Sport Certified']
       }
     ],
-    parentContacts: [
-      { id: 'p-jenk-w', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Maya Jenkins', linkedPlayerNumber: 7 },
-      { id: 'p-bark-w', name: 'David Barker', email: 'david.barker@example.com', phone: '(905) 555-2244', linkedPlayerName: 'Charlotte Barker', linkedPlayerNumber: 8 },
-      { id: 'p-elmo-w', name: 'Fatima Elmorshedy', email: 'fatima.e@example.com', phone: '(647) 555-4819', linkedPlayerName: 'Joury Elmorshedy', linkedPlayerNumber: 5 }
-    ],
-    nextGame: {
-      id: 'g2',
-      type: 'game',
-      title: 'vs Hamilton Flames',
-      date: '2026-04-05',
-      time: '10:00 AM',
-      location: 'David Braley Centre, Hamilton',
-      opponent: 'Hamilton Flames',
-      homeAway: 'away',
-      rsvp: { going: 11, maybe: 1, notGoing: 0, total: 12 },
-    },
+    parentContacts: []
   },
   {
     id: 'u15-boys',
@@ -233,21 +209,6 @@ export const TEAMS: Team[] = [
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR']
       }
     ],
-    parentContacts: [
-      { id: 'p-jenk-bw', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Leo Jenkins', linkedPlayerNumber: 12 },
-      { id: 'p-saga-w', name: 'Robert Sagat', email: 'robert.sagat@example.com', phone: '(905) 555-8812', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 }
-    ],
-    nextGame: {
-      id: 'g1',
-      type: 'game',
-      title: 'vs Raptors Prep',
-      date: '2026-04-06',
-      time: '2:00 PM',
-      location: 'Hershey Centre, Mississauga',
-      opponent: 'Raptors Prep',
-      homeAway: 'home',
-      rsvp: { going: 10, maybe: 1, notGoing: 1, total: 12 },
-    },
+    parentContacts: []
   },
-
 ]

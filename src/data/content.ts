@@ -157,56 +157,9 @@ export const TESTIMONIALS: Testimonial[] = [
 ]
 
 
-export const MESSAGES: Message[] = [
-  {
-    id: 'm1',
-    sender: 'Coach Adrian',
-    content: 'Great energy at practice today! Remember — Friday Night Hoops is this week. Bring a friend! 🏀',
-    timestamp: '2 hours ago',
-    channel: 'general',
-    unread: true,
-  },
-  {
-    id: 'm2',
-    sender: 'Kendy M.',
-    content: 'Miles won\'t be at Saturday\'s game — family event. Sorry for the late notice!',
-    timestamp: '4 hours ago',
-    channel: '2011-boys',
-    unread: true,
-  },
-  {
-    id: 'm3',
-    sender: 'Coach Adrian',
-    content: 'Spring Classic tournament schedule is up. Check the Schedule tab for game times and locations.',
-    timestamp: 'Yesterday',
-    channel: 'general',
-  },
-  {
-    id: 'm4',
-    sender: 'Meghan R.',
-    content: 'Can we get the practice plan for this week? Want to work on some stuff at home.',
-    timestamp: 'Yesterday',
-    channel: '2012-girls',
-  },
-  {
-    id: 'm5',
-    sender: 'System',
-    content: 'Payment reminder: Spring season fees due by April 15th.',
-    timestamp: '2 days ago',
-    channel: 'payments',
-  },
-]
+export const MESSAGES: Message[] = []
 
-export const PAYMENTS: PaymentRecord[] = [
-  { id: 'p1', player: 'Miles Carter', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p2', player: 'Jaylen Brooks', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p3', player: 'Kai Thompson', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
-  { id: 'p4', player: 'Darius Mitchell', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
-  { id: 'p5', player: 'Nico Alvarez', amount: 1950, status: 'overdue', dueDate: '2026-03-01', description: 'Spring Season Registration' },
-  { id: 'p6', player: 'Ava Richardson', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p7', player: 'Maya Chen', amount: 1950, status: 'paid', dueDate: '2026-03-15', description: 'Spring Season Registration' },
-  { id: 'p8', player: 'Sophia Grant', amount: 1950, status: 'pending', dueDate: '2026-04-15', description: 'Spring Season Registration' },
-]
+export const PAYMENTS: PaymentRecord[] = []
 
 export const PHILOSOPHY_CONTENT = {
   founder: {

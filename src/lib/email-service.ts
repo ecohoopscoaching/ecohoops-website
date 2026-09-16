@@ -51,6 +51,17 @@ export function recordNotification(notification: EmailNotification) {
 }
 
 /**
+ * Completely clear dispatched notification history
+ */
+export function clearSentNotifications() {
+  try {
+    localStorage.removeItem(NOTIFICATIONS_STORAGE_KEY)
+  } catch (err) {
+    console.error('Failed to clear notifications', err)
+  }
+}
+
+/**
  * Generate formatted HTML template for EcoHoops team emails
  */
 export function generateEmailHtml(params: DispatchNotificationParams): { subject: string; body: string } {

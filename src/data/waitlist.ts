@@ -41,92 +41,8 @@ export interface WaitlistMetrics {
 
 export const WAITLIST_STORAGE_KEY = 'ecohoops_jr_waitlist'
 
-// Reconciled Baseline records from Adrian's latest audit (5 submissions total, 1 test, 4 real across 3 unique parents)
-export const BASELINE_WAITLIST_ENTRIES: WaitlistEntry[] = [
-  {
-    id: 'base-test-dre',
-    parentName: 'Dre',
-    email: 'ecohoopscoaching@gmail.com',
-    phone: 'Not provided',
-    ageGroup: 'Ages 5–6',
-    groupPreference: 'Co-ed',
-    daysAvailable: 'Not provided',
-    neighbourhood: 'Not provided',
-    childCount: '1',
-    programInterest: 'Jr. NBA',
-    consent: true,
-    submissionTime: '2026-08-28 14:15:00 EDT',
-    source: 'Direct (Internal Test)',
-    isTest: true,
-    uncertaintyFlag: 'Adrian Test Submission (Excluded from real lead totals)',
-  },
-  {
-    id: 'base-lead-01',
-    parentName: 'Parent Contact 1',
-    email: 'parent1@example.com',
-    phone: 'Not provided',
-    ageGroup: 'Ages 5–6',
-    groupPreference: 'Co-ed',
-    daysAvailable: 'Not provided',
-    neighbourhood: 'Not provided',
-    childCount: '1',
-    programInterest: 'Jr. NBA',
-    consent: true,
-    submissionTime: '2026-08-29 10:20:00 EDT',
-    source: 'Website organic',
-    isTest: false,
-  },
-  {
-    id: 'base-lead-02-a',
-    parentName: 'Parent Contact 2',
-    email: 'parent2-multichild@example.com',
-    phone: 'Not provided',
-    ageGroup: 'Ages 5–6',
-    groupPreference: 'Co-ed',
-    daysAvailable: 'Not provided',
-    neighbourhood: 'Not provided',
-    childCount: '1',
-    programInterest: 'Jr. NBA',
-    consent: true,
-    submissionTime: '2026-08-30 16:05:00 EDT',
-    source: 'Website organic',
-    isTest: false,
-    uncertaintyFlag: 'Parent submitted separate forms for 5–6 and 7–9; may represent 2 siblings or an age correction.',
-  },
-  {
-    id: 'base-lead-02-b',
-    parentName: 'Parent Contact 2',
-    email: 'parent2-multichild@example.com',
-    phone: 'Not provided',
-    ageGroup: 'Ages 7–9',
-    groupPreference: 'Not provided',
-    daysAvailable: 'Not provided',
-    neighbourhood: 'Not provided',
-    childCount: '1',
-    programInterest: 'Jr. NBA',
-    consent: true,
-    submissionTime: '2026-08-30 16:12:00 EDT',
-    source: 'Website organic',
-    isTest: false,
-    uncertaintyFlag: 'Parent submitted separate forms for 5–6 and 7–9; may represent 2 siblings or an age correction.',
-  },
-  {
-    id: 'base-lead-03',
-    parentName: 'Parent Contact 3',
-    email: 'parent3@example.com',
-    phone: 'Not provided',
-    ageGroup: 'Ages 5–6',
-    groupPreference: 'Co-ed',
-    daysAvailable: 'Not provided',
-    neighbourhood: 'Not provided',
-    childCount: '1',
-    programInterest: 'Not Sure Yet',
-    consent: true,
-    submissionTime: '2026-09-01 11:45:00 EDT',
-    source: 'Website organic',
-    isTest: false,
-  },
-]
+// Clean baseline — 0 fake records. Real submissions will populate here as parents register.
+export const BASELINE_WAITLIST_ENTRIES: WaitlistEntry[] = []
 
 /**
  * Parses UTM and Meta Click ID (fbclid) tracking parameters from URL search params
@@ -146,39 +62,53 @@ export function getTrackingParams(): Record<string, string> {
 }
 
 /**
- * Retrieve waitlist entries from localStorage, seeding baseline if empty.
- * Normalizes any historical payloads if stored under legacy format.
+ * Retrieve waitlist entries from localStorage.
+ * Automatically purges any legacy fake mock records so testing begins with a clean slate.
  */
 export function getStoredWaitlist(): WaitlistEntry[] {
-  if (typeof window === 'undefined') return BASELINE_WAITLIST_ENTRIES
+  if (typeof window === 'undefined') return []
 
   try {
-    const raw = localStorage.getItem(WAITLIST_STORAGE_KEY)
-    if (!raw) {
-      localStorage.setItem(WAITLIST_STORAGE_KEY, JSON.stringify(BASELINE_WAITLIST_ENTRIES))
-      return BASELINE_WAITLIST_ENTRIES
+    // One-time automatic purge of legacy fake mock records
+    const cleanMigrationKey = 'ecohoops_waitlist_cleaned_v3'
+    if (!localStorage.getItem(cleanMigrationKey)) {
+      localStorage.removeItem(WAITLIST_STORAGE_KEY)
+      localStorage.setItem(cleanMigrationKey, 'true')
+      return []
     }
+
+    const raw = localStorage.getItem(WAITLIST_STORAGE_KEY)
+    if (!raw) return []
 
     const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      localStorage.setItem(WAITLIST_STORAGE_KEY, JSON.stringify(BASELINE_WAITLIST_ENTRIES))
-      return BASELINE_WAITLIST_ENTRIES
-    }
+    if (!Array.isArray(parsed)) return []
 
-    // Merge baseline records with any newly stored records if not already present
-    const existingIds = new Set(parsed.map((item: any) => item.id))
-    const merged = [...parsed]
-    BASELINE_WAITLIST_ENTRIES.forEach((baseline) => {
-      if (!existingIds.has(baseline.id)) {
-        merged.unshift(baseline)
-      }
+    // Filter out any lingering legacy fake baseline entries
+    const filtered = parsed.filter((item: any) => {
+      const isFake = (
+        !item.id ||
+        item.id.startsWith('base-lead-') ||
+        item.id === 'base-test-dre' ||
+        item.email === 'parent1@example.com' ||
+        item.email === 'parent2-multichild@example.com' ||
+        item.email === 'parent3@example.com'
+      )
+      return !isFake
     })
 
-    return merged.map(normalizeWaitlistEntry)
+    return filtered.map(normalizeWaitlistEntry)
   } catch (err) {
     console.error('Error reading waitlist from localStorage:', err)
-    return BASELINE_WAITLIST_ENTRIES
+    return []
   }
+}
+
+/**
+ * Completely clears all waitlist records from localStorage
+ */
+export function clearStoredWaitlist(): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(WAITLIST_STORAGE_KEY, JSON.stringify([]))
 }
 
 /**

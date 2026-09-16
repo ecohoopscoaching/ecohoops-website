@@ -23,6 +23,8 @@ interface DataContextType {
   downloadCalendarIcs: (calendarTitle?: string) => void
   sendMessage: (channel: string, content: string, sender: string) => void
   updatePaymentStatus: (paymentId: string, status: PaymentRecord['status']) => void
+  clearSchedule: () => void
+  clearAllData: () => void
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
@@ -36,7 +38,7 @@ export function useData() {
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  // Try to load initial state from localStorage, fallback to static data files
+  // Clean state: Load user-saved state from localStorage or initialize clean
   const [teams, setTeams] = useState<Team[]>(() => {
     const saved = localStorage.getItem('ecohoops_teams_v2')
     return saved ? JSON.parse(saved) : TEAMS
@@ -44,20 +46,43 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const [schedule, setSchedule] = useState<ScheduleEvent[]>(() => {
     const saved = localStorage.getItem('ecohoops_schedule')
-    return saved ? JSON.parse(saved) : SCHEDULE
+    if (!saved) return []
+    try {
+      const parsed: ScheduleEvent[] = JSON.parse(saved)
+      // Filter out any legacy mock events with IDs like e1..e19
+      return parsed.filter(e => !e.id || !e.id.match(/^e\d+$/))
+    } catch {
+      return []
+    }
   })
 
   const [payments, setPayments] = useState<PaymentRecord[]>(() => {
     const saved = localStorage.getItem('ecohoops_payments')
-    return saved ? JSON.parse(saved) : PAYMENTS
+    return saved ? JSON.parse(saved) : []
   })
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem('ecohoops_messages')
-    return saved ? JSON.parse(saved) : MESSAGES
+    return saved ? JSON.parse(saved) : []
   })
 
-
+  // One-time automated purge of legacy mock data so client testing starts on a 100% clean slate
+  useEffect(() => {
+    const cleanFlagKey = 'ecohoops_clean_baseline_v4'
+    if (!localStorage.getItem(cleanFlagKey)) {
+      localStorage.removeItem('ecohoops_schedule')
+      localStorage.removeItem('ecohoops_payments')
+      localStorage.removeItem('ecohoops_messages')
+      localStorage.removeItem('ecohoops_jr_waitlist')
+      localStorage.removeItem('ecohoops_sent_notifications_v1')
+      localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
+      localStorage.setItem(cleanFlagKey, 'true')
+      setSchedule([])
+      setPayments([])
+      setMessages([])
+      setTeams(TEAMS)
+    }
+  }, [])
 
   // Synchronize state changes to localStorage
   useEffect(() => {
@@ -75,6 +100,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem('ecohoops_messages', JSON.stringify(messages))
   }, [messages])
+
+  const clearAllData = () => {
+    localStorage.removeItem('ecohoops_schedule')
+    localStorage.removeItem('ecohoops_payments')
+    localStorage.removeItem('ecohoops_messages')
+    localStorage.removeItem('ecohoops_jr_waitlist')
+    localStorage.removeItem('ecohoops_sent_notifications_v1')
+    localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
+    setSchedule([])
+    setPayments([])
+    setMessages([])
+    setTeams(TEAMS)
+  }
+
+  const clearSchedule = () => {
+    localStorage.removeItem('ecohoops_schedule')
+    setSchedule([])
+  }
 
   /* ─── SCHEDULE MODIFIERS ─── */
   const addEvent = (event: ScheduleEvent) => {
@@ -395,6 +438,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     downloadCalendarIcs,
     sendMessage,
     updatePaymentStatus,
+    clearSchedule,
+    clearAllData,
   }
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>

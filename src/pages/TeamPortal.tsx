@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   Calendar, Users, Shield, Clock, MapPin, CheckCircle2,
   AlertTriangle, Mail, Phone, ChevronRight, Download, Send,
-  Sparkles, Bell, ExternalLink, Info, Filter, ArrowRight, UserCheck, X
+  Sparkles, Bell, ExternalLink, Info, Filter, ArrowRight, UserCheck, X, Plus
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useData } from '../contexts/DataContext'
@@ -378,8 +378,16 @@ export default function TeamPortal() {
             {teamEvents.length === 0 ? (
               <div className="p-12 text-center rounded-2xl bg-eco-surface border border-eco-border">
                 <Calendar size={32} className="mx-auto text-eco-muted mb-3 opacity-50" />
-                <h3 className="font-heading font-bold text-base text-white mb-1">No Events Found</h3>
-                <p className="text-xs text-eco-muted">There are no upcoming events matching this filter.</p>
+                <h3 className="font-heading font-bold text-base text-white mb-1">No Events Scheduled</h3>
+                <p className="text-xs text-eco-muted-light mb-4">There are no upcoming games or practices on the calendar for {currentTeam.name}.</p>
+                {(isAdmin || isCoach) && (
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className="btn-glow inline-flex items-center gap-2 text-xs !px-4 !py-2"
+                  >
+                    <Plus size={14} /> Add Event in Command Center
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
