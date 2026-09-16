@@ -51,21 +51,13 @@ export const TEAMS: Team[] = [
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
       },
       {
-        id: 'c-maya-g',
-        name: 'Maya Williams',
+        id: 'c-teepu-g',
+        name: 'Teepu Khawja',
         role: 'Assistant Coach',
-        email: 'coach.maya@ecohoops.ca',
-        phone: '(416) 555-0155',
-        bio: 'Former OUA / USports collegiate guard specializing in perimeter defence, ball screen reading, and shooting mechanics.',
-        certifications: ['NCCP Trained', 'Safe Sport Certified']
-      },
-      {
-        id: 'm-lisa-g',
-        name: 'Lisa Jenkins',
-        role: 'Team Manager',
-        email: 'manager.girls@ecohoops.ca',
-        phone: '(905) 555-0182',
-        bio: 'Coordinates tournament registrations, hotel blocks, uniform distribution, and scorekeeping logistics.'
+        email: 'teepu.khawja@ecohoops.ca',
+        phone: '(647) 555-0188',
+        bio: 'Assistant Coach for the 2012 Girls team, dedicated to fundamental skill development, high energy, and team camaraderie.',
+        certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: [
@@ -95,30 +87,32 @@ export const TEAMS: Team[] = [
     ],
     coaches: [
       {
-        id: 'c-marcus-b',
-        name: 'Marcus Vance',
-        role: 'Head Coach',
-        email: 'coach.marcus@ecohoops.ca',
-        phone: '(416) 555-0133',
-        bio: 'Former collegiate athlete emphasizing high-tempo pace-and-space offense, defensive communication, and mental resilience.',
-        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR']
+        id: 'c-adrian-b',
+        name: 'Adrian Sapp',
+        role: 'Coach',
+        email: 'coach.adrian@ecohoops.ca',
+        phone: '(647) 555-0194',
+        bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
+        avatar: '/images/coach.png',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
       },
       {
-        id: 'c-jordan-b',
-        name: 'Jordan Lee',
-        role: 'Assistant Coach',
-        email: 'coach.jordan@ecohoops.ca',
-        phone: '(647) 555-0177',
-        bio: 'Specialist in post development, rim protection, and transition spacing.',
+        id: 'c-herald-b',
+        name: 'Herald Sison',
+        role: 'Coach',
+        email: 'herald.sison@ecohoops.ca',
+        phone: '(416) 555-0144',
+        bio: 'Coach for the 2011 Boys team, bringing passionate leadership, guard development, and competitive defensive intensity.',
         certifications: ['NCCP Trained', 'Safe Sport Certified']
       },
       {
-        id: 'm-rachel-b',
-        name: 'Rachel Sagat',
-        role: 'Team Manager',
-        email: 'manager.boys@ecohoops.ca',
-        phone: '(905) 555-0128',
-        bio: 'Parent coordinator, travel planner, and tournament communication liaison.'
+        id: 'c-adrian-y-b',
+        name: 'Adrian Yasay',
+        role: 'Coach',
+        email: 'adrian.yasay@ecohoops.ca',
+        phone: '(647) 555-0162',
+        bio: 'Coach for the 2011 Boys team, focused on skill execution, court spacing, and player confidence.',
+        certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: [
@@ -161,13 +155,13 @@ export const TEAMS: Team[] = [
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
       },
       {
-        id: 'c-maya-g2',
-        name: 'Maya Williams',
+        id: 'c-teepu-g2',
+        name: 'Teepu Khawja',
         role: 'Assistant Coach',
-        email: 'coach.maya@ecohoops.ca',
-        phone: '(416) 555-0155',
-        bio: 'Former collegiate guard specializing in perimeter defence and shooting mechanics.',
-        certifications: ['NCCP Trained', 'Safe Sport Certified']
+        email: 'teepu.khawja@ecohoops.ca',
+        phone: '(647) 555-0188',
+        bio: 'Assistant Coach for the 2012 Girls team, dedicated to fundamental skill development, high energy, and team camaraderie.',
+        certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: []
@@ -198,13 +192,32 @@ export const TEAMS: Team[] = [
     ],
     coaches: [
       {
-        id: 'c-marcus-b2',
-        name: 'Marcus Vance',
-        role: 'Head Coach',
-        email: 'coach.marcus@ecohoops.ca',
-        phone: '(416) 555-0133',
-        bio: 'Former collegiate athlete emphasizing high-tempo pace-and-space offense, defensive communication, and mental resilience.',
-        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR']
+        id: 'c-adrian-b2',
+        name: 'Adrian Sapp',
+        role: 'Coach',
+        email: 'coach.adrian@ecohoops.ca',
+        phone: '(647) 555-0194',
+        bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
+        avatar: '/images/coach.png',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
+      },
+      {
+        id: 'c-herald-b2',
+        name: 'Herald Sison',
+        role: 'Coach',
+        email: 'herald.sison@ecohoops.ca',
+        phone: '(416) 555-0144',
+        bio: 'Coach for the 2011 Boys team, bringing passionate leadership, guard development, and competitive defensive intensity.',
+        certifications: ['NCCP Trained', 'Safe Sport Certified']
+      },
+      {
+        id: 'c-adrian-y-b2',
+        name: 'Adrian Yasay',
+        role: 'Coach',
+        email: 'adrian.yasay@ecohoops.ca',
+        phone: '(647) 555-0162',
+        bio: 'Coach for the 2011 Boys team, focused on skill execution, court spacing, and player confidence.',
+        certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: []

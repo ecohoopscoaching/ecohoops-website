@@ -66,9 +66,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : []
   })
 
-  // One-time automated update of rosters so client testing immediately reflects latest team rosters
+  // One-time automated update of rosters and coaches so client testing immediately reflects latest team rosters & coaches
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v5'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v6'
     if (!localStorage.getItem(cleanFlagKey)) {
       localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
       localStorage.setItem(cleanFlagKey, 'true')

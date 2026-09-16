@@ -311,7 +311,7 @@ function OverviewTab() {
                   <span className="text-xs text-eco-muted font-mono">U15 Boys Rep</span>
                 </div>
                 <h2 className="font-display text-2xl md:text-3xl text-white uppercase tracking-tight">
-                  {userProfile?.name || 'Marcus Vance'}
+                  {userProfile?.name || 'Jacob Sagat'}
                 </h2>
                 <p className="text-xs text-eco-muted-light font-mono mt-0.5">
                   Point Guard / Shooting Guard &middot; EcoHoops Academy

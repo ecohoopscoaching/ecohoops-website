@@ -27,10 +27,10 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
   },
   coach: {
     id: 'coach-1',
-    name: 'Coach Marcus',
-    email: 'coach@ecohoops.ca',
+    name: 'Coach Adrian',
+    email: 'coach.adrian@ecohoops.ca',
     role: 'coach',
-    teamId: 'u15-boys'
+    teamId: 'u14-girls-ss26'
   },
   parent: {
     id: 'parent-1',
