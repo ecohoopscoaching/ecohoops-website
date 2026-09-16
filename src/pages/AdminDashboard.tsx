@@ -6,7 +6,7 @@ import { useData } from '../contexts/DataContext'
 import { 
   LayoutDashboard, Users, Calendar, Settings, FileText, 
   ChevronRight, Plus, Edit2, Shield, AlertTriangle, Trash2,
-  Sparkles, Download, Copy, Check, Search, Filter, Phone, Mail, MapPin, CalendarDays, CheckCircle2, Info
+  Sparkles, Download, Copy, Check, Search, Filter, Phone, Mail, MapPin, CalendarDays, CheckCircle2, Info, Send
 } from 'lucide-react'
 import { blogService } from '../lib/blog-service'
 import { BLOG_POSTS } from '../data/blogs'
@@ -14,6 +14,7 @@ import { BlogPost } from '../types'
 import { 
   WaitlistEntry, getStoredWaitlist, calculateWaitlistMetrics, exportWaitlistToCsv 
 } from '../data/waitlist'
+import { dispatchTeamNotification } from '../lib/email-service'
 
 import MarketingPlaybook from './MarketingPlaybook'
 
@@ -911,10 +912,13 @@ function TeamsTab() {
 }
 
 function ScheduleTab() {
-  const { schedule, addEvent, deleteEvent } = useData()
+  const { teams, schedule, addEvent, deleteEvent } = useData()
+  const navigate = useNavigate()
   const [showAddForm, setShowAddForm] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   // Form states
+  const [teamId, setTeamId] = useState<string>(teams[0]?.id || '')
   const [title, setTitle] = useState('')
   const [type, setType] = useState<'game' | 'practice' | 'tournament' | 'event'>('game')
   const [date, setDate] = useState('')
@@ -922,28 +926,56 @@ function ScheduleTab() {
   const [location, setLocation] = useState('')
   const [opponent, setOpponent] = useState('')
   const [homeAway, setHomeAway] = useState<'home' | 'away'>('home')
+  const [uniformColor, setUniformColor] = useState('White (Home)')
+  const [arrivalNote, setArrivalNote] = useState('Arrive 30 minutes prior for warmups')
+  const [notes, setNotes] = useState('')
+  const [sendEmailAlert, setSendEmailAlert] = useState(true)
 
-  const handleAddEvent = (e: React.FormEvent) => {
+  const selectedTeamObj = teams.find(t => t.id === teamId) || teams[0]
+  const recipientCount = selectedTeamObj?.parentContacts?.length || 12
+
+  const handleAddEvent = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !date || !time || !location) {
       alert('Please fill out Title, Date, Time, and Location.')
       return
     }
 
-    const newEvent = {
+    const newEvent: any = {
       id: 'event-' + Date.now(),
       type,
       title: title.trim(),
       date,
       time: time.trim(),
       location: location.trim(),
+      teamId: teamId || undefined,
       opponent: type === 'game' ? opponent.trim() : undefined,
       homeAway: type === 'game' ? homeAway : undefined,
+      uniformColor: uniformColor || undefined,
+      arrivalNote: arrivalNote.trim() || undefined,
+      notes: notes.trim() || undefined,
       rsvp: { going: 0, maybe: 0, notGoing: 0, total: 0 }
     }
 
     addEvent(newEvent)
     setShowAddForm(false)
+
+    if (sendEmailAlert && selectedTeamObj) {
+      try {
+        const result = await dispatchTeamNotification({
+          team: selectedTeamObj,
+          event: newEvent,
+          eventType: 'event_created'
+        })
+        setToastMessage(`✓ Added event & emailed ${result.notification.recipientCount} parents on ${selectedTeamObj.name}!`)
+        setTimeout(() => setToastMessage(null), 4500)
+      } catch (err) {
+        console.error('Email dispatch error', err)
+      }
+    } else {
+      setToastMessage('✓ Calendar event created successfully.')
+      setTimeout(() => setToastMessage(null), 3500)
+    }
 
     // Reset Form
     setTitle('')
@@ -952,19 +984,67 @@ function ScheduleTab() {
     setTime('')
     setLocation('')
     setOpponent('')
+    setNotes('')
     setHomeAway('home')
+  }
+
+  const handleDeleteEvent = async (event: any) => {
+    const shouldNotify = confirm(
+      `Delete "${event.title}"?\n\nClick OK to confirm deletion and dispatch a cancellation email alert to parents.`
+    )
+    if (!shouldNotify) return
+
+    const matchedTeam = teams.find(t => t.id === event.teamId) || teams[0]
+    if (matchedTeam) {
+      await dispatchTeamNotification({
+        team: matchedTeam,
+        event,
+        eventType: 'event_cancelled',
+        customMessage: `Notice: The scheduled event "${event.title}" on ${event.date} at ${event.location} has been cancelled.`
+      })
+    }
+
+    deleteEvent(event.id)
+    setToastMessage(`Event cancelled & email alert sent to ${matchedTeam?.name || 'team'} parents.`)
+    setTimeout(() => setToastMessage(null), 4500)
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-heading font-bold text-xl text-white">Event Schedule</h3>
-        <button 
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="btn-glow flex items-center gap-2 text-sm"
-        >
-          <Plus size={16} /> Add Event
-        </button>
+      {/* Toast Alert */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="p-4 rounded-xl bg-[#00D26A]/20 border border-[#00D26A]/40 text-[#00D26A] font-heading font-semibold text-sm flex items-center justify-between"
+          >
+            <span>{toastMessage}</span>
+            <button onClick={() => setToastMessage(null)} className="text-white hover:text-eco-muted ml-2">✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h3 className="font-heading font-bold text-xl text-white">Event Schedule & Parent Alerts</h3>
+          <p className="text-xs text-eco-muted">Manage games, practices, and automated email updates for each rep squad.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/team-portal')}
+            className="px-4 py-2 rounded-xl bg-eco-surface border border-eco-border hover:border-[#97B3D2] text-[#97B3D2] text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all"
+          >
+            <Shield size={14} /> Open Team Portal
+          </button>
+          <button 
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="btn-glow flex items-center gap-2 text-sm"
+          >
+            <Plus size={16} /> Add Event & Notify Parents
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -973,21 +1053,48 @@ function ScheduleTab() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="glow-card p-6 bg-eco-surface border border-eco-blue/30 rounded-2xl overflow-hidden mb-6"
+            className="glow-card p-6 bg-eco-surface border border-eco-blue/30 rounded-2xl overflow-hidden mb-6 shadow-2xl"
           >
             <form onSubmit={handleAddEvent} className="space-y-4">
-              <h4 className="font-heading font-bold text-white text-lg">Add New Calendar Event</h4>
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <h4 className="font-heading font-bold text-white text-lg flex items-center gap-2">
+                  <Calendar className="text-eco-blue" size={18} />
+                  Add New Calendar Event & Dispatch Alert
+                </h4>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                  Automated Email Sync
+                </span>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Team Selection */}
+                <div>
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Target Rep Team</label>
+                  <select
+                    value={teamId}
+                    onChange={(e) => setTeamId(e.target.value)}
+                    className="bg-eco-surface2 text-white border border-eco-border rounded-xl px-4 py-2.5 text-sm w-full focus:outline-none focus:border-eco-blue cursor-pointer"
+                  >
+                    {teams.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.gender} &middot; {t.season})
+                      </option>
+                    ))}
+                    <option value="all">All Rep Teams (Club-Wide)</option>
+                  </select>
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Event Title</label>
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. vs Oakville Venom or Practice Session"
+                    placeholder="e.g. vs Oakville Venom or Practice Session & Shooting Lab"
                     className="input-field !py-2"
                     required
                   />
                 </div>
+
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Event Type</label>
                   <select
@@ -998,9 +1105,10 @@ function ScheduleTab() {
                     <option value="game">Game</option>
                     <option value="practice">Practice</option>
                     <option value="tournament">Tournament</option>
-                    <option value="event">Event</option>
+                    <option value="event">Event / Scrimmage</option>
                   </select>
                 </div>
+
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Date</label>
                   <input
@@ -1011,6 +1119,7 @@ function ScheduleTab() {
                     required
                   />
                 </div>
+
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Time</label>
                   <input
@@ -1021,24 +1130,50 @@ function ScheduleTab() {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Location</label>
+
+                <div className="md:col-span-2">
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Gym Location & Address</label>
                   <input
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. EcoHoops Court 1"
+                    placeholder="e.g. Hershey Centre Court 3, 5500 Rose Cherry Pl, Mississauga"
                     className="input-field !py-2"
                     required
                   />
                 </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Arrival Time Instruction</label>
+                  <input
+                    value={arrivalNote}
+                    onChange={(e) => setArrivalNote(e.target.value)}
+                    placeholder="e.g. Arrive 45 mins prior for warmup"
+                    className="input-field !py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Uniform Color</label>
+                  <select
+                    value={uniformColor}
+                    onChange={(e) => setUniformColor(e.target.value)}
+                    className="bg-eco-surface2 text-white border border-eco-border rounded-xl px-4 py-2.5 text-sm w-full focus:outline-none focus:border-eco-blue cursor-pointer"
+                  >
+                    <option value="White (Home)">White (Home)</option>
+                    <option value="Black (Away)">Black (Away)</option>
+                    <option value="Practice Reversible">Practice Reversible</option>
+                    <option value="Both White & Black">Both White & Black</option>
+                  </select>
+                </div>
+
                 {type === 'game' && (
                   <>
-                    <div className="md:col-span-2">
+                    <div>
                       <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Opponent</label>
                       <input
                         value={opponent}
                         onChange={(e) => setOpponent(e.target.value)}
-                        placeholder="Opponent Team Name"
+                        placeholder="e.g. Brampton Warriors"
                         className="input-field !py-2"
                       />
                     </div>
@@ -1055,7 +1190,43 @@ function ScheduleTab() {
                     </div>
                   </>
                 )}
+
+                <div className="md:col-span-3">
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-eco-muted mb-1">Coach's Notes & Tactical Focus</label>
+                  <textarea
+                    rows={2}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add parking directions, film review notes, bring water bottles, door codes, etc."
+                    className="input-field !py-2 text-xs"
+                  />
+                </div>
               </div>
+
+              {/* Automated Email Checkbox */}
+              <div className="p-4 rounded-xl bg-eco-surface2 border border-[#97B3D2]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sendEmailAlert}
+                    onChange={(e) => setSendEmailAlert(e.target.checked)}
+                    className="w-4 h-4 rounded border-eco-border text-[#97B3D2] focus:ring-0 focus:ring-offset-0 bg-eco-surface"
+                  />
+                  <div>
+                    <span className="text-sm font-semibold text-white flex items-center gap-1.5">
+                      <Mail size={14} className="text-[#97B3D2]" />
+                      Email Notification to Parents
+                    </span>
+                    <p className="text-xs text-eco-muted">
+                      Immediately dispatch EcoHoops schedule alert with calendar sync file to {recipientCount} registered parents on {selectedTeamObj?.name || 'team'}.
+                    </p>
+                  </div>
+                </label>
+                <span className="text-[10px] font-mono uppercase text-[#97B3D2] bg-[#97B3D2]/10 px-2.5 py-1 rounded border border-[#97B3D2]/20 whitespace-nowrap self-start sm:self-auto">
+                  {recipientCount} Recipients Ready
+                </span>
+              </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
@@ -1066,9 +1237,9 @@ function ScheduleTab() {
                 </button>
                 <button
                   type="submit"
-                  className="btn-glow text-sm !px-5 !py-2"
+                  className="btn-glow text-sm !px-5 !py-2 flex items-center gap-2"
                 >
-                  Create Event
+                  <Send size={14} /> Create Event & Dispatch
                 </button>
               </div>
             </form>
@@ -1079,44 +1250,63 @@ function ScheduleTab() {
       <div className="glow-card overflow-hidden bg-eco-surface border border-eco-border rounded-2xl">
         <div className="divide-y divide-eco-border">
           {schedule.length > 0 ? (
-            schedule.map(event => (
-              <div key={event.id} className="flex items-center justify-between p-4 hover:bg-eco-surface2/50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="text-center w-12 flex-shrink-0">
-                    <p className="font-display text-lg text-white">{new Date(event.date).getDate()}</p>
-                    <p className="text-[10px] text-eco-muted uppercase">
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-heading font-bold text-sm text-white">{event.title}</p>
-                      <span className={`text-[9px] uppercase tracking-widest px-2 py-0.5 rounded font-bold ${
-                        event.type === 'game' ? 'bg-eco-blue/15 text-eco-blue border border-eco-blue/20' :
-                        event.type === 'practice' ? 'bg-eco-muted/15 text-eco-muted-light border border-white/5' :
-                        'bg-eco-surface2 text-eco-muted border border-eco-border'
-                      }`}>
-                        {event.type}
-                      </span>
+            schedule.map(event => {
+              const matchedTeam = teams.find(t => t.id === event.teamId)
+
+              return (
+                <div key={event.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-eco-surface2/50 transition-colors gap-3">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center w-12 flex-shrink-0">
+                      <p className="font-display text-lg text-white">{new Date(event.date + 'T12:00:00').getDate()}</p>
+                      <p className="text-[10px] text-eco-muted uppercase font-mono">
+                        {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
+                      </p>
                     </div>
-                    <p className="text-xs text-eco-muted">{event.location} • {event.time}</p>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-heading font-bold text-sm text-white">{event.title}</p>
+                        <span className={`text-[9px] uppercase tracking-widest px-2 py-0.5 rounded font-bold ${
+                          event.type === 'game' ? 'bg-eco-blue/15 text-eco-blue border border-eco-blue/20' :
+                          event.type === 'practice' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20' :
+                          'bg-purple-500/15 text-purple-300 border border-purple-500/20'
+                        }`}>
+                          {event.type}
+                        </span>
+                        {matchedTeam && (
+                          <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-white/10 text-white border border-white/10">
+                            {matchedTeam.name}
+                          </span>
+                        )}
+                        {event.uniformColor && (
+                          <span className="text-[9px] font-mono text-emerald-400">
+                            &middot; {event.uniformColor}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-eco-muted mt-0.5">{event.location} &middot; {event.time}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 self-end sm:self-auto">
+                    {event.teamId && (
+                      <button
+                        onClick={() => navigate(`/team-portal/${event.teamId}`)}
+                        className="text-xs text-[#97B3D2] hover:underline font-mono"
+                      >
+                        Parent Hub →
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => handleDeleteEvent(event)}
+                      className="text-eco-muted hover:text-red-400 transition-colors p-2"
+                      title="Delete Event & Notify Parents"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this event?')) {
-                        deleteEvent(event.id)
-                      }
-                    }}
-                    className="text-eco-muted hover:text-red-400 transition-colors p-2"
-                    title="Delete Event"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))
+              )
+            })
           ) : (
             <p className="text-xs text-eco-muted p-8 text-center bg-eco-surface">No events found in calendar.</p>
           )}

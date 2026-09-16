@@ -38,10 +38,10 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
     email: 'sarah.jenkins@example.com',
     role: 'parent',
     childName: 'Maya Jenkins',
-    teamId: 'u14-girls',
+    teamId: 'u14-girls-ss26',
     children: [
-      { id: 'child-1', name: 'Maya Jenkins', teamId: 'u14-girls', number: 7 },
-      { id: 'child-2', name: 'Leo Jenkins', teamId: 'u15-boys', number: 12 }
+      { id: 'child-1', name: 'Maya Jenkins', teamId: 'u14-girls-ss26', number: 7 },
+      { id: 'child-2', name: 'Leo Jenkins', teamId: 'u15-boys-ss26', number: 12 }
     ]
   },
   player: {

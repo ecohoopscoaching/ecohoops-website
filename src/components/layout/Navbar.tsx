@@ -40,6 +40,7 @@ const NAV_LINKS: NavLinkItem[] = [
         title: 'Competitive',
         links: [
           { label: 'Rep Teams', path: '/rep', description: 'Divisions, schedules, and tryouts' },
+          { label: 'Team Portal (Parent Hub)', path: '/team-portal', description: 'Private schedules, RSVP & parent email updates' },
           { label: 'Rosters & Player Stats', path: '/teams', description: 'Meet the players & track performance' },
           { label: 'Watch Videos', path: '/videos', description: 'Game highlights & team videos' }
         ]

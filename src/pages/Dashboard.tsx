@@ -189,7 +189,36 @@ function OverviewTab() {
 
   return (
     <div className="space-y-8">
-      
+      {/* Rep Team Hub / Parent Portal Callout Banner */}
+      <div className="p-5 rounded-2xl bg-gradient-to-r from-eco-surface2 via-[#97B3D2]/10 to-eco-surface border border-[#97B3D2]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#97B3D2]/20 border border-[#97B3D2]/30 text-[#97B3D2] flex items-center justify-center flex-shrink-0">
+            <Trophy size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#97B3D2] bg-[#97B3D2]/10 px-2 py-0.5 rounded border border-[#97B3D2]/20">
+                Rep Parent Portal
+              </span>
+              <span className="text-[10px] font-mono text-emerald-400">Live Email Sync Active</span>
+            </div>
+            <h3 className="font-heading font-bold text-white text-base mt-0.5">
+              {isParent ? `${selectedChild?.name || 'Athlete'}'s Dedicated Team Section` : 'Official Rep Team Portal'}
+            </h3>
+            <p className="text-xs text-eco-muted-light">
+              View private gym locations, opponent scouting notes, arrival times, full roster & coach contacts.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => navigate(selectedChild?.teamId ? `/team-portal/${selectedChild.teamId}` : '/team-portal')}
+          className="px-5 py-2.5 rounded-xl bg-[#97B3D2] text-[#060A10] text-xs font-heading font-bold uppercase tracking-wider hover:bg-white transition-all shadow-glow-sm flex items-center gap-2 self-start sm:self-auto whitespace-nowrap"
+        >
+          <span>Open Team Portal</span>
+          <ArrowUpRight size={14} />
+        </button>
+      </div>
+
       {/* Urgent Broadcast Alert Banner */}
       <div className="p-4 rounded-2xl bg-gradient-to-r from-red-950/40 via-eco-surface2 to-red-950/20 border border-red-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">

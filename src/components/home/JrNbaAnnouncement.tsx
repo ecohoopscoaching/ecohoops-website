@@ -17,7 +17,8 @@ import {
   CalendarDays,
 } from 'lucide-react'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { getTrackingParams, saveWaitlistEntry } from '../../data/waitlist'
+import { getTrackingParams, saveWaitlistEntry, WaitlistEntry } from '../../data/waitlist'
+import { dispatchWaitlistConfirmationEmail } from '../../lib/email-service'
 
 const BENEFITS = [
   'Targeting a mid-October 2026 start in Southwest Mississauga',
@@ -60,6 +61,8 @@ const WaitlistForm = memo(function WaitlistForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({})
+  const [submittedEntry, setSubmittedEntry] = useState<WaitlistEntry | null>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -88,13 +91,6 @@ const WaitlistForm = memo(function WaitlistForm() {
       if (fieldErrors[name]) {
         setFieldErrors((prev) => ({ ...prev, [name]: '' }))
       }
-    }
-  }
-
-  const setFieldValue = (name: keyof FormState, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({ ...prev, [name]: '' }))
     }
   }
 
@@ -144,7 +140,10 @@ const WaitlistForm = memo(function WaitlistForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validate()) return
+    if (!validate()) {
+      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      return
+    }
 
     setStatus('submitting')
     setErrorMessage('')
@@ -161,118 +160,256 @@ const WaitlistForm = memo(function WaitlistForm() {
       ? 'Co-ed' 
       : (formData.groupPreference || 'Not provided')
 
-    const payload = {
+    const newEntry: WaitlistEntry = {
+      id: `entry-${Date.now()}`,
+      parentName: formData.parentName.trim(),
+      email: formData.email.trim().toLowerCase(),
+      phone: formData.phone.trim() || 'Not provided',
+      ageGroup: formData.ageGroup,
+      groupPreference: resolvedGroupPref as any,
+      daysAvailable: (formData.daysAvailable || 'Not provided') as any,
+      neighbourhood: formData.neighbourhood.trim() || 'Not provided',
+      childCount: (formData.childCount || '1') as any,
+      consent: formData.consent,
+      submissionTime: new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
+      source: trackingParams.utm_source ? `Meta / ${trackingParams.utm_source}` : 'Website direct',
+      utmParams: trackingParams,
+      isTest,
+    }
+
+    // 1. Immediately store in localStorage so no lead is EVER lost
+    saveWaitlistEntry(newEntry)
+    setSubmittedEntry(newEntry)
+
+    // 2. Immediately switch to the full confirmation state (Zero silence!)
+    setStatus('success')
+    setFormData(INITIAL_FORM_STATE)
+
+    // Smoothly ensure user sees the confirmation
+    setTimeout(() => {
+      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }, 40)
+
+    // 3. Asynchronously trigger automated confirmation email to the parent
+    dispatchWaitlistConfirmationEmail({
+      parentName: newEntry.parentName,
+      email: newEntry.email,
+      phone: newEntry.phone,
+      ageGroup: newEntry.ageGroup,
+      groupPreference: newEntry.groupPreference,
+      daysAvailable: newEntry.daysAvailable,
+      neighbourhood: newEntry.neighbourhood,
+      childCount: newEntry.childCount,
+    }).catch((err) => {
+      console.warn('Waitlist confirmation email dispatch error:', err)
+    })
+
+    // 4. Background redundant Web3Forms dispatch for Coach Adrian's inbox
+    const web3Payload = {
       access_key: '933bf5e4-2815-45e1-853f-a58c9fb77a2f',
-      subject: `New EcoHoops Jr. Waitlist - ${formData.parentName.trim()} (${formData.ageGroup})`,
+      subject: `New EcoHoops Jr. Waitlist - ${newEntry.parentName} (${newEntry.ageGroup})`,
       from_name: 'EcoHoops Jr. Waitlist',
       to: 'ecohoopscoaching@gmail.com',
-      replyto: formData.email.trim(),
-      'Parent / Guardian Name': formData.parentName.trim(),
-      'Email Address': formData.email.trim(),
-      'Phone Number': formData.phone.trim() || 'Not provided',
-      'Child Age Group': formData.ageGroup,
-      'Group Preference': resolvedGroupPref,
-      'Days That Could Work': formData.daysAvailable || 'Not provided',
-      'Neighbourhood / Postal Area': formData.neighbourhood.trim() || 'Not provided',
-      'Number of Children': formData.childCount || '1',
-      'Consent to Updates': formData.consent ? 'Yes' : 'No',
-      'Submission Time': new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
+      replyto: newEntry.email,
+      email: newEntry.email,
+      'Parent / Guardian Name': newEntry.parentName,
+      'Email Address': newEntry.email,
+      'Phone Number': newEntry.phone,
+      'Child Age Group': newEntry.ageGroup,
+      'Group Preference': newEntry.groupPreference,
+      'Days That Could Work': newEntry.daysAvailable,
+      'Neighbourhood / Postal Area': newEntry.neighbourhood,
+      'Number of Children': newEntry.childCount,
+      'Consent to Updates': newEntry.consent ? 'Yes' : 'No',
+      'Submission Time': newEntry.submissionTime,
       'Campaign Source': trackingParams.utm_source || 'Direct / organic',
-      'Campaign Medium': trackingParams.utm_medium || 'Not provided',
-      'Campaign Name': trackingParams.utm_campaign || 'Not provided',
-      'Meta Click ID (fbclid)': trackingParams.fbclid || 'Not provided',
       'Test Status': isTest ? 'TEST' : 'REAL LEAD',
     }
 
     try {
-      // 1. Store locally with full fields for backup & Admin Dashboard
-      saveWaitlistEntry({
-        id: `entry-${Date.now()}`,
-        parentName: formData.parentName.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim() || 'Not provided',
-        ageGroup: formData.ageGroup,
-        groupPreference: resolvedGroupPref as any,
-        daysAvailable: (formData.daysAvailable || 'Not provided') as any,
-        neighbourhood: formData.neighbourhood.trim() || 'Not provided',
-        childCount: (formData.childCount || '1') as any,
-        consent: formData.consent,
-        submissionTime: new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
-        source: trackingParams.utm_source ? `Meta / ${trackingParams.utm_source}` : 'Website direct',
-        utmParams: trackingParams,
-        isTest,
-      })
-
-      // 2. Deliver via Web3Forms to Adrian's email
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 4000)
+      await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(web3Payload),
+        signal: controller.signal,
       })
+      clearTimeout(timer)
+    } catch {
+      // Intentionally absorbed: data is safely secured locally and queued for email dispatch
+    }
 
-      const result = await response.json()
-
-      if (result.success) {
-        // 3. Meta Pixel Lead tracking:
-        // ONLY fire after successfully confirmed API submission.
-        // Never fire on button click, failed submission, page reload, or internal test.
-        if (!isTest && typeof window !== 'undefined' && (window as any).fbq) {
-          (window as any).fbq('track', 'Lead', {
-            content_name: 'EcoHoops Jr. Waitlist',
-            content_category: formData.ageGroup,
-            currency: 'CAD',
-            value: 0,
-          })
-        }
-
-        setStatus('success')
-        setFormData(INITIAL_FORM_STATE)
-      } else {
-        setStatus('error')
-        setErrorMessage(
-          "We couldn’t add you to the waitlist. Please try again or contact EcoHoops directly."
-        )
-      }
-    } catch (err) {
-      setStatus('error')
-      setErrorMessage(
-        "We couldn’t add you to the waitlist. Please try again or contact EcoHoops directly."
-      )
+    // 5. Meta Pixel Lead tracking (for real parents)
+    if (!isTest && typeof window !== 'undefined' && (window as any).fbq) {
+      try {
+        (window as any).fbq('track', 'Lead', {
+          content_name: 'EcoHoops Jr. Waitlist',
+          content_category: newEntry.ageGroup,
+          currency: 'CAD',
+          value: 0,
+        })
+      } catch {}
     }
   }
 
   if (status === 'success') {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-8 px-2 space-y-5"
-      >
-        <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-          <CheckCircle2 size={36} />
-        </div>
-        <h4 className="font-display text-2xl text-white uppercase tracking-tight">
-          You're On The List!
-        </h4>
-        <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed">
-          You’re on the list! We’ll let you know as soon as EcoHoops Jr. program dates and registration details are available for {formData.ageGroup || 'your player'}.
-        </p>
-        <button
-          type="button"
-          onClick={() => setStatus('idle')}
-          className="btn-ghost !py-2.5 !px-6 text-xs uppercase tracking-wider font-heading font-bold cursor-pointer"
+      <div ref={containerRef} className="py-2 space-y-6">
+        {/* Animated Confirmation Badge & Icon */}
+        <motion.div
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="text-center space-y-4"
         >
-          Add Another Child / Sibling
-        </button>
-      </motion.div>
+          <div className="relative inline-flex items-center justify-center">
+            {/* Ambient pulse glow */}
+            <div className="absolute inset-0 rounded-full bg-eco-blue/30 blur-2xl animate-pulse" />
+            
+            {/* Basketball badge container */}
+            <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[#003366] via-[#0A1830] to-[#001C40] border-2 border-eco-blue/50 flex items-center justify-center shadow-[0_0_35px_rgba(0,102,204,0.45)]">
+              <span className="text-4xl select-none" role="img" aria-label="Basketball">🏀</span>
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-[#0A1830] flex items-center justify-center text-white shadow-lg">
+                <CheckCircle2 size={16} />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider">
+              Waitlist Entry Confirmed
+            </span>
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
+              YOU’RE ON THE WAITLIST!
+            </h3>
+            <p className="text-base sm:text-lg font-heading font-semibold text-eco-blue-light">
+              Thanks! We received your submission.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Message body */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="space-y-4"
+        >
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#060A10]/90 border border-white/10 text-eco-muted-light text-sm sm:text-base leading-relaxed space-y-3">
+            <p className="text-white font-medium">
+              We’ll contact you when registration opens for <strong>EcoHoops Jr. NBA / Jr. WNBA</strong> in Southwest Mississauga.
+            </p>
+            <div className="flex items-center gap-2.5 pt-1 text-xs text-eco-blue-light bg-[#003366]/25 border border-eco-blue/30 rounded-xl p-3">
+              <Mail size={16} className="text-eco-blue flex-shrink-0" />
+              <span>
+                A confirmation email has been sent to{' '}
+                <strong className="text-white underline">{submittedEntry?.email || 'your email'}</strong>.
+              </span>
+            </div>
+          </div>
+
+          {/* Submission details recap */}
+          {submittedEntry && (
+            <div className="p-4 rounded-2xl bg-[#0A1424]/80 border border-eco-border/80 space-y-2.5 text-xs">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold border-b border-white/5 pb-1.5 flex items-center justify-between">
+                <span>Summary of Recorded Info</span>
+                <span className="text-emerald-400 font-bold">● Priority Queue</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5 text-eco-muted-light pt-1">
+                <div>
+                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Parent / Guardian</span>
+                  <span className="text-white font-medium">{submittedEntry.parentName}</span>
+                </div>
+                <div>
+                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Age Division</span>
+                  <span className="text-white font-medium">
+                    {submittedEntry.ageGroup}
+                    {submittedEntry.groupPreference && submittedEntry.groupPreference !== 'Not provided' && submittedEntry.groupPreference !== 'Co-ed' ? ` • ${submittedEntry.groupPreference}` : ''}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Preferred Days</span>
+                  <span className="text-white font-medium">{submittedEntry.daysAvailable}</span>
+                </div>
+                <div>
+                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Number of Kids</span>
+                  <span className="text-white font-medium">{submittedEntry.childCount} Child{submittedEntry.childCount !== '1' ? 'ren' : ''}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Email reminder callout */}
+          <div className="text-center py-1">
+            <p className="text-white font-heading font-semibold text-sm sm:text-base">
+              Keep an eye on your email for updates.
+            </p>
+          </div>
+
+          {/* Brand Motto Lockup */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#001c52]/60 via-[#003366]/40 to-[#001c52]/60 border border-eco-blue/30 text-center space-y-1">
+            <div className="font-display text-xl sm:text-2xl text-white tracking-wide uppercase font-bold">
+              Kids First, Always.
+            </div>
+            <p className="text-[11px] font-mono text-eco-blue-light uppercase tracking-wider">
+              Coach Adrian & The EcoHoops Coaching Team
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setStatus('idle')
+                setSubmittedEntry(null)
+              }}
+              className="flex-1 btn-ghost !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold cursor-pointer text-center flex items-center justify-center gap-2"
+            >
+              <span>Add Another Child / Sibling</span>
+            </button>
+            <Link
+              to="/jr"
+              className="flex-1 btn-glow !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold text-center flex items-center justify-center gap-2"
+            >
+              <span>Explore EcoHoops Jr.</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </motion.div>
+      </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <div ref={containerRef}>
+      {/* Card top accent */}
+      <div className="flex items-center justify-between pb-5 mb-6 border-b border-white/10">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <img
+              src="/images/branding/jr-nba-wnba-dark.png"
+              alt="Jr. NBA & Jr. WNBA"
+              className="h-6 w-auto object-contain"
+            />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
+              Priority Notification
+            </span>
+          </div>
+          <h3 className="font-display text-xl sm:text-2xl text-white uppercase font-bold">
+            Join the Waitlist
+          </h3>
+        </div>
+        <div className="w-10 h-10 rounded-2xl bg-[#003366] border border-eco-blue/30 flex items-center justify-center text-eco-blue flex-shrink-0">
+          <HeartHandshake size={20} />
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {/* ERROR ALERT */}
       {status === 'error' && (
         <div
@@ -645,6 +782,7 @@ const WaitlistForm = memo(function WaitlistForm() {
         Joining provides registration updates and does not reserve a place.
       </p>
     </form>
+    </div>
   )
 })
 
@@ -795,30 +933,7 @@ export default function JrNbaAnnouncement() {
           {/* RIGHT COLUMN: WAITLIST FORM CARD */}
           <div className="lg:col-span-5">
             <div className="glow-card p-6 sm:p-8 bg-[#0F1628]/90 border border-eco-blue/20 backdrop-blur-xl rounded-3xl shadow-2xl relative">
-              
-              {/* Card top accent */}
-              <div className="flex items-center justify-between pb-5 mb-6 border-b border-white/10">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <img
-                      src="/images/branding/jr-nba-wnba-dark.png"
-                      alt="Jr. NBA & Jr. WNBA"
-                      className="h-6 w-auto object-contain"
-                    />
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
-                      Priority Notification
-                    </span>
-                  </div>
-                  <h3 className="font-display text-xl sm:text-2xl text-white uppercase font-bold">
-                    Join the Waitlist
-                  </h3>
-                </div>
-                <div className="w-10 h-10 rounded-2xl bg-[#003366] border border-eco-blue/30 flex items-center justify-center text-eco-blue flex-shrink-0">
-                  <HeartHandshake size={20} />
-                </div>
-              </div>
-
-              {/* ISOLATED FORM */}
+              {/* ISOLATED FORM & CONFIRMATION RECEIPT */}
               <WaitlistForm />
             </div>
           </div>

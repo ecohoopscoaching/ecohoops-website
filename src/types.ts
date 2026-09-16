@@ -41,6 +41,26 @@ export interface PlayerStats {
   fgPct: number
 }
 
+export interface CoachProfile {
+  id: string
+  name: string
+  role: 'Head Coach' | 'Assistant Coach' | 'Team Manager' | string
+  email: string
+  phone?: string
+  bio?: string
+  avatar?: string
+  certifications?: string[]
+}
+
+export interface ParentContact {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  linkedPlayerName: string
+  linkedPlayerNumber?: number
+}
+
 export interface Team {
   id: string
   name: string
@@ -52,6 +72,8 @@ export interface Team {
   isActive: boolean
   record: string
   roster: Player[]
+  coaches?: CoachProfile[]
+  parentContacts?: ParentContact[]
   nextGame?: ScheduleEvent
 }
 
@@ -74,6 +96,9 @@ export interface ScheduleEvent {
   opponent?: string
   homeAway?: 'home' | 'away'
   teamId?: string
+  notes?: string
+  uniformColor?: 'White (Home)' | 'Black (Away)' | 'Practice Reversible' | string
+  arrivalNote?: string
   rsvp: {
     going: number
     maybe: number
@@ -85,6 +110,20 @@ export interface ScheduleEvent {
     score: string
     outcome: 'W' | 'L' | 'T'
   }
+}
+
+export interface EmailNotification {
+  id: string
+  teamId: string
+  teamName: string
+  recipientCount: number
+  recipientEmails: string[]
+  subject: string
+  body: string
+  sentAt: string
+  eventType: 'event_created' | 'event_updated' | 'event_cancelled' | 'coach_announcement'
+  eventTitle?: string
+  status: 'sent' | 'simulated'
 }
 
 export interface Message {

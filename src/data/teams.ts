@@ -41,6 +41,43 @@ export const TEAMS: Team[] = [
       createPlayer('g7-ss', 23, 'Aleena Hasan', 'PG', '5\'4"', 14, '/images/Player Profile Pics/Aleena.png'),
       createPlayer('g5-ss', 30, 'Laila Gaafar', 'C', '5\'8"', 14, '/images/Player Profile Pics/Laila.png'),
     ],
+    coaches: [
+      {
+        id: 'c-adrian-g',
+        name: 'Adrian Sapp',
+        role: 'Head Coach',
+        email: 'coach.adrian@ecohoops.ca',
+        phone: '(647) 555-0194',
+        bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
+        avatar: '/images/coach.png',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
+      },
+      {
+        id: 'c-maya-g',
+        name: 'Maya Williams',
+        role: 'Assistant Coach',
+        email: 'coach.maya@ecohoops.ca',
+        phone: '(416) 555-0155',
+        bio: 'Former OUA / USports collegiate guard specializing in perimeter defence, ball screen reading, and shooting mechanics.',
+        certifications: ['NCCP Trained', 'Safe Sport Certified']
+      },
+      {
+        id: 'm-lisa-g',
+        name: 'Lisa Jenkins',
+        role: 'Team Manager',
+        email: 'manager.girls@ecohoops.ca',
+        phone: '(905) 555-0182',
+        bio: 'Coordinates tournament registrations, hotel blocks, uniform distribution, and scorekeeping logistics.'
+      }
+    ],
+    parentContacts: [
+      { id: 'p-jenk', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Maya Jenkins', linkedPlayerNumber: 7 },
+      { id: 'p-bark', name: 'David Barker', email: 'david.barker@example.com', phone: '(905) 555-2244', linkedPlayerName: 'Charlotte Barker', linkedPlayerNumber: 8 },
+      { id: 'p-elmo', name: 'Fatima Elmorshedy', email: 'fatima.e@example.com', phone: '(647) 555-4819', linkedPlayerName: 'Joury Elmorshedy', linkedPlayerNumber: 5 },
+      { id: 'p-quar', name: 'Mark Quarrington', email: 'mark.q@example.com', phone: '(905) 555-7312', linkedPlayerName: 'Quinn Quarrington', linkedPlayerNumber: 22 },
+      { id: 'p-azna', name: 'Jennifer Aznar', email: 'jennifer.a@example.com', phone: '(416) 555-6671', linkedPlayerName: 'Calista Aznar', linkedPlayerNumber: 12 },
+      { id: 'p-khaw', name: 'Tariq Khawja', email: 'tariq.k@example.com', phone: '(647) 555-3810', linkedPlayerName: 'Layla Khawja', linkedPlayerNumber: 10 }
+    ]
   },
   {
     id: 'u15-boys-ss26',
@@ -63,6 +100,41 @@ export const TEAMS: Team[] = [
       createPlayer('b3-ss', 21, 'Savva Donets', 'SF', '5\'11"', 15, '/images/Player Profile Pics/Savva.png'),
       createPlayer('b-tyler-ss', 33, 'Tyler Ilogon', 'C', '6\'1"', 15),
     ],
+    coaches: [
+      {
+        id: 'c-marcus-b',
+        name: 'Marcus Vance',
+        role: 'Head Coach',
+        email: 'coach.marcus@ecohoops.ca',
+        phone: '(416) 555-0133',
+        bio: 'Former collegiate athlete emphasizing high-tempo pace-and-space offense, defensive communication, and mental resilience.',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR']
+      },
+      {
+        id: 'c-jordan-b',
+        name: 'Jordan Lee',
+        role: 'Assistant Coach',
+        email: 'coach.jordan@ecohoops.ca',
+        phone: '(647) 555-0177',
+        bio: 'Specialist in post development, rim protection, and transition spacing.',
+        certifications: ['NCCP Trained', 'Safe Sport Certified']
+      },
+      {
+        id: 'm-rachel-b',
+        name: 'Rachel Sagat',
+        role: 'Team Manager',
+        email: 'manager.boys@ecohoops.ca',
+        phone: '(905) 555-0128',
+        bio: 'Parent coordinator, travel planner, and tournament communication liaison.'
+      }
+    ],
+    parentContacts: [
+      { id: 'p-jenk-b', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Leo Jenkins', linkedPlayerNumber: 12 },
+      { id: 'p-saga', name: 'Robert Sagat', email: 'robert.sagat@example.com', phone: '(905) 555-8812', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 },
+      { id: 'p-siso', name: 'Elena Sison', email: 'elena.sison@example.com', phone: '(647) 555-1940', linkedPlayerName: 'Ryder Sison', linkedPlayerNumber: 8 },
+      { id: 'p-uppa', name: 'Manpreet Uppal', email: 'm.uppal@example.com', phone: '(416) 555-4429', linkedPlayerName: 'Josh Uppal', linkedPlayerNumber: 13 },
+      { id: 'p-bhat', name: 'Harjit Bhathal', email: 'h.bhathal@example.com', phone: '(905) 555-7731', linkedPlayerName: 'Adole Bhathal', linkedPlayerNumber: 15 }
+    ]
   },
   {
     id: 'u14-girls',
@@ -87,6 +159,32 @@ export const TEAMS: Team[] = [
       createPlayer('g10', 13, 'Amaya Small', 'SG', '5\'6"', 13, '/images/Player Profile Pics/Amaya.png'),
       createPlayer('g11', 21, 'Simar Ahmed', 'SF', '5\'5"', 13, '/images/Player Profile Pics/Simar.png'),
       createPlayer('g12', 22, 'Quinn Quarrington', 'C', '5\'9"', 13, '/images/Player Profile Pics/Quinn.png'),
+    ],
+    coaches: [
+      {
+        id: 'c-adrian-g2',
+        name: 'Adrian Sapp',
+        role: 'Head Coach',
+        email: 'coach.adrian@ecohoops.ca',
+        phone: '(647) 555-0194',
+        bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
+        avatar: '/images/coach.png',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
+      },
+      {
+        id: 'c-maya-g2',
+        name: 'Maya Williams',
+        role: 'Assistant Coach',
+        email: 'coach.maya@ecohoops.ca',
+        phone: '(416) 555-0155',
+        bio: 'Former collegiate guard specializing in perimeter defence and shooting mechanics.',
+        certifications: ['NCCP Trained', 'Safe Sport Certified']
+      }
+    ],
+    parentContacts: [
+      { id: 'p-jenk-w', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Maya Jenkins', linkedPlayerNumber: 7 },
+      { id: 'p-bark-w', name: 'David Barker', email: 'david.barker@example.com', phone: '(905) 555-2244', linkedPlayerName: 'Charlotte Barker', linkedPlayerNumber: 8 },
+      { id: 'p-elmo-w', name: 'Fatima Elmorshedy', email: 'fatima.e@example.com', phone: '(647) 555-4819', linkedPlayerName: 'Joury Elmorshedy', linkedPlayerNumber: 5 }
     ],
     nextGame: {
       id: 'g2',
@@ -123,6 +221,21 @@ export const TEAMS: Team[] = [
       createPlayer('b10', 11, 'Gurveer Bhatti', 'SG', '5\'9"', 14, '/images/Player Profile Pics/Gurveer.png'),
       createPlayer('b11', 15, 'Adole Bhathal', 'PF', '6\'0"', 14, '/images/Player Profile Pics/Adole.png'),
       createPlayer('b12', 12, 'Gabriel Kangethe', 'C', '6\'2"', 14, '/images/Player Profile Pics/Gabriel.png'),
+    ],
+    coaches: [
+      {
+        id: 'c-marcus-b2',
+        name: 'Marcus Vance',
+        role: 'Head Coach',
+        email: 'coach.marcus@ecohoops.ca',
+        phone: '(416) 555-0133',
+        bio: 'Former collegiate athlete emphasizing high-tempo pace-and-space offense, defensive communication, and mental resilience.',
+        certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR']
+      }
+    ],
+    parentContacts: [
+      { id: 'p-jenk-bw', name: 'Sarah Jenkins', email: 'sarah.jenkins@example.com', phone: '(416) 555-9011', linkedPlayerName: 'Leo Jenkins', linkedPlayerNumber: 12 },
+      { id: 'p-saga-w', name: 'Robert Sagat', email: 'robert.sagat@example.com', phone: '(905) 555-8812', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 }
     ],
     nextGame: {
       id: 'g1',
