@@ -66,20 +66,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : []
   })
 
-  // One-time automated purge of legacy mock data so client testing starts on a 100% clean slate
+  // One-time automated update of rosters so client testing immediately reflects latest team rosters
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v4'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v5'
     if (!localStorage.getItem(cleanFlagKey)) {
-      localStorage.removeItem('ecohoops_schedule')
-      localStorage.removeItem('ecohoops_payments')
-      localStorage.removeItem('ecohoops_messages')
-      localStorage.removeItem('ecohoops_jr_waitlist')
-      localStorage.removeItem('ecohoops_sent_notifications_v1')
       localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
       localStorage.setItem(cleanFlagKey, 'true')
-      setSchedule([])
-      setPayments([])
-      setMessages([])
       setTeams(TEAMS)
     }
   }, [])
