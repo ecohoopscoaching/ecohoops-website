@@ -6,15 +6,17 @@ import { useData } from '../contexts/DataContext'
 import { 
   LayoutDashboard, Users, Calendar, Settings, FileText, 
   ChevronRight, Plus, Edit2, Shield, AlertTriangle, Trash2,
-  Sparkles, Download, Copy, Check, Search, Filter, Phone, Mail, MapPin, CalendarDays, CheckCircle2, Info, Send
+  Sparkles, Download, Copy, Check, Search, Filter, Phone, Mail, MapPin, CalendarDays, CheckCircle2, Info, Send, Bell
 } from 'lucide-react'
 import { blogService } from '../lib/blog-service'
 import { BLOG_POSTS } from '../data/blogs'
-import { BlogPost } from '../types'
+import { BlogPost, ScheduleEvent } from '../types'
 import { 
   WaitlistEntry, getStoredWaitlist, calculateWaitlistMetrics, exportWaitlistToCsv 
 } from '../data/waitlist'
 import { dispatchTeamNotification } from '../lib/email-service'
+import EventNotificationModal from '../components/schedule/EventNotificationModal'
+import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
 
 import MarketingPlaybook from './MarketingPlaybook'
 
@@ -912,10 +914,13 @@ function TeamsTab() {
 }
 
 function ScheduleTab() {
-  const { teams, schedule, addEvent, deleteEvent } = useData()
+  const { teams, schedule, addEvent, deleteEvent, updateEvent } = useData()
   const navigate = useNavigate()
   const [showAddForm, setShowAddForm] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [activeAlertEvent, setActiveAlertEvent] = useState<ScheduleEvent | null>(null)
+  const [activeAlertType, setActiveAlertType] = useState<'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge'>('pre_game_reminder')
+  const [showEmergencyBroadcast, setShowEmergencyBroadcast] = useState(false)
 
   // Form states
   const [teamId, setTeamId] = useState<string>(teams[0]?.id || '')
@@ -1031,7 +1036,13 @@ function ScheduleTab() {
           <h3 className="font-heading font-bold text-xl text-white">Event Schedule & Parent Alerts</h3>
           <p className="text-xs text-eco-muted">Manage games, practices, and automated email updates for each rep squad.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setShowEmergencyBroadcast(true)}
+            className="px-4 py-2 rounded-xl bg-red-500/15 border border-red-500/35 text-red-300 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-red-500/25 transition-all cursor-pointer shadow-glow-sm"
+          >
+            <AlertTriangle size={14} className="text-red-400" /> Weather Alert / Broadcast
+          </button>
           <button
             onClick={() => navigate('/team-portal')}
             className="px-4 py-2 rounded-xl bg-eco-surface border border-eco-border hover:border-[#97B3D2] text-[#97B3D2] text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all"
@@ -1287,7 +1298,50 @@ function ScheduleTab() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-auto">
+                  <div className="flex flex-wrap items-center gap-2.5 self-end sm:self-auto">
+                    {/* Quick Parent Alert Triggers */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveAlertEvent(event)
+                          setActiveAlertType('pre_game_reminder')
+                        }}
+                        className="px-2 py-1 rounded-lg bg-eco-blue/15 hover:bg-eco-blue/25 border border-eco-blue/30 text-eco-blue hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                        title="Send 24h Game Prep Reminder to Parents"
+                      >
+                        <Sparkles size={10} /> Prep
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveAlertEvent(event)
+                          setActiveAlertType('weather_cancellation')
+                        }}
+                        className="px-2 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                        title="Send Weather Cancellation Notice to Parents"
+                      >
+                        <AlertTriangle size={10} /> Weather
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveAlertEvent(event)
+                          setActiveAlertType('rsvp_nudge')
+                        }}
+                        className="px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                        title="Nudge Unconfirmed RSVPs"
+                      >
+                        <Bell size={10} /> Nudge
+                      </button>
+                    </div>
+
+                    {event.lastAlertType && (
+                      <span className="text-[9px] font-mono text-[#00D26A] bg-[#00D26A]/10 px-2 py-0.5 rounded border border-[#00D26A]/20">
+                        ✓ Alert Sent
+                      </span>
+                    )}
+
                     {event.teamId && (
                       <button
                         onClick={() => navigate(`/team-portal/${event.teamId}`)}
@@ -1312,6 +1366,35 @@ function ScheduleTab() {
           )}
         </div>
       </div>
+
+      {activeAlertEvent && (
+        <EventNotificationModal
+          isOpen={true}
+          event={activeAlertEvent}
+          team={teams.find(t => t.id === activeAlertEvent.teamId) || teams[0]}
+          initialType={activeAlertType}
+          onClose={() => setActiveAlertEvent(null)}
+          onSuccess={(msg: string) => {
+            updateEvent({
+              ...activeAlertEvent,
+              lastAlertSent: new Date().toISOString(),
+              lastAlertType: activeAlertType
+            })
+            setToastMessage(msg)
+            setTimeout(() => setToastMessage(null), 6000)
+          }}
+        />
+      )}
+
+      <EmergencyBroadcastModal
+        isOpen={showEmergencyBroadcast}
+        teams={teams}
+        onClose={() => setShowEmergencyBroadcast(false)}
+        onSuccess={(msg: string) => {
+          setToastMessage(msg)
+          setTimeout(() => setToastMessage(null), 8000)
+        }}
+      />
     </div>
   )
 }

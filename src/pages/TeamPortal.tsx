@@ -15,6 +15,8 @@ import {
   dispatchTeamNotification
 } from '../lib/email-service'
 import type { ScheduleEvent, Player, CoachProfile, Team } from '../types'
+import EventNotificationModal from '../components/schedule/EventNotificationModal'
+import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
 
 type PortalTab = 'schedule' | 'roster' | 'coaches' | 'emails'
 
@@ -22,7 +24,7 @@ export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
   const navigate = useNavigate()
   const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, loginAsRole } = useAuth()
-  const { teams, schedule, recordAttendance, downloadCalendarIcs } = useData()
+  const { teams, schedule, recordAttendance, downloadCalendarIcs, updateEvent } = useData()
 
   // Determine authorized teams for current user
   const userTeamIds = useMemo(() => {
@@ -67,7 +69,7 @@ export default function TeamPortal() {
   // Schedule Filter State
   const [eventTypeFilter, setEventTypeFilter] = useState<'all' | 'game' | 'practice' | 'tournament'>('all')
 
-  // Email Announcements State
+  // Email Announcements & Automated Alert Modals State
   const [notifications, setNotifications] = useState(() => getSentNotifications(selectedTeamId))
   const [selectedEmailModal, setSelectedEmailModal] = useState<any>(null)
   const [showBroadcastModal, setShowBroadcastModal] = useState(false)
@@ -75,6 +77,11 @@ export default function TeamPortal() {
   const [broadcastMessage, setBroadcastMessage] = useState('')
   const [broadcastSending, setBroadcastSending] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  
+  // Specific Event Alerts & Emergency Broadcast
+  const [activeAlertEvent, setActiveAlertEvent] = useState<ScheduleEvent | null>(null)
+  const [activeAlertType, setActiveAlertType] = useState<'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge'>('pre_game_reminder')
+  const [showEmergencyBroadcast, setShowEmergencyBroadcast] = useState(false)
 
   // Refresh notifications when team changes
   const teamNotifications = useMemo(() => {
@@ -350,8 +357,20 @@ export default function TeamPortal() {
                 ))}
               </div>
 
-              <div className="text-xs text-eco-muted font-mono">
-                Showing {teamEvents.length} events for {currentTeam.name}
+              <div className="flex items-center gap-3">
+                {(isAdmin || isCoach) && (
+                  <button
+                    onClick={() => setShowEmergencyBroadcast(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/15 border border-red-500/35 text-red-300 text-xs font-heading font-bold uppercase tracking-wider hover:bg-red-500/25 transition-all cursor-pointer shadow-glow-sm"
+                    title="Broadcast urgent gym closure or inclement weather notice"
+                  >
+                    <AlertTriangle size={13} className="text-red-400" />
+                    <span>Weather Alert</span>
+                  </button>
+                )}
+                <div className="text-xs text-eco-muted font-mono">
+                  Showing {teamEvents.length} events for {currentTeam.name}
+                </div>
               </div>
             </div>
 
@@ -443,6 +462,50 @@ export default function TeamPortal() {
                             <p className="text-xs text-eco-muted-light leading-relaxed">
                               <strong>Notes:</strong> {evt.notes}
                             </p>
+                          )}
+
+                          {/* Coach / Admin Parent Alert Actions */}
+                          {(isAdmin || isCoach) && (
+                            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-white/5">
+                              <span className="text-[10px] font-mono text-eco-muted uppercase tracking-wider">
+                                Parent Alert:
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveAlertEvent(evt)
+                                  setActiveAlertType('pre_game_reminder')
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-eco-blue/15 hover:bg-eco-blue/25 border border-eco-blue/30 text-eco-blue hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                              >
+                                <Sparkles size={11} /> 24h Game Prep
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveAlertEvent(evt)
+                                  setActiveAlertType('weather_cancellation')
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                              >
+                                <AlertTriangle size={11} /> Weather / Cancel
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveAlertEvent(evt)
+                                  setActiveAlertType('rsvp_nudge')
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-white text-[10px] font-heading font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer"
+                              >
+                                <Bell size={11} /> Nudge RSVPs
+                              </button>
+                              {evt.lastAlertType && (
+                                <span className="text-[10px] font-mono text-[#00D26A] ml-auto">
+                                  ✓ Alert: {evt.lastAlertType === 'weather_cancellation' ? 'Weather Alert' : evt.lastAlertType === 'rsvp_nudge' ? 'RSVP Nudge' : 'Game Prep'}
+                                </span>
+                              )}
+                            </div>
                           )}
                         </div>
 
@@ -897,6 +960,35 @@ export default function TeamPortal() {
             </motion.div>
           </div>
         )}
+
+        {activeAlertEvent && currentTeam && (
+          <EventNotificationModal
+            isOpen={true}
+            event={activeAlertEvent}
+            team={currentTeam}
+            initialType={activeAlertType}
+            onClose={() => setActiveAlertEvent(null)}
+            onSuccess={(msg: string) => {
+              updateEvent({
+                ...activeAlertEvent,
+                lastAlertSent: new Date().toISOString(),
+                lastAlertType: activeAlertType
+              })
+              setNotifications(getSentNotifications(selectedTeamId))
+              showToast(msg)
+            }}
+          />
+        )}
+
+        <EmergencyBroadcastModal
+          isOpen={showEmergencyBroadcast}
+          teams={teams}
+          onClose={() => setShowEmergencyBroadcast(false)}
+          onSuccess={(msg: string) => {
+            setNotifications(getSentNotifications(selectedTeamId))
+            showToast(msg)
+          }}
+        />
       </AnimatePresence>
     </section>
   )

@@ -5,10 +5,11 @@ const NOTIFICATIONS_STORAGE_KEY = 'ecohoops_sent_notifications'
 export interface DispatchNotificationParams {
   team: Team
   event?: ScheduleEvent
-  eventType: 'event_created' | 'event_updated' | 'event_cancelled' | 'coach_announcement'
+  eventType: 'event_created' | 'event_updated' | 'event_cancelled' | 'coach_announcement' | 'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge'
   customSubject?: string
   customMessage?: string
   changesSummary?: string
+  cancellationReason?: string
 }
 
 export interface DispatchResult {
@@ -20,15 +21,16 @@ export interface DispatchResult {
 /**
  * Retrieve all sent/simulated email notifications from local storage
  */
-export function getSentNotifications(teamId?: string): EmailNotification[] {
+export function getSentNotifications(teamId?: string, eventId?: string): EmailNotification[] {
   try {
     const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY)
     if (!raw) return []
     const all: EmailNotification[] = JSON.parse(raw)
-    if (teamId) {
-      return all.filter((n) => n.teamId === teamId)
-    }
-    return all
+    return all.filter((n) => {
+      const matchTeam = !teamId || n.teamId === teamId
+      const matchEvent = !eventId || n.eventId === eventId
+      return matchTeam && matchEvent
+    })
   } catch (err) {
     console.error('Failed to parse notifications from storage', err)
     return []
@@ -52,14 +54,26 @@ export function recordNotification(notification: EmailNotification) {
  * Generate formatted HTML template for EcoHoops team emails
  */
 export function generateEmailHtml(params: DispatchNotificationParams): { subject: string; body: string } {
-  const { team, event, eventType, customSubject, customMessage, changesSummary } = params
+  const { team, event, eventType, customSubject, customMessage, changesSummary, cancellationReason } = params
 
   const teamName = `${team.name} (${team.season})`
   let subject = customSubject || ''
   let headerBadge = 'Team Notification'
   let headerColor = '#97B3D2'
 
-  if (eventType === 'event_created') {
+  if (eventType === 'pre_game_reminder') {
+    subject = subject || `[EcoHoops ${team.name}] Game Day Prep: ${event?.title} (${event?.date})`
+    headerBadge = '🏀 GAME DAY PREPARATION'
+    headerColor = '#00D26A'
+  } else if (eventType === 'weather_cancellation') {
+    subject = subject || `[URGENT - EcoHoops ${team.name}] CANCELLED: ${event?.title} on ${event?.date}`
+    headerBadge = '⚠️ URGENT CANCELLATION / WEATHER ALERT'
+    headerColor = '#FF3B30'
+  } else if (eventType === 'rsvp_nudge') {
+    subject = subject || `[EcoHoops ${team.name}] Attendance Check: ${event?.title} (${event?.date})`
+    headerBadge = 'RSVP CONFIRMATION NEEDED'
+    headerColor = '#FFA800'
+  } else if (eventType === 'event_created') {
     subject = subject || `[EcoHoops ${team.name}] New Event: ${event?.title} on ${event?.date}`
     headerBadge = 'NEW SCHEDULE ADDITION'
     headerColor = '#00D26A'
@@ -85,27 +99,35 @@ export function generateEmailHtml(params: DispatchNotificationParams): { subject
       })
     : ''
 
+  const mapsUrl = event?.location 
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
+    : ''
+
   const body = `
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
       <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060A10; color: #FFFFFF; margin: 0; padding: 24px; }
-        .container { max-width: 600px; margin: 0 auto; background: #0E1726; border-radius: 16px; border: 1px solid #1E293B; overflow: hidden; }
-        .header { background: #060A10; padding: 24px; border-bottom: 1px solid #1E293B; text-align: center; }
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #060A10; background: ${headerColor}; }
-        .title { font-size: 22px; font-weight: bold; margin: 12px 0 4px; color: #FFFFFF; }
-        .subtitle { font-size: 13px; color: #97B3D2; text-transform: uppercase; letter-spacing: 0.5px; }
-        .content { padding: 24px; }
-        .alert-box { background: rgba(255, 168, 0, 0.1); border-left: 4px solid #FFA800; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #FFD580; }
-        .card { background: #162234; border: 1px solid #24354D; border-radius: 12px; padding: 18px; margin-bottom: 20px; }
-        .card-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #24354D; font-size: 14px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060A10; color: #FFFFFF; margin: 0; padding: 24px; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 600px; margin: 0 auto; background: #0E1726; border-radius: 18px; border: 1px solid #1E293B; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #001c52 0%, #003366 100%); padding: 28px 24px; border-bottom: 1px solid #24354D; text-align: center; }
+        .badge { display: inline-block; padding: 5px 14px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: #060A10; background: ${headerColor}; }
+        .title { font-size: 24px; font-weight: 800; margin: 12px 0 4px; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.5px; }
+        .subtitle { font-size: 13px; color: #97B3D2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+        .content { padding: 28px 24px; }
+        .alert-box { background: rgba(255, 168, 0, 0.12); border-left: 4px solid #FFA800; padding: 14px 18px; border-radius: 10px; margin-bottom: 22px; font-size: 14px; color: #FFD580; line-height: 1.5; }
+        .danger-box { background: rgba(255, 59, 48, 0.15); border-left: 4px solid #FF3B30; padding: 16px 18px; border-radius: 10px; margin-bottom: 22px; font-size: 14px; color: #FFA39E; line-height: 1.5; }
+        .card { background: #162234; border: 1px solid #24354D; border-radius: 14px; padding: 20px; margin-bottom: 22px; }
+        .card-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-size: 14px; }
         .card-row:last-child { border-bottom: none; }
         .label { color: #8A99AD; }
         .value { color: #FFFFFF; font-weight: 600; text-align: right; }
-        .btn { display: inline-block; background: #97B3D2; color: #060A10; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; margin-top: 10px; }
-        .footer { background: #060A10; padding: 20px; text-align: center; font-size: 12px; color: #64748B; border-top: 1px solid #1E293B; }
+        .uniform-banner { background: rgba(0, 210, 106, 0.12); border: 1px solid rgba(0, 210, 106, 0.35); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        .checklist-box { background: #111C2D; border: 1px solid #1E2D44; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13px; color: #CBD5E1; }
+        .btn { display: inline-block; background: #97B3D2; color: #060A10; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(151, 179, 210, 0.3); }
+        .footer { background: #060A10; padding: 22px; text-align: center; font-size: 12px; color: #64748B; border-top: 1px solid #1E293B; line-height: 1.5; }
       </style>
     </head>
     <body>
@@ -113,17 +135,41 @@ export function generateEmailHtml(params: DispatchNotificationParams): { subject
         <div class="header">
           <span class="badge">${headerBadge}</span>
           <div class="title">${teamName}</div>
-          <div class="subtitle">EcoHoops Rep Basketball Program</div>
+          <div class="subtitle">EcoHoops Basketball Club &middot; Player & Parent Notice</div>
         </div>
         
         <div class="content">
-          ${changesSummary ? `<div class="alert-box"><strong>Notice:</strong> ${changesSummary}</div>` : ''}
+          ${eventType === 'weather_cancellation' ? `
+            <div class="danger-box">
+              <strong style="color: #FF6B6B; font-size: 15px; display: block; margin-bottom: 6px;">⚠️ CANCELLATION NOTICE</strong>
+              ${cancellationReason || customMessage || `Due to severe weather / facility permit closure, this event is cancelled for player safety.`}
+              <div style="margin-top: 10px; font-size: 12px; color: #E2E8F0;">
+                We will inform you as soon as gym availability and makeup schedule options are confirmed.
+              </div>
+            </div>
+          ` : ''}
 
-          ${customMessage ? `<p style="font-size: 15px; line-height: 1.6; color: #E2E8F0; margin-bottom: 20px;">${customMessage}</p>` : ''}
+          ${eventType === 'pre_game_reminder' && event?.uniformColor ? `
+            <div class="uniform-banner">
+              <div style="font-size: 11px; font-weight: 800; color: #00D26A; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">REQUIRED JERSEY COLOR</div>
+              <div style="font-size: 17px; font-weight: 800; color: #FFFFFF;">${event.uniformColor}</div>
+              ${event.arrivalNote ? `
+                <div style="font-size: 13px; color: #E2E8F0; margin-top: 6px;">
+                  ⏱️ <strong>Arrival Buffer:</strong> ${event.arrivalNote}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          ${changesSummary ? `<div class="alert-box"><strong>Schedule Change Notice:</strong><br>${changesSummary}</div>` : ''}
+
+          ${customMessage && eventType !== 'weather_cancellation' ? `
+            <p style="font-size: 15px; line-height: 1.65; color: #E2E8F0; margin-bottom: 22px;">${customMessage}</p>
+          ` : ''}
 
           ${event ? `
             <div class="card">
-              <div style="font-size: 16px; font-weight: bold; color: #97B3D2; margin-bottom: 12px; text-transform: uppercase;">
+              <div style="font-size: 17px; font-weight: 800; color: #97B3D2; margin-bottom: 14px; text-transform: uppercase; border-bottom: 1px solid #24354D; padding-bottom: 8px;">
                 ${event.title}
               </div>
               <div class="card-row">
@@ -131,19 +177,22 @@ export function generateEmailHtml(params: DispatchNotificationParams): { subject
                 <span class="value">${formattedDate}</span>
               </div>
               <div class="card-row">
-                <span class="label">Time</span>
+                <span class="label">Event Time</span>
                 <span class="value">${event.time}</span>
               </div>
               <div class="card-row">
                 <span class="label">Location</span>
-                <span class="value">${event.location}</span>
+                <span class="value">
+                  ${event.location}
+                  ${mapsUrl ? `<br><a href="${mapsUrl}" target="_blank" style="color: #97B3D2; font-size: 11px; text-decoration: underline;">Open Google Maps &rarr;</a>` : ''}
+                </span>
               </div>
-              ${event.arrivalNote ? `
+              ${event.arrivalNote && eventType !== 'pre_game_reminder' ? `
               <div class="card-row">
                 <span class="label">Arrival Instructions</span>
                 <span class="value" style="color: #97B3D2;">${event.arrivalNote}</span>
               </div>` : ''}
-              ${event.uniformColor ? `
+              ${event.uniformColor && eventType !== 'pre_game_reminder' ? `
               <div class="card-row">
                 <span class="label">Jersey Color</span>
                 <span class="value">${event.uniformColor}</span>
@@ -154,16 +203,27 @@ export function generateEmailHtml(params: DispatchNotificationParams): { subject
                 <span class="value" style="font-weight: normal; color: #CBD5E1;">${event.notes}</span>
               </div>` : ''}
             </div>
+
+            ${eventType === 'pre_game_reminder' ? `
+              <div class="checklist-box">
+                <div style="font-weight: 800; color: #97B3D2; text-transform: uppercase; font-size: 11px; margin-bottom: 8px;">PLAYER CHECKLIST FOR TIP-OFF</div>
+                <div style="margin-bottom: 5px;">✓ Wilson basketball, water bottle & athletic bag</div>
+                <div style="margin-bottom: 5px;">✓ Both jerseys (in case of opponent color clashes)</div>
+                <div>✓ Arrive energized, stretched, and ready to compete!</div>
+              </div>
+            ` : ''}
             
-            <div style="text-align: center; margin: 24px 0;">
-              <a href="https://ecohoops.ca/team-portal" class="btn">View in Team Portal & RSVP</a>
+            <div style="text-align: center; margin: 26px 0 10px;">
+              <a href="https://ecohoops.ca/team-portal" class="btn">
+                ${eventType === 'rsvp_nudge' ? 'Confirm Player RSVP Now' : 'Open Team Portal & View Schedule'}
+              </a>
             </div>
           ` : ''}
         </div>
         
         <div class="footer">
-          <p style="margin: 0 0 6px 0;">EcoHoops Basketball Club &middot; Player & Parent Team Section</p>
-          <p style="margin: 0;">You are receiving this automated alert because your family is registered with the ${team.name} roster.</p>
+          <p style="margin: 0 0 6px 0;"><strong>EcoHoops Basketball Club</strong> &middot; Southwest Mississauga, ON</p>
+          <p style="margin: 0;">You are receiving this automated alert because your family is active with the ${team.name} roster.</p>
         </div>
       </div>
     </body>
@@ -200,6 +260,7 @@ export async function dispatchTeamNotification(
     body,
     sentAt: new Date().toISOString(),
     eventType,
+    eventId: event?.id,
     eventTitle: event?.title || customMessage?.slice(0, 30) || 'Team Announcement',
     status: 'sent'
   }
@@ -234,6 +295,54 @@ export async function dispatchTeamNotification(
     notification: notificationRecord,
     message: `Notified ${recipientEmails.length} parents for ${team.name}`
   }
+}
+
+/**
+ * Dispatch a 24-hour pre-game prep digest to parents
+ */
+export async function dispatchPreGameReminder(
+  team: Team,
+  event: ScheduleEvent,
+  customNote?: string
+): Promise<DispatchResult> {
+  return dispatchTeamNotification({
+    team,
+    event,
+    eventType: 'pre_game_reminder',
+    customMessage: customNote,
+  })
+}
+
+/**
+ * Dispatch an urgent weather or gym cancellation notice to parents
+ */
+export async function dispatchWeatherCancellation(
+  team: Team,
+  event: ScheduleEvent,
+  cancellationReason: string
+): Promise<DispatchResult> {
+  return dispatchTeamNotification({
+    team,
+    event,
+    eventType: 'weather_cancellation',
+    cancellationReason,
+  })
+}
+
+/**
+ * Dispatch an attendance RSVP confirmation nudge to parents
+ */
+export async function dispatchRsvpNudge(
+  team: Team,
+  event: ScheduleEvent,
+  customNote?: string
+): Promise<DispatchResult> {
+  return dispatchTeamNotification({
+    team,
+    event,
+    eventType: 'rsvp_nudge',
+    customMessage: customNote,
+  })
 }
 
 /**

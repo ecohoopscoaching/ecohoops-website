@@ -5,10 +5,14 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import {
   Calendar, MapPin, Clock, Users, Check, X, HelpCircle,
   Trophy, Dumbbell, Star, PartyPopper, Filter,
-  ChevronDown, Plus, Trash2, Download, ExternalLink, MessageSquare, CheckCircle2
+  ChevronDown, Plus, Trash2, Download, ExternalLink, MessageSquare, CheckCircle2,
+  AlertTriangle, Bell, Send, Sparkles
 } from 'lucide-react'
-import type { ScheduleEvent } from '../types'
+import type { ScheduleEvent, Team } from '../types'
 import { useData } from '../contexts/DataContext'
+import EventNotificationModal from '../components/schedule/EventNotificationModal'
+import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
+import { getSentNotifications } from '../lib/email-service'
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
   game: Trophy,
@@ -31,13 +35,24 @@ export default function Schedule() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const { ref, isVisible } = useScrollReveal(0.05)
   const { isAdmin, isCoach, isParent, userProfile } = useAuth()
-  const { schedule, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
+  const { schedule, teams, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>(
     userProfile?.children?.[0]?.id || userProfile?.playerId || 'child-1'
   )
   const [userRsvps, setUserRsvps] = useState<Record<string, 'going'|'maybe'|'notGoing'>>({})
   const [rsvpNotes, setRsvpNotes] = useState<Record<string, string>>({})
+  
+  // Notification Modal States
+  const [activeAlertEvent, setActiveAlertEvent] = useState<ScheduleEvent | null>(null)
+  const [activeAlertType, setActiveAlertType] = useState<'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge'>('pre_game_reminder')
+  const [showEmergencyBroadcast, setShowEmergencyBroadcast] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const handleOpenAlert = (event: ScheduleEvent, type: 'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge') => {
+    setActiveAlertEvent(event)
+    setActiveAlertType(type)
+  }
 
   const handleRsvp = (eventId: string, newStatus: 'going'|'maybe'|'notGoing', note?: string) => {
     const playerId = isParent ? selectedChildId : (userProfile?.playerId || 'player-1')
@@ -55,6 +70,8 @@ export default function Schedule() {
 
   const upcoming = filtered.filter((e) => !e.result)
   const past = filtered.filter((e) => e.result)
+
+  const activeAlertTeam = teams.find(t => t.id === activeAlertEvent?.teamId) || teams[0]
 
   return (
     <section ref={ref} className="pt-28 pb-20 min-h-screen">
@@ -86,6 +103,21 @@ export default function Schedule() {
 
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
 
+        {/* Toast Alert */}
+        <AnimatePresence>
+          {toastMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="p-4 mb-6 rounded-2xl bg-[#00D26A]/20 border border-[#00D26A]/40 text-[#00D26A] font-heading font-semibold text-sm flex items-center justify-between shadow-glow-sm"
+            >
+              <span>{toastMessage}</span>
+              <button onClick={() => setToastMessage(null)} className="text-white hover:text-eco-muted ml-2">✕</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Top Control Bar: Parent Child Switcher + Sync Calendar + Admin Add */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 p-4 bg-eco-surface2/60 border border-eco-border rounded-2xl">
           {isParent && userProfile?.children && userProfile.children.length > 0 ? (
@@ -113,10 +145,21 @@ export default function Schedule() {
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {(isAdmin || isCoach) && (
+              <button
+                onClick={() => setShowEmergencyBroadcast(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-500/15 border border-red-500/35 text-red-300 rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-red-500/25 transition-all shadow-glow-sm cursor-pointer"
+                title="Broadcast urgent weather cancellation or facility closure notice"
+              >
+                <AlertTriangle size={13} className="text-red-400" />
+                <span>Urgent Weather Alert</span>
+              </button>
+            )}
+
             <button
               onClick={() => downloadCalendarIcs('EcoHoops Team Calendar')}
-              className="flex items-center gap-2 px-4 py-2 bg-eco-surface border border-eco-blue/30 text-white rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue hover:text-eco-black transition-all shadow-glow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-eco-surface border border-eco-blue/30 text-white rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue hover:text-eco-black transition-all shadow-glow-sm cursor-pointer"
               title="Download iCal (.ics) file to sync with iPhone, Android, or Outlook calendar"
             >
               <Download size={14} />
@@ -126,7 +169,7 @@ export default function Schedule() {
             {isAdmin && (
               <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-eco-blue text-eco-black rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-eco-blue text-eco-black rounded-xl text-xs font-heading font-bold uppercase tracking-wider hover:bg-eco-blue/80 transition-colors shadow-glow-sm cursor-pointer"
               >
                 <Plus size={14} />
                 Add Event
@@ -185,7 +228,9 @@ export default function Schedule() {
                   currentRsvp={userRsvps[event.id]}
                   onRsvp={(status) => handleRsvp(event.id, status)}
                   isAdmin={isAdmin}
+                  isCoach={isCoach}
                   onDelete={() => handleDeleteEvent(event.id)}
+                  onOpenAlert={(type) => handleOpenAlert(event, type)}
                 />
               ))}
             </div>
@@ -210,6 +255,7 @@ export default function Schedule() {
                   currentRsvp={userRsvps[event.id]}
                   onRsvp={(status) => handleRsvp(event.id, status)}
                   isAdmin={isAdmin}
+                  isCoach={isCoach}
                   onDelete={() => handleDeleteEvent(event.id)}
                 />
               ))}
@@ -228,6 +274,35 @@ export default function Schedule() {
             }}
           />
         )}
+
+        {activeAlertEvent && activeAlertTeam && (
+          <EventNotificationModal
+            isOpen={true}
+            event={activeAlertEvent}
+            team={activeAlertTeam}
+            initialType={activeAlertType}
+            onClose={() => setActiveAlertEvent(null)}
+            onSuccess={(msg: string) => {
+              updateEvent({
+                ...activeAlertEvent,
+                lastAlertSent: new Date().toISOString(),
+                lastAlertType: activeAlertType
+              })
+              setToastMessage(msg)
+              setTimeout(() => setToastMessage(null), 6000)
+            }}
+          />
+        )}
+
+        <EmergencyBroadcastModal
+          isOpen={showEmergencyBroadcast}
+          teams={teams}
+          onClose={() => setShowEmergencyBroadcast(false)}
+          onSuccess={(msg: string) => {
+            setToastMessage(msg)
+            setTimeout(() => setToastMessage(null), 8000)
+          }}
+        />
       </AnimatePresence>
     </section>
   )
@@ -344,7 +419,9 @@ function EventCard({
   currentRsvp,
   onRsvp,
   isAdmin,
+  isCoach,
   onDelete,
+  onOpenAlert,
 }: {
   event: ScheduleEvent
   index: number
@@ -353,7 +430,9 @@ function EventCard({
   currentRsvp?: 'going' | 'maybe' | 'notGoing'
   onRsvp?: (status: 'going' | 'maybe' | 'notGoing') => void
   isAdmin?: boolean
+  isCoach?: boolean
   onDelete?: () => void
+  onOpenAlert?: (type: 'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge') => void
 }) {
   const Icon = EVENT_ICONS[event.type]
   const color = EVENT_COLORS[event.type]
@@ -388,7 +467,7 @@ function EventCard({
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <Icon size={14} style={{ color }} />
             <span className="text-xs uppercase tracking-wider font-mono" style={{ color }}>
               {event.type}
@@ -396,6 +475,27 @@ function EventCard({
             {event.homeAway && (
               <span className="text-xs text-eco-muted">
                 ({event.homeAway === 'home' ? 'HOME' : 'AWAY'})
+              </span>
+            )}
+            {event.uniformColor && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-white border border-white/10">
+                👕 {event.uniformColor}
+              </span>
+            )}
+            {event.arrivalNote && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-eco-blue/10 text-eco-blue border border-eco-blue/20">
+                ⏱️ {event.arrivalNote}
+              </span>
+            )}
+            {event.lastAlertType && (
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                event.lastAlertType === 'weather_cancellation' 
+                  ? 'bg-red-500/15 text-red-300 border-red-500/30' 
+                  : event.lastAlertType === 'rsvp_nudge'
+                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                  : 'bg-[#00D26A]/15 text-[#00D26A] border-[#00D26A]/30'
+              }`}>
+                ✓ {event.lastAlertType === 'weather_cancellation' ? 'Alert Sent' : event.lastAlertType === 'rsvp_nudge' ? 'Nudge Sent' : 'Prep Sent'}
               </span>
             )}
           </div>
@@ -461,6 +561,51 @@ function EventCard({
             className="overflow-hidden"
           >
             <div className="px-6 pb-6 pt-2 border-t border-eco-border">
+              {/* Coach / Admin Parent Alert Controls */}
+              {(isAdmin || isCoach) && onOpenAlert && !event.result && (
+                <div className="mb-6 p-4 rounded-xl bg-eco-surface2/80 border border-eco-border">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Send size={14} className="text-eco-blue" />
+                      <h5 className="text-xs font-mono uppercase tracking-wider text-white font-bold">
+                        Coach Parent Alert Controls
+                      </h5>
+                    </div>
+                    {event.lastAlertSent && (
+                      <span className="text-[11px] font-mono text-eco-muted">
+                        Last alert: {new Date(event.lastAlertSent).toLocaleDateString()} at {new Date(event.lastAlertSent).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onOpenAlert('pre_game_reminder'); }}
+                      className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-eco-blue/15 hover:bg-eco-blue/25 border border-eco-blue/30 text-eco-blue hover:text-white text-xs font-heading font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      <Sparkles size={13} />
+                      <span>24h Game Prep</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onOpenAlert('weather_cancellation'); }}
+                      className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-white text-xs font-heading font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      <AlertTriangle size={13} />
+                      <span>Weather / Cancel</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onOpenAlert('rsvp_nudge'); }}
+                      className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-white text-xs font-heading font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      <Bell size={13} />
+                      <span>Nudge RSVPs</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* RSVP Breakdown */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-eco-blue/10 rounded-xl p-3 text-center border border-eco-blue/20">

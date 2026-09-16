@@ -110,6 +110,8 @@ export interface ScheduleEvent {
     score: string
     outcome: 'W' | 'L' | 'T'
   }
+  lastAlertSent?: string
+  lastAlertType?: 'pre_game' | 'weather' | 'update' | 'rsvp' | string
 }
 
 export interface EmailNotification {
@@ -121,7 +123,8 @@ export interface EmailNotification {
   subject: string
   body: string
   sentAt: string
-  eventType: 'event_created' | 'event_updated' | 'event_cancelled' | 'coach_announcement'
+  eventType: 'event_created' | 'event_updated' | 'event_cancelled' | 'coach_announcement' | 'pre_game_reminder' | 'weather_cancellation' | 'rsvp_nudge'
+  eventId?: string
   eventTitle?: string
   status: 'sent' | 'simulated'
 }
