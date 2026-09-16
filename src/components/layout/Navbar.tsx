@@ -22,6 +22,7 @@ interface NavLinkItem {
 
 const NAV_LINKS: NavLinkItem[] = [
   { label: 'Home', path: '/' },
+  { label: 'Team Hub', path: '/hub' },
   { label: 'The Game Changer', path: '/game-changer/index.html' },
   { 
     label: 'Explore Programs', 
@@ -40,7 +41,7 @@ const NAV_LINKS: NavLinkItem[] = [
         title: 'Competitive',
         links: [
           { label: 'Rep Teams', path: '/rep', description: 'Divisions, schedules, and tryouts' },
-          { label: 'Team Portal (Parent Hub)', path: '/team-portal', description: 'Private schedules, RSVP & parent email updates' },
+          { label: 'Team Hub (Parents & Players)', path: '/hub', description: 'One link for schedules, RSVP, roster & updates' },
           { label: 'Rosters & Player Stats', path: '/teams', description: 'Meet the players & track performance' },
           { label: 'Watch Videos', path: '/videos', description: 'Game highlights & team videos' }
         ]

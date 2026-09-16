@@ -70,7 +70,18 @@ export default function App() {
               
               {/* Restored Routes */}
               <Route path="player/:teamId/:playerId" element={<PlayerProfile />} />
-              <Route path="schedule" element={<Schedule />} />
+              
+              {/* Unified Team Hub - One Link for Parents, Players & Coaches */}
+              <Route path="hub" element={<TeamPortal />} />
+              <Route path="hub/:teamId" element={<TeamPortal />} />
+              <Route path="schedule" element={<TeamPortal />} />
+              <Route path="schedule/:teamId" element={<TeamPortal />} />
+              <Route path="team-portal" element={<TeamPortal />} />
+              <Route path="team-portal/:teamId" element={<TeamPortal />} />
+              <Route path="portal" element={<TeamPortal />} />
+              <Route path="team" element={<TeamPortal />} />
+              <Route path="team/:teamId" element={<TeamPortal />} />
+
               <Route path="blog" element={<Blog />} />
               <Route path="blog/:slug" element={<BlogPost />} />
               <Route path="admin/blog/new" element={<AdminBlog />} />
@@ -79,8 +90,6 @@ export default function App() {
               <Route path="philosophy" element={<Philosophy />} />
               <Route path="pillar/:slug" element={<PillarDetail />} />
               <Route path="teams" element={<Teams />} />
-              <Route path="team-portal" element={<TeamPortal />} />
-              <Route path="team-portal/:teamId" element={<TeamPortal />} />
               <Route path="videos" element={<Videos />} />
               <Route path="safe-sport" element={<SafeSport />} />
               
