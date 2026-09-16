@@ -66,9 +66,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : []
   })
 
-  // One-time automated update to ensure strictly the 2 active teams exist
+  // One-time automated update to ensure Winter season and new players are synced
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v7'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v8'
     if (!localStorage.getItem(cleanFlagKey)) {
       localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
       localStorage.setItem(cleanFlagKey, 'true')

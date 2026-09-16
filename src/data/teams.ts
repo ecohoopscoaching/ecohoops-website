@@ -24,7 +24,7 @@ export const TEAMS: Team[] = [
     gender: 'Girls',
     ageGroup: 'Born 2012',
     birthYear: 2012,
-    season: 'Spring/Summer 2026',
+    season: 'Winter 2026-2027',
     isActive: true,
     record: '0-0',
     roster: [
@@ -37,7 +37,9 @@ export const TEAMS: Team[] = [
       createPlayer('g11-ss', 20, 'Simar Ahmed', 'SF', '5\'5"', 14, '/images/Player Profile Pics/Simar.png'),
       createPlayer('g6-ss', 21, 'Muriam Dhawan', 'SG', '5\'5"', 14, '/images/Player Profile Pics/Muriam.png'),
       createPlayer('g7-ss', 23, 'Aleena Hasan', 'PG', '5\'4"', 14, '/images/Player Profile Pics/Aleena.png'),
+      createPlayer('g-rasna-w26', 28, 'Rasna Purba', 'G/F', '5\'5"', 14),
       createPlayer('g5-ss', 30, 'Laila Gaafar', 'C', '5\'8"', 14, '/images/Player Profile Pics/Laila.png'),
+      createPlayer('g-inaaya-w26', 35, 'Inaaya Sufian', 'G/F', '5\'7"', 14),
     ],
     coaches: [
       {
@@ -70,7 +72,7 @@ export const TEAMS: Team[] = [
     gender: 'Boys',
     ageGroup: 'Born 2011',
     birthYear: 2011,
-    season: 'Spring/Summer 2026',
+    season: 'Winter 2026-2027',
     isActive: true,
     record: '0-0',
     roster: [
