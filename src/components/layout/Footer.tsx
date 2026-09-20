@@ -118,7 +118,7 @@ export default function Footer() {
                 EcoHoops for Kids Canada / EcoHoops pour Enfants Canada
               </div>
               <div className="text-eco-muted text-[11px]">
-                Federally incorporated Canadian nonprofit corporation
+                Federally incorporated Canadian not-for-profit corporation
               </div>
               <div className="text-eco-muted text-[11px] font-mono">
                 Federal Corporation No. 1720493-1

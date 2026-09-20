@@ -9,7 +9,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle'
 export default function Nonprofit() {
   useDocumentTitle('EcoHoops for Kids Canada | Canadian Youth Basketball Nonprofit', {
     raw: true,
-    metaDescription: 'EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization providing youth basketball and community programming through the EcoHoops brand.',
+    metaDescription: 'EcoHoops for Kids Canada is a federally incorporated Canadian not-for-profit corporation providing youth basketball and community programming through the EcoHoops brand.',
   })
   const { ref, isVisible } = useScrollReveal(0.05)
 
@@ -24,14 +24,14 @@ export default function Nonprofit() {
           className="text-center mb-16"
         >
           <span className="tag mb-4 inline-block !bg-[#003366]/80 !border-[#97B3D2]/40 !text-[#97B3D2]">
-            Official Nonprofit Entity
+            Official Not-for-Profit Entity
           </span>
           <h1 className="font-display text-section uppercase tracking-tight mb-6">
             <span className="text-white">ECOHOOPS FOR KIDS </span>
             <span className="gradient-text">CANADA</span>
           </h1>
           <p className="text-eco-muted-light text-lg max-w-3xl mx-auto leading-relaxed mb-6">
-            EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization operating under the EcoHoops brand. Ecohoops.ca serves as the official website and web presence for EcoHoops for Kids Canada and its nonprofit youth programs.
+            EcoHoops for Kids Canada is a federally incorporated Canadian not-for-profit corporation operating under the EcoHoops brand. Ecohoops.ca serves as the official website and web presence for EcoHoops for Kids Canada and its nonprofit youth programs.
           </p>
           <p className="text-sm text-eco-muted max-w-2xl mx-auto">
             We help kids grow strong, healthy, and resilient through youth basketball programming, community open gyms, equipment support, all-girls sports initiatives, financial assistance, and mental health education.
@@ -55,7 +55,7 @@ export default function Nonprofit() {
               </h2>
             </div>
             <span className="px-3 py-1 rounded-full bg-eco-blue/10 border border-eco-blue/30 text-eco-blue text-xs font-mono font-semibold uppercase tracking-wider self-start sm:self-auto">
-              Federal Nonprofit
+              Federal Not-for-Profit
             </span>
           </div>
 
@@ -66,7 +66,7 @@ export default function Nonprofit() {
                 <span>Entity Type</span>
               </div>
               <p className="text-sm font-semibold text-white">
-                Federally incorporated Canadian nonprofit corporation
+                Federally incorporated Canadian not-for-profit corporation
               </p>
             </div>
 
@@ -359,7 +359,7 @@ export default function Nonprofit() {
                      <span className="text-[11px] text-eco-muted font-body">EcoHoops pour Enfants Canada</span>
                    </div>
                    <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/15 border border-eco-blue/40 text-eco-blue font-bold self-start">
-                     Federal Non-Profit Corporation
+                     Federal Not-for-Profit Corporation
                    </span>
                  </div>
                  <p className="text-[10px] text-eco-muted mb-1 font-mono">FEDERAL CORPORATION NO: 1720493-1</p>

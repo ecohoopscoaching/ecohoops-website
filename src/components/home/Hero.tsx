@@ -191,7 +191,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
                 <Link to="/nonprofit" className="text-white font-semibold underline decoration-eco-blue/60 hover:text-eco-blue transition-colors">
                   EcoHoops for Kids Canada
                 </Link>{' '}
-                is the federally incorporated nonprofit organization behind EcoHoops’ community youth programming. Ecohoops.ca is its official website.
+                is the federally incorporated not-for-profit corporation behind EcoHoops’ community youth programming. ecohoops.ca is its official website.
               </p>
             </div>
             <Link

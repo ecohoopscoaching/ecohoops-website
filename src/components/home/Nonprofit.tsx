@@ -63,7 +63,7 @@ export default function Nonprofit() {
             <Link to="/nonprofit" className="text-white font-bold underline decoration-eco-blue hover:text-eco-blue transition-colors">
               EcoHoops for Kids Canada
             </Link>{' '}
-            is the federally incorporated nonprofit organization behind EcoHoops’ community youth programming. Ecohoops.ca is its official website.
+            is the federally incorporated not-for-profit corporation behind EcoHoops’ community youth programming. ecohoops.ca is its official website.
           </p>
           <p className="text-eco-muted text-sm max-w-3xl mx-auto mb-6 leading-relaxed">
             EcoHoops for Kids Canada and EcoHoops Inc. are separate legal entities that share the EcoHoops brand and website. EcoHoops Inc. handles coaching, rep teams, and skill development, while EcoHoops for Kids Canada is dedicated to expanding community access, free open gyms, equipment support, girls' sports initiatives, financial assistance, and mental health education.

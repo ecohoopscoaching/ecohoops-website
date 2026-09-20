@@ -290,7 +290,7 @@ export default function About() {
                   <div className="text-xs text-eco-muted font-body">EcoHoops pour Enfants Canada</div>
                 </div>
                 <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-eco-blue/15 border border-eco-blue/40 text-eco-blue font-bold self-start sm:self-auto">
-                  Federal Non-Profit Corporation
+                  Federal Not-for-Profit Corporation
                 </span>
               </div>
               <div className="space-y-1 text-[11px] font-mono text-eco-muted uppercase tracking-wider mb-6">
@@ -300,7 +300,7 @@ export default function About() {
               
               <div className="space-y-4 text-sm text-eco-muted-light leading-relaxed font-body">
                 <p>
-                  EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization operating under the EcoHoops brand.
+                  EcoHoops for Kids Canada is a federally incorporated Canadian not-for-profit corporation operating under the EcoHoops brand.
                 </p>
                 <p>
                   Ecohoops.ca serves as its official website and web presence, helping make basketball accessible through gym rentals, equipment support, financial assistance and subsidies, free community events, all-girls sports initiatives, and wellness support.
