@@ -65,7 +65,6 @@ export default function Navbar() {
           }
         ]
       },
-      { label: 'Blog', path: '/blog' },
       { label: 'Contact', path: '/contact' },
       ...(isAdmin ? [{ label: 'Admin', path: '/admin' }] : [])
     ]
