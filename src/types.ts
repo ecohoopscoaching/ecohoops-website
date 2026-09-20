@@ -90,6 +90,7 @@ export interface ScheduleEvent {
   type: 'game' | 'practice' | 'tournament' | 'event'
   title: string
   date: string
+  endDate?: string
   time: string
   location: string
   mapUrl?: string

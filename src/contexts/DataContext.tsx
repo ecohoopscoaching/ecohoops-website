@@ -3,6 +3,7 @@ import { Team, Player, ScheduleEvent, PaymentRecord, Message } from '../types'
 import { TEAMS } from '../data/teams'
 import { SCHEDULE } from '../data/schedule'
 import { PAYMENTS, MESSAGES } from '../data/content'
+import { downloadTeamIcsFile } from '../lib/calendar-service'
 
 interface DataContextType {
   teams: Team[]
@@ -20,7 +21,7 @@ interface DataContextType {
   uploadScoresheet: (teamId: string, csvContent: string, gameOutcome?: 'W' | 'L', gameScore?: string) => string
   recordAttendance: (eventId: string, playerId: string, status: 'going' | 'maybe' | 'notGoing', note?: string) => void
   checkInPlayer: (eventId: string, playerId: string, checkedIn: boolean) => void
-  downloadCalendarIcs: (calendarTitle?: string) => void
+  downloadCalendarIcs: (teamIdOrTitle?: string, calendarTitle?: string) => void
   sendMessage: (channel: string, content: string, sender: string) => void
   updatePaymentStatus: (paymentId: string, status: PaymentRecord['status']) => void
   clearSchedule: () => void
@@ -355,41 +356,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  const downloadCalendarIcs = (calendarTitle = 'EcoHoops Schedule') => {
-    const sanitize = (str: string) => (str || '').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n')
-    const icsLines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//EcoHoops Coaching//Team Calendar//EN',
-      `X-WR-CALNAME:${calendarTitle}`,
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-    ]
+  const downloadCalendarIcs = (teamIdOrTitle?: string, customTitle?: string) => {
+    let resolvedTeamId: 'u15-girls' | 'u16-boys' = 'u16-boys'
+    let resolvedTitle = customTitle
 
-    schedule.forEach((ev) => {
-      const dt = ev.date.replace(/-/g, '')
-      icsLines.push(
-        'BEGIN:VEVENT',
-        `UID:${ev.id}@ecohoops.ca`,
-        `DTSTAMP:${dt}T120000Z`,
-        `DTSTART:${dt}T180000Z`,
-        `DTEND:${dt}T193000Z`,
-        `SUMMARY:${sanitize(ev.title)}`,
-        `LOCATION:${sanitize(ev.location)}`,
-        `DESCRIPTION:${sanitize(`${ev.type.toUpperCase()} - ${ev.time} at ${ev.location}${ev.opponent ? ` vs ${ev.opponent}` : ''}`)}`,
-        'STATUS:CONFIRMED',
-        'END:VEVENT'
-      )
-    })
+    if (teamIdOrTitle === 'u15-girls' || teamIdOrTitle === 'u16-boys') {
+      resolvedTeamId = teamIdOrTitle
+    } else if (teamIdOrTitle && teamIdOrTitle.toLowerCase().includes('girls')) {
+      resolvedTeamId = 'u15-girls'
+      resolvedTitle = teamIdOrTitle
+    } else if (teamIdOrTitle && teamIdOrTitle.toLowerCase().includes('boys')) {
+      resolvedTeamId = 'u16-boys'
+      resolvedTitle = teamIdOrTitle
+    }
 
-    icsLines.push('END:VCALENDAR')
-    const blob = new Blob([icsLines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.setAttribute('download', 'ecohoops-team-schedule.ics')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    downloadTeamIcsFile(schedule, resolvedTeamId, resolvedTitle)
   }
 
   /* ─── MESSAGING MODIFIERS ─── */

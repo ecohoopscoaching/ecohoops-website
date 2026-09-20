@@ -230,12 +230,17 @@ export default function TeamPortal() {
             {/* Quick Calendar Sync Button */}
             <button
               type="button"
-              onClick={() => downloadCalendarIcs(`${currentTeam.name} Schedule`)}
-              className="px-3.5 py-1.5 sm:py-2 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/15 text-white text-[11px] sm:text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-              title="Add schedule to iPhone, Google, or Outlook Calendar"
+              onClick={() => downloadCalendarIcs(currentTeam.id, `${currentTeam.name} Schedule`)}
+              className="px-4 py-2 sm:py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white text-xs font-heading font-black uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-md group"
+              title="Sync complete schedule with Apple Calendar, Google Calendar, or Outlook"
             >
-              <Download size={13} className="text-[#97B3D2]" />
-              <span>Add to Phone (.ics)</span>
+              <Calendar size={16} className="text-[#97B3D2] flex-shrink-0 group-hover:scale-110 transition-transform" />
+              <div className="flex flex-col text-left">
+                <span className="leading-tight">Add Schedule to Calendar</span>
+                <span className="text-[10px] font-mono font-normal text-white/50 lowercase leading-none mt-0.5">
+                  Apple &bull; Google &bull; .ics
+                </span>
+              </div>
             </button>
           </div>
 
