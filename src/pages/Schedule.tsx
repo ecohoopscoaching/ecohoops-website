@@ -124,13 +124,13 @@ export default function Schedule() {
           <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
             <div className="flex gap-2">
               <input
-                type="text"
+                type="password"
                 value={passcode}
                 onChange={(e) => {
                   setPasscode(e.target.value)
                   setPasscodeError(false)
                 }}
-                placeholder="Or enter team passcode (e.g. team)"
+                placeholder="Or enter team passcode..."
                 className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
               />
               <button
@@ -146,35 +146,6 @@ export default function Schedule() {
               </p>
             )}
           </form>
-
-          <div className="pt-6 border-t border-white/10">
-            <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
-              Quick Member Sign-In
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => loginAsRole('player')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                🏀 Player
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsRole('parent')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                👪 Parent
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsRole('coach')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                👑 Coach
-              </button>
-            </div>
-          </div>
 
           <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
             <Link

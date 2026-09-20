@@ -360,38 +360,28 @@ export default function TeamPortal() {
             This portal is restricted to active EcoHoops players, parents, and coaching staff to safeguard athlete schedules and rosters.
           </p>
 
-          {/* WhatsApp Direct Access Highlight (Girls & Boys) */}
-          <div className="space-y-3 mb-6">
-            <div className="p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left space-y-1.5">
-              <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
-                <MessageSquare size={16} />
-                <span>Direct WhatsApp Links (No Login Needed)</span>
-              </div>
-              <p className="text-xs text-eco-muted-light leading-relaxed">
-                Parents & players can tap their team's <strong>pinned WhatsApp link</strong> to open their private squad hub directly on their phone.
-              </p>
-              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono">
-                <span className="px-2.5 py-1 rounded-md bg-pink-500/20 text-pink-300 border border-pink-500/30">
-                  🌸 U15 Girls Group: Passcode <strong>girls</strong>
-                </span>
-                <span className="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  🏀 U16 Boys Group: Passcode <strong>boys</strong>
-                </span>
-              </div>
+          {/* WhatsApp Direct Access Instructions */}
+          <div className="p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left space-y-1.5 mb-6">
+            <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
+              <MessageSquare size={16} />
+              <span>Direct WhatsApp Access</span>
             </div>
+            <p className="text-xs text-eco-muted-light leading-relaxed">
+              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter your private team hub directly with no login required.
+            </p>
           </div>
 
           {/* Passcode Unlock */}
           <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
             <div className="flex gap-2">
               <input
-                type="text"
+                type="password"
                 value={passcode}
                 onChange={(e) => {
                   setPasscode(e.target.value)
                   setPasscodeError(false)
                 }}
-                placeholder="Enter squad passcode (girls or boys)"
+                placeholder="Or enter team passcode..."
                 className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
               />
               <button
@@ -407,50 +397,6 @@ export default function TeamPortal() {
               </p>
             )}
           </form>
-
-          {/* Quick Member Access (Authorized Roles) */}
-          <div className="pt-6 border-t border-white/10">
-            <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
-              Quick Member Access
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  loginAsRole('parent', {
-                    teamId: 'u14-girls-ss26',
-                    childName: 'Alisha Sapp',
-                    children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 }]
-                  })
-                  setSelectedTeamId('u14-girls-ss26')
-                }}
-                className="py-2.5 px-2 bg-pink-500/10 border border-pink-500/30 hover:border-pink-500/60 hover:bg-pink-500/20 text-pink-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                🌸 U15 Girls Family
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  loginAsRole('parent', {
-                    teamId: 'u15-boys-ss26',
-                    childName: 'Jacob Sagat',
-                    children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }]
-                  })
-                  setSelectedTeamId('u15-boys-ss26')
-                }}
-                className="py-2.5 px-2 bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/20 text-blue-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                🏀 U16 Boys Family
-              </button>
-              <button
-                type="button"
-                onClick={() => loginAsRole('coach')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
-              >
-                👑 Coach
-              </button>
-            </div>
-          </div>
 
           <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
             <Link

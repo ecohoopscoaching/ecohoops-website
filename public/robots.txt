@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /hub
+Disallow: /hub/
+Disallow: /girls-hub
+Disallow: /boys-hub
+Disallow: /team-portal
+Disallow: /portal
+Disallow: /schedule
+Disallow: /admin
+
+Sitemap: https://www.ecohoops.ca/sitemap.xml
