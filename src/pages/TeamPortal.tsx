@@ -39,10 +39,8 @@ export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, scopedTeamId, loginAsRole, unlockWithPasscode } = useAuth()
+  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, scopedTeamId, loginAsRole } = useAuth()
   const { teams, schedule, recordAttendance, downloadCalendarIcs, updateEvent, addEvent, deleteEvent } = useData()
-  const [passcode, setPasscode] = useState('')
-  const [passcodeError, setPasscodeError] = useState(false)
 
   // Determine if URL path or param specifies girls or boys
   const resolvedParamTeamId = useMemo(() => {
@@ -316,27 +314,6 @@ export default function TeamPortal() {
     showToast(`Dispatched email alert to ${result.notification.recipientCount} parents!`)
   }
 
-  const handlePasscodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const input = passcode.trim().toLowerCase()
-    if (unlockWithPasscode(passcode)) {
-      if (['girls', 'u15', 'u15-girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(input)) {
-        setSelectedTeamId('u14-girls-ss26')
-        navigate('/hub/u14-girls-ss26', { replace: true })
-        showToast('✓ Welcome to the EcoHoops U15 Girls Team Hub!')
-      } else if (['boys', 'u16', 'u16-boys', 'u15-boys', '2011boys', 'boys2026'].includes(input)) {
-        setSelectedTeamId('u15-boys-ss26')
-        navigate('/hub/u15-boys-ss26', { replace: true })
-        showToast('✓ Welcome to the EcoHoops U16 Boys Team Hub!')
-      } else {
-        showToast('✓ Access granted! Welcome to the Team Hub.')
-      }
-      setPasscodeError(false)
-    } else {
-      setPasscodeError(true)
-    }
-  }
-
   if (!isTeamMember) {
     return (
       <section className="pt-32 pb-24 min-h-screen relative overflow-hidden bg-eco-black text-white flex items-center justify-center px-4">
@@ -360,56 +337,22 @@ export default function TeamPortal() {
             This portal is restricted to active EcoHoops players, parents, and coaching staff to safeguard athlete schedules and rosters.
           </p>
 
-          {/* WhatsApp Direct Access Instructions */}
           <div className="p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left space-y-1.5 mb-6">
             <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
               <MessageSquare size={16} />
               <span>Direct WhatsApp Access</span>
             </div>
             <p className="text-xs text-eco-muted-light leading-relaxed">
-              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter your private team hub directly with no login required.
+              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter your private team hub directly. Access is granted via the secret link only.
             </p>
           </div>
 
-          {/* Passcode Unlock */}
-          <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => {
-                  setPasscode(e.target.value)
-                  setPasscodeError(false)
-                }}
-                placeholder="Or enter team passcode..."
-                className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-xl bg-[#97B3D2] text-[#060A10] font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#B0C8E0] transition-colors whitespace-nowrap cursor-pointer"
-              >
-                Unlock
-              </button>
-            </div>
-            {passcodeError && (
-              <p className="text-xs text-red-400 text-left font-mono">
-                Incorrect passcode. Check your WhatsApp group or tap your squad's secret link.
-              </p>
-            )}
-          </form>
-
-          <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
+          <div className="pt-5 border-t border-white/10 mt-6 flex justify-center text-xs">
             <Link
               to="/"
               className="text-eco-muted hover:text-white transition-colors uppercase font-mono tracking-wider"
             >
               &larr; Back to Home
-            </Link>
-            <Link
-              to="/login"
-              className="text-eco-blue hover:text-white transition-colors uppercase font-mono tracking-wider font-semibold"
-            >
-              Coach Login &rarr;
             </Link>
           </div>
         </div>

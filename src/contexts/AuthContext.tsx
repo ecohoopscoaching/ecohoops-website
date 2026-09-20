@@ -18,7 +18,6 @@ interface AuthContextType {
   loginMockAdmin: () => void
   logoutMockAdmin: () => void
   logout: () => void
-  unlockWithPasscode: (code: string) => boolean
 }
 
 const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
@@ -71,8 +70,7 @@ const AuthContext = createContext<AuthContextType>({
   loginAsRole: () => {},
   loginMockAdmin: () => {},
   logoutMockAdmin: () => {},
-  logout: () => {},
-  unlockWithPasscode: () => false
+  logout: () => {}
 })
 
 export function useAuth() {
@@ -254,62 +252,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [userRole])
 
-  const unlockWithPasscode = (code: string): boolean => {
-    const normalized = code.trim().toLowerCase()
-    if (['girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(normalized)) {
-      localStorage.setItem('ecohoops_whatsapp_access', 'true')
-      localStorage.setItem('ecohoops_scoped_team', 'u14-girls-ss26')
-      setScopedTeamId('u14-girls-ss26')
-      setHasSecretPass(true)
-      const profile: UserProfile = {
-        id: 'parent-girls',
-        name: 'Girls Team Family',
-        email: 'family@ecohoops.ca',
-        role: 'parent',
-        childName: 'Alisha Sapp',
-        teamId: 'u14-girls-ss26',
-        children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 }]
-      }
-      setUserRole('parent')
-      setUserProfile(profile)
-      localStorage.setItem('ecohoops_user_role', 'parent')
-      localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
-      return true
-    }
-    if (['boys', 'u15', 'u15-boys', '2011boys', 'boys2026'].includes(normalized)) {
-      localStorage.setItem('ecohoops_whatsapp_access', 'true')
-      localStorage.setItem('ecohoops_scoped_team', 'u15-boys-ss26')
-      setScopedTeamId('u15-boys-ss26')
-      setHasSecretPass(true)
-      const profile: UserProfile = {
-        id: 'parent-boys',
-        name: 'Boys Team Family',
-        email: 'family@ecohoops.ca',
-        role: 'parent',
-        childName: 'Jacob Sagat',
-        teamId: 'u15-boys-ss26',
-        children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }]
-      }
-      setUserRole('parent')
-      setUserProfile(profile)
-      localStorage.setItem('ecohoops_user_role', 'parent')
-      localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
-      return true
-    }
-    if (['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(normalized)) {
-      localStorage.setItem('ecohoops_whatsapp_access', 'true')
-      setHasSecretPass(true)
-      if (!userRole) {
-        setUserRole('parent')
-        setUserProfile(DEFAULT_PROFILES.parent)
-        localStorage.setItem('ecohoops_user_role', 'parent')
-        localStorage.setItem('ecohoops_user_profile', JSON.stringify(DEFAULT_PROFILES.parent))
-      }
-      return true
-    }
-    return false
-  }
-
   useEffect(() => {
     if (!isFirebaseConfigured()) {
       setLoading(false)
@@ -386,8 +328,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loginAsRole,
     loginMockAdmin,
     logoutMockAdmin,
-    logout,
-    unlockWithPasscode
+    logout
   }
 
   return (

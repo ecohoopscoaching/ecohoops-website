@@ -16,7 +16,7 @@ const FOOTER_LINKS = [
   {
     title: 'Platform',
     links: [
-      { label: 'Member Login', path: '/login' },
+      { label: 'Coach Login', path: '/login' },
       { label: 'AI Coach', path: '/coach' },
       { label: 'Safe Sport', path: '/safe-sport' },
     ],

@@ -37,9 +37,7 @@ export default function Schedule() {
   const { ref, isVisible } = useScrollReveal(0.05)
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAdmin, isCoach, isParent, isTeamMember, userProfile, loginAsRole, unlockWithPasscode } = useAuth()
-  const [passcode, setPasscode] = useState('')
-  const [passcodeError, setPasscodeError] = useState(false)
+  const { isAdmin, isCoach, isParent, isTeamMember, userProfile, loginAsRole } = useAuth()
   const { schedule, teams, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>(
@@ -78,15 +76,6 @@ export default function Schedule() {
 
   const activeAlertTeam = teams.find(t => t.id === activeAlertEvent?.teamId) || teams[0]
 
-  const handlePasscodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (unlockWithPasscode(passcode)) {
-      setPasscodeError(false)
-    } else {
-      setPasscodeError(true)
-    }
-  }
-
   if (!isTeamMember) {
     return (
       <section className="pt-32 pb-24 min-h-screen relative overflow-hidden bg-eco-black text-white flex items-center justify-center px-4">
@@ -109,56 +98,22 @@ export default function Schedule() {
             Game schedules, practices, and attendance RSVP tracking are private and restricted to active EcoHoops players, parents, and coaches.
           </p>
 
-          {/* WhatsApp Direct Access Highlight */}
           <div className="p-5 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left mb-6 space-y-2">
             <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
               <MessageSquare size={16} />
               <span>Direct WhatsApp Group Access</span>
             </div>
             <p className="text-xs text-eco-muted-light leading-relaxed">
-              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter directly on your phone with no password needed.
+              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter directly on your phone. Access is granted via the secret link only.
             </p>
           </div>
 
-          {/* Passcode Unlock */}
-          <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => {
-                  setPasscode(e.target.value)
-                  setPasscodeError(false)
-                }}
-                placeholder="Or enter team passcode..."
-                className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-xl bg-[#97B3D2] text-[#060A10] font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#B0C8E0] transition-colors whitespace-nowrap cursor-pointer"
-              >
-                Unlock
-              </button>
-            </div>
-            {passcodeError && (
-              <p className="text-xs text-red-400 text-left font-mono">
-                Incorrect passcode. Check your WhatsApp group or tap the secret link.
-              </p>
-            )}
-          </form>
-
-          <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
+          <div className="pt-5 border-t border-white/10 mt-6 flex justify-center text-xs">
             <Link
               to="/"
               className="text-eco-muted hover:text-white transition-colors uppercase font-mono tracking-wider"
             >
               &larr; Back to Home
-            </Link>
-            <Link
-              to="/login"
-              className="text-eco-blue hover:text-white transition-colors uppercase font-mono tracking-wider font-semibold"
-            >
-              Coach Login &rarr;
             </Link>
           </div>
         </div>

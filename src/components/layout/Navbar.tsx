@@ -348,7 +348,7 @@ export default function Navbar() {
                   to="/login"
                   className="text-xs font-heading font-semibold uppercase tracking-wider text-eco-muted-light hover:text-white transition-colors px-2 py-1"
                 >
-                  Member Login
+                  Coach Login
                 </Link>
               )}
 
@@ -691,7 +691,7 @@ export default function Navbar() {
                         className="text-xs font-heading font-bold uppercase tracking-widest text-eco-muted-light hover:text-white transition-colors" 
                         onClick={() => setIsOpen(false)}
                       >
-                        Member Login
+                        Coach Login
                       </Link>
                     )}
                     <a 
