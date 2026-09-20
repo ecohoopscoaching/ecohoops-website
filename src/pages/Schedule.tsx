@@ -37,7 +37,9 @@ export default function Schedule() {
   const { ref, isVisible } = useScrollReveal(0.05)
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAdmin, isCoach, isParent, isTeamMember, userProfile, loginAsRole } = useAuth()
+  const { isAdmin, isCoach, isParent, isTeamMember, userProfile, loginAsRole, unlockWithPasscode } = useAuth()
+  const [passcode, setPasscode] = useState('')
+  const [passcodeError, setPasscodeError] = useState(false)
   const { schedule, teams, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>(
@@ -76,6 +78,15 @@ export default function Schedule() {
 
   const activeAlertTeam = teams.find(t => t.id === activeAlertEvent?.teamId) || teams[0]
 
+  const handlePasscodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (unlockWithPasscode(passcode)) {
+      setPasscodeError(false)
+    } else {
+      setPasscodeError(true)
+    }
+  }
+
   if (!isTeamMember) {
     return (
       <section className="pt-32 pb-24 min-h-screen relative overflow-hidden bg-eco-black text-white flex items-center justify-center px-4">
@@ -94,26 +105,47 @@ export default function Schedule() {
             Team Members Only
           </h1>
 
-          <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed mb-8 max-w-md mx-auto">
+          <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed mb-6 max-w-md mx-auto">
             Game schedules, practices, and attendance RSVP tracking are private and restricted to active EcoHoops players, parents, and coaches.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <button
-              onClick={() => navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`)}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#97B3D2] text-[#060A10] font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#B0C8E0] hover:shadow-[0_0_25px_rgba(151,179,210,0.4)] transition-all flex items-center justify-center gap-2"
-            >
-              <span>Sign In to Team Hub</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <Link
-              to="/"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/10 hover:border-white/20 bg-white/5 text-eco-muted-light hover:text-white font-heading font-semibold text-sm uppercase tracking-wider transition-all"
-            >
-              Back to Home
-            </Link>
+          {/* WhatsApp Direct Access Highlight */}
+          <div className="p-5 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left mb-6 space-y-2">
+            <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
+              <MessageSquare size={16} />
+              <span>Direct WhatsApp Group Access</span>
+            </div>
+            <p className="text-xs text-eco-muted-light leading-relaxed">
+              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter directly on your phone with no password needed.
+            </p>
           </div>
+
+          {/* Passcode Unlock */}
+          <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={passcode}
+                onChange={(e) => {
+                  setPasscode(e.target.value)
+                  setPasscodeError(false)
+                }}
+                placeholder="Or enter team passcode (e.g. team)"
+                className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 rounded-xl bg-[#97B3D2] text-[#060A10] font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#B0C8E0] transition-colors whitespace-nowrap cursor-pointer"
+              >
+                Unlock
+              </button>
+            </div>
+            {passcodeError && (
+              <p className="text-xs text-red-400 text-left font-mono">
+                Incorrect passcode. Check your WhatsApp group or tap the secret link.
+              </p>
+            )}
+          </form>
 
           <div className="pt-6 border-t border-white/10">
             <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
@@ -123,25 +155,40 @@ export default function Schedule() {
               <button
                 type="button"
                 onClick={() => loginAsRole('player')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 🏀 Player
               </button>
               <button
                 type="button"
                 onClick={() => loginAsRole('parent')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 👪 Parent
               </button>
               <button
                 type="button"
                 onClick={() => loginAsRole('coach')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 👑 Coach
               </button>
             </div>
+          </div>
+
+          <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
+            <Link
+              to="/"
+              className="text-eco-muted hover:text-white transition-colors uppercase font-mono tracking-wider"
+            >
+              &larr; Back to Home
+            </Link>
+            <Link
+              to="/login"
+              className="text-eco-blue hover:text-white transition-colors uppercase font-mono tracking-wider font-semibold"
+            >
+              Coach Login &rarr;
+            </Link>
           </div>
         </div>
       </section>

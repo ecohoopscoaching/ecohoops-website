@@ -17,6 +17,7 @@ interface AuthContextType {
   loginMockAdmin: () => void
   logoutMockAdmin: () => void
   logout: () => void
+  unlockWithPasscode: (code: string) => boolean
 }
 
 const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
@@ -68,7 +69,8 @@ const AuthContext = createContext<AuthContextType>({
   loginAsRole: () => {},
   loginMockAdmin: () => {},
   logoutMockAdmin: () => {},
-  logout: () => {}
+  logout: () => {},
+  unlockWithPasscode: () => false
 })
 
 export function useAuth() {
@@ -92,10 +94,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const savedRole = (localStorage.getItem('ecohoops_user_role') as UserRole) || (localStorage.getItem('mock_admin') === 'true' ? 'admin' : null)
+  // Check if device already has WhatsApp secret link access saved or in URL
+  const checkInitialSecretAccess = () => {
+    if (typeof window === 'undefined') return false
+    if (localStorage.getItem('ecohoops_whatsapp_access') === 'true') return true
+    const params = new URLSearchParams(window.location.search)
+    const accessKey = params.get('access') || params.get('key') || params.get('token') || params.get('pass')
+    if (accessKey && ['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(accessKey.toLowerCase())) {
+      localStorage.setItem('ecohoops_whatsapp_access', 'true')
+      return true
+    }
+    return false
+  }
+
+  const initialSecretPass = checkInitialSecretAccess()
+  const [hasSecretPass, setHasSecretPass] = useState<boolean>(initialSecretPass)
+
+  const savedRole = (localStorage.getItem('ecohoops_user_role') as UserRole) || 
+    (localStorage.getItem('mock_admin') === 'true' ? 'admin' : (initialSecretPass ? 'parent' : null))
   const savedProfile = localStorage.getItem('ecohoops_user_profile')
 
-  const [userRole, setUserRole] = useState<UserRole | null>(savedRole || null)
+  const [userRole, setUserRole] = useState<UserRole | null>(savedRole || (initialSecretPass ? 'parent' : null))
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     if (savedProfile && savedRole) {
       try {
@@ -107,14 +126,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (savedRole && DEFAULT_PROFILES[savedRole]) {
       return DEFAULT_PROFILES[savedRole]
     }
+    if (initialSecretPass) {
+      return DEFAULT_PROFILES.parent
+    }
     return null
   })
 
-  const isTeamMember = !!(userRole || currentUser)
+  const isTeamMember = !!(userRole || currentUser || hasSecretPass)
   const isAdmin = userRole === 'admin' || currentUser !== null
   const isCoach = userRole === 'coach'
-  const isParent = userRole === 'parent'
+  const isParent = userRole === 'parent' || (hasSecretPass && !userRole)
   const isPlayer = userRole === 'player'
+
+  // Listen for secret URL access parameters dynamically
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const accessKey = params.get('access') || params.get('key') || params.get('token') || params.get('pass')
+      if (accessKey && ['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(accessKey.toLowerCase())) {
+        localStorage.setItem('ecohoops_whatsapp_access', 'true')
+        setHasSecretPass(true)
+        if (!userRole) {
+          setUserRole('parent')
+          setUserProfile(DEFAULT_PROFILES.parent)
+          localStorage.setItem('ecohoops_user_role', 'parent')
+          localStorage.setItem('ecohoops_user_profile', JSON.stringify(DEFAULT_PROFILES.parent))
+        }
+      }
+    }
+  }, [userRole])
+
+  const unlockWithPasscode = (code: string): boolean => {
+    const normalized = code.trim().toLowerCase()
+    if (['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(normalized)) {
+      localStorage.setItem('ecohoops_whatsapp_access', 'true')
+      setHasSecretPass(true)
+      if (!userRole) {
+        setUserRole('parent')
+        setUserProfile(DEFAULT_PROFILES.parent)
+        localStorage.setItem('ecohoops_user_role', 'parent')
+        localStorage.setItem('ecohoops_user_profile', JSON.stringify(DEFAULT_PROFILES.parent))
+      }
+      return true
+    }
+    return false
+  }
 
   useEffect(() => {
     if (!isFirebaseConfigured()) {
@@ -169,6 +225,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('mock_admin')
     localStorage.removeItem('ecohoops_user_role')
     localStorage.removeItem('ecohoops_user_profile')
+    localStorage.removeItem('ecohoops_whatsapp_access')
+    setHasSecretPass(false)
     setUserRole(null)
     setUserProfile(null)
   }
@@ -186,7 +244,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loginAsRole,
     loginMockAdmin,
     logoutMockAdmin,
-    logout
+    logout,
+    unlockWithPasscode
   }
 
   return (

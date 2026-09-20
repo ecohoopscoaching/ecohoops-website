@@ -25,8 +25,10 @@ export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, loginAsRole } = useAuth()
+  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, loginAsRole, unlockWithPasscode } = useAuth()
   const { teams, schedule, recordAttendance, downloadCalendarIcs, updateEvent, addEvent, deleteEvent } = useData()
+  const [passcode, setPasscode] = useState('')
+  const [passcodeError, setPasscodeError] = useState(false)
 
   // Determine authorized teams for current user
   const userTeamIds = useMemo(() => {
@@ -139,13 +141,13 @@ export default function TeamPortal() {
   }
 
   const handleCopyLink = () => {
-    const hubUrl = `${window.location.origin}/hub`
+    const hubUrl = `${window.location.origin}/hub/${selectedTeamId}?access=team`
     if (navigator.clipboard) {
       navigator.clipboard.writeText(hubUrl)
     }
     setCopiedLink(true)
-    showToast(`✓ Link copied: ${hubUrl}`)
-    setTimeout(() => setCopiedLink(false), 3000)
+    showToast(`✓ WhatsApp group link copied: ${hubUrl}`)
+    setTimeout(() => setCopiedLink(false), 4000)
   }
 
   // Split events into upcoming and past
@@ -206,6 +208,16 @@ export default function TeamPortal() {
     showToast(`Dispatched email alert to ${result.notification.recipientCount} parents!`)
   }
 
+  const handlePasscodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (unlockWithPasscode(passcode)) {
+      showToast('✓ Access granted! Welcome to the Team Hub.')
+      setPasscodeError(false)
+    } else {
+      setPasscodeError(true)
+    }
+  }
+
   if (!isTeamMember) {
     return (
       <section className="pt-32 pb-24 min-h-screen relative overflow-hidden bg-eco-black text-white flex items-center justify-center px-4">
@@ -225,55 +237,91 @@ export default function TeamPortal() {
             Team Members Only
           </h1>
 
-          <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed mb-8 max-w-md mx-auto">
-            The EcoHoops Team Hub is a private portal reserved exclusively for registered players, parents, and coaching staff. Rosters, game schedules, attendance, and team communications are protected to safeguard athlete privacy.
+          <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed mb-6 max-w-md mx-auto">
+            This portal is restricted to active EcoHoops players, parents, and coaching staff to safeguard athlete schedules and rosters.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <button
-              onClick={() => navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`)}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#97B3D2] text-[#060A10] font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#B0C8E0] hover:shadow-[0_0_25px_rgba(151,179,210,0.4)] transition-all flex items-center justify-center gap-2"
-            >
-              <span>Sign In to Team Hub</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <Link
-              to="/"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/10 hover:border-white/20 bg-white/5 text-eco-muted-light hover:text-white font-heading font-semibold text-sm uppercase tracking-wider transition-all"
-            >
-              Back to Home
-            </Link>
+          {/* WhatsApp Direct Access Highlight */}
+          <div className="p-5 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left mb-6 space-y-2">
+            <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
+              <MessageSquare size={16} />
+              <span>Direct WhatsApp Group Access</span>
+            </div>
+            <p className="text-xs text-eco-muted-light leading-relaxed">
+              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter directly on your phone with no password needed.
+            </p>
           </div>
 
-          {/* Quick Member Access */}
+          {/* Passcode Unlock */}
+          <form onSubmit={handlePasscodeSubmit} className="mb-6 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={passcode}
+                onChange={(e) => {
+                  setPasscode(e.target.value)
+                  setPasscodeError(false)
+                }}
+                placeholder="Or enter team passcode (e.g. team)"
+                className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 rounded-xl bg-[#97B3D2] text-[#060A10] font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#B0C8E0] transition-colors whitespace-nowrap cursor-pointer"
+              >
+                Unlock
+              </button>
+            </div>
+            {passcodeError && (
+              <p className="text-xs text-red-400 text-left font-mono">
+                Incorrect passcode. Check your WhatsApp group or tap the secret link.
+              </p>
+            )}
+          </form>
+
+          {/* Quick Member Access (Authorized Roles) */}
           <div className="pt-6 border-t border-white/10">
             <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
-              Quick Member Sign-In
+              Quick Member Access (Authorized Roles)
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => loginAsRole('player')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 🏀 Player
               </button>
               <button
                 type="button"
                 onClick={() => loginAsRole('parent')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 👪 Parent
               </button>
               <button
                 type="button"
                 onClick={() => loginAsRole('coach')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
                 👑 Coach
               </button>
             </div>
+          </div>
+
+          <div className="pt-5 border-t border-white/10 mt-6 flex items-center justify-between text-xs">
+            <Link
+              to="/"
+              className="text-eco-muted hover:text-white transition-colors uppercase font-mono tracking-wider"
+            >
+              &larr; Back to Home
+            </Link>
+            <Link
+              to="/login"
+              className="text-eco-blue hover:text-white transition-colors uppercase font-mono tracking-wider font-semibold"
+            >
+              Coach Login &rarr;
+            </Link>
           </div>
         </div>
       </section>
@@ -372,11 +420,11 @@ export default function TeamPortal() {
             <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
               <button
                 onClick={handleCopyLink}
-                className="px-4 py-2.5 rounded-xl bg-eco-surface border border-eco-border hover:border-[#97B3D2] text-white text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all hover:bg-eco-surface2 cursor-pointer shadow-sm"
-                title="Copy shareable link for WhatsApp, SMS or email"
+                className="px-4 py-2.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] text-[#25D366] hover:text-white hover:bg-[#25D366]/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+                title="Copy secret link for WhatsApp group (no login needed for parents)"
               >
-                {copiedLink ? <Check size={14} className="text-[#00D26A]" /> : <Copy size={14} className="text-[#97B3D2]" />}
-                <span>{copiedLink ? 'Link Copied!' : 'Copy Share Link'}</span>
+                {copiedLink ? <Check size={14} className="text-[#25D366]" /> : <MessageSquare size={14} className="text-[#25D366]" />}
+                <span>{copiedLink ? 'WhatsApp Link Copied!' : 'Copy WhatsApp Link'}</span>
               </button>
 
               <button
