@@ -142,26 +142,51 @@ export default function TeamPortal() {
     showToast(`Sent email alert to ${result.notification.recipientCount} families!`)
   }
 
-  // Lock screen if not authorized
-  if (!isTeamMember) {
+  // Check authorization for the requested team:
+  // - Coaches and Admins can view either team
+  // - Squad parents can ONLY view their assigned team
+  const isAuthorizedForThisTeam = useMemo(() => {
+    if (isAdmin || isCoach) return true
+    if (!scopedTeamId) return false
+    return scopedTeamId === selectedTeamId
+  }, [isAdmin, isCoach, scopedTeamId, selectedTeamId])
+
+  // Lock screen if not authorized for this squad
+  if (!isAuthorizedForThisTeam) {
+    const isOtherTeamScoped = scopedTeamId && scopedTeamId !== selectedTeamId
+    const otherTeamName = scopedTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys'
+    const targetTeamName = selectedTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys'
+
     return (
       <section className="pt-28 pb-20 min-h-screen bg-[#060A10] text-white flex items-center justify-center px-4">
         <div className="w-full max-w-md p-6 sm:p-10 text-center border-2 border-white/10 bg-[#0B131E] rounded-3xl shadow-2xl">
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-center justify-center mx-auto mb-5 text-[#97B3D2]">
             <Lock size={32} />
           </div>
-          <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[#97B3D2] font-mono text-[11px] uppercase tracking-widest inline-block mb-3">
+          <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono text-[11px] uppercase tracking-widest inline-block mb-3 font-bold">
             Private Access
           </span>
           <h1 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-2">
-            Team Members Only
+            {targetTeamName} Hub
           </h1>
           <p className="text-white/70 text-xs sm:text-sm leading-relaxed mb-6">
-            This hub is private for registered EcoHoops families. Please tap the secret link pinned in your WhatsApp group to enter.
+            {isOtherTeamScoped
+              ? `This private team area is exclusively for registered ${targetTeamName} players and parents.`
+              : 'This hub is private for registered EcoHoops families. Please tap the secret link pinned in your WhatsApp group to enter.'}
           </p>
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
-            No password needed — tap the link from your WhatsApp group.
-          </div>
+          {isOtherTeamScoped ? (
+            <button
+              type="button"
+              onClick={() => navigate(`/hub/${scopedTeamId}`, { replace: true })}
+              className="w-full py-3.5 px-4 rounded-xl bg-[#97B3D2] hover:bg-white text-[#060A10] text-xs font-heading font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+            >
+              Go to Your {otherTeamName} Hub →
+            </button>
+          ) : (
+            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
+              No password needed — tap the link from your WhatsApp group.
+            </div>
+          )}
         </div>
       </section>
     )
@@ -191,10 +216,10 @@ export default function TeamPortal() {
 
       <div className="max-w-4xl mx-auto px-3.5 sm:px-6 space-y-6">
         
-        {/* MOBILE OPTIMIZED HEADER */}
+        {/* MOBILE OPTIMIZED HEADER — EXCLUSIVELY FOR THIS TEAM */}
         <div className="flex flex-col gap-3 pt-2 pb-4 border-b border-white/10">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-heading font-extrabold uppercase tracking-wider border ${
+            <span className={`px-3.5 py-1.5 rounded-full text-xs font-heading font-extrabold uppercase tracking-wider border ${
               isBoys
                 ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
                 : 'bg-pink-500/20 text-pink-300 border-pink-500/40'
@@ -202,7 +227,7 @@ export default function TeamPortal() {
               {isBoys ? '🏀 U16 Boys Squad' : '🌸 U15 Girls Squad'}
             </span>
 
-            {/* Quick Calendar Sync Button (Prominent touch target) */}
+            {/* Quick Calendar Sync Button */}
             <button
               type="button"
               onClick={() => downloadCalendarIcs(`${currentTeam.name} Schedule`)}
@@ -218,36 +243,6 @@ export default function TeamPortal() {
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white leading-tight">
               {currentTeam.name} <span className="text-[#97B3D2]">Team Hub</span>
             </h1>
-
-            {/* Coach Squad Switcher (if admin) */}
-            {(isAdmin || isCoach) && (
-              <div className="flex items-center gap-1 bg-[#0B131E] p-1 rounded-xl border border-white/10 self-start">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedTeamId('u16-boys')
-                    navigate('/hub/u16-boys', { replace: true })
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-heading font-extrabold uppercase tracking-wider transition-all ${
-                    isBoys ? 'bg-[#97B3D2] text-[#060A10]' : 'text-white/60'
-                  }`}
-                >
-                  Boys
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedTeamId('u15-girls')
-                    navigate('/hub/u15-girls', { replace: true })
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-heading font-extrabold uppercase tracking-wider transition-all ${
-                    !isBoys ? 'bg-pink-400 text-[#060A10]' : 'text-white/60'
-                  }`}
-                >
-                  Girls
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -591,7 +586,7 @@ export default function TeamPortal() {
                 <span className="px-3 py-1 rounded-xl bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-black uppercase tracking-wider">
                   FRIDAYS
                 </span>
-                <span className="text-xs font-mono text-cyan-300 font-bold">Both Squads</span>
+                <span className="text-xs font-mono text-cyan-300 font-bold">Open Gym Session</span>
               </div>
 
               <div>
