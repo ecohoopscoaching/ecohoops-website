@@ -74,6 +74,8 @@ export default function App() {
               {/* Unified Team Hub - One Link for Parents, Players & Coaches */}
               <Route path="hub" element={<TeamPortal />} />
               <Route path="hub/:teamId" element={<TeamPortal />} />
+              <Route path="girls-hub" element={<TeamPortal />} />
+              <Route path="boys-hub" element={<TeamPortal />} />
               <Route path="schedule" element={<TeamPortal />} />
               <Route path="schedule/:teamId" element={<TeamPortal />} />
               <Route path="team-portal" element={<TeamPortal />} />

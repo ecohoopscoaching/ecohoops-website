@@ -25,15 +25,33 @@ export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, loginAsRole, unlockWithPasscode } = useAuth()
+  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, scopedTeamId, loginAsRole, unlockWithPasscode } = useAuth()
   const { teams, schedule, recordAttendance, downloadCalendarIcs, updateEvent, addEvent, deleteEvent } = useData()
   const [passcode, setPasscode] = useState('')
   const [passcodeError, setPasscodeError] = useState(false)
+
+  // Determine if URL path or param specifies girls or boys
+  const resolvedParamTeamId = useMemo(() => {
+    const path = location.pathname.toLowerCase()
+    if (path.includes('girls') || paramTeamId?.toLowerCase() === 'girls' || paramTeamId?.toLowerCase() === 'u14' || paramTeamId === 'u14-girls-ss26') {
+      return 'u14-girls-ss26'
+    }
+    if (path.includes('boys') || paramTeamId?.toLowerCase() === 'boys' || paramTeamId?.toLowerCase() === 'u15' || paramTeamId === 'u15-boys-ss26') {
+      return 'u15-boys-ss26'
+    }
+    if (paramTeamId && teams.some((t) => t.id === paramTeamId)) {
+      return paramTeamId
+    }
+    return null
+  }, [paramTeamId, location.pathname, teams])
 
   // Determine authorized teams for current user
   const userTeamIds = useMemo(() => {
     if (isAdmin || isCoach) {
       return teams.map((t) => t.id)
+    }
+    if (scopedTeamId) {
+      return [scopedTeamId]
     }
     const ids: string[] = []
     if (userProfile?.teamId) ids.push(userProfile.teamId)
@@ -42,13 +60,14 @@ export default function TeamPortal() {
         if (c.teamId && !ids.includes(c.teamId)) ids.push(c.teamId)
       })
     }
-    return ids
-  }, [isAdmin, isCoach, userProfile, teams])
+    return ids.length > 0 ? ids : teams.map((t) => t.id)
+  }, [isAdmin, isCoach, scopedTeamId, userProfile, teams])
 
   // Active Team Selection
   const [selectedTeamId, setSelectedTeamId] = useState<string>(() => {
-    if (paramTeamId && teams.some((t) => t.id === paramTeamId)) {
-      return paramTeamId
+    if (resolvedParamTeamId) return resolvedParamTeamId
+    if (scopedTeamId && teams.some((t) => t.id === scopedTeamId) && !isAdmin && !isCoach) {
+      return scopedTeamId
     }
     if (userTeamIds.length > 0) {
       const match = teams.find((t) => userTeamIds.includes(t.id))
@@ -58,10 +77,12 @@ export default function TeamPortal() {
   })
 
   useEffect(() => {
-    if (paramTeamId && teams.some((t) => t.id === paramTeamId)) {
-      setSelectedTeamId(paramTeamId)
+    if (resolvedParamTeamId) {
+      setSelectedTeamId(resolvedParamTeamId)
+    } else if (scopedTeamId && teams.some((t) => t.id === scopedTeamId) && !isAdmin && !isCoach) {
+      setSelectedTeamId(scopedTeamId)
     }
-  }, [paramTeamId, teams])
+  }, [resolvedParamTeamId, scopedTeamId, teams, isAdmin, isCoach])
 
   // Selected Team Object
   const currentTeam = useMemo(() => {
@@ -114,7 +135,7 @@ export default function TeamPortal() {
   const [selectedRsvpPlayerId, setSelectedRsvpPlayerId] = useState<string>(() => {
     return localStorage.getItem('ecohoops_parent_player_id') || ''
   })
-  const [copiedLink, setCopiedLink] = useState(false)
+  const [copiedLink, setCopiedLink] = useState<'girls' | 'boys' | 'current' | null>(null)
   const [showAddEventModal, setShowAddEventModal] = useState(false)
 
   const effectivePlayerId = useMemo(() => {
@@ -140,14 +161,28 @@ export default function TeamPortal() {
     showToast(`RSVP updated: ${status === 'going' ? 'Attending ✓' : status === 'maybe' ? 'Maybe ⏱️' : 'Can\'t Attend ✕'}${pLabel}`)
   }
 
-  const handleCopyLink = () => {
-    const hubUrl = `${window.location.origin}/hub/${selectedTeamId}?access=team`
+  const handleCopyLink = (teamType: 'girls' | 'boys' | 'current' = 'current') => {
+    let hubUrl = ''
+    let toastLabel = ''
+
+    if (teamType === 'girls') {
+      hubUrl = `${window.location.origin}/hub/u14-girls-ss26?access=girls`
+      toastLabel = '🌸 2012 Girls WhatsApp link copied! Pin this in the Girls group.'
+    } else if (teamType === 'boys') {
+      hubUrl = `${window.location.origin}/hub/u15-boys-ss26?access=boys`
+      toastLabel = '🏀 2011 Boys WhatsApp link copied! Pin this in the Boys group.'
+    } else {
+      const isGirls = selectedTeamId === 'u14-girls-ss26'
+      hubUrl = `${window.location.origin}/hub/${selectedTeamId}?access=${isGirls ? 'girls' : 'boys'}`
+      toastLabel = `✓ ${isGirls ? 'Girls' : 'Boys'} WhatsApp link copied: ${hubUrl}`
+    }
+
     if (navigator.clipboard) {
       navigator.clipboard.writeText(hubUrl)
     }
-    setCopiedLink(true)
-    showToast(`✓ WhatsApp group link copied: ${hubUrl}`)
-    setTimeout(() => setCopiedLink(false), 4000)
+    setCopiedLink(teamType)
+    showToast(toastLabel)
+    setTimeout(() => setCopiedLink(null), 4000)
   }
 
   // Split events into upcoming and past
@@ -210,8 +245,19 @@ export default function TeamPortal() {
 
   const handlePasscodeSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const input = passcode.trim().toLowerCase()
     if (unlockWithPasscode(passcode)) {
-      showToast('✓ Access granted! Welcome to the Team Hub.')
+      if (['girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(input)) {
+        setSelectedTeamId('u14-girls-ss26')
+        navigate('/hub/u14-girls-ss26', { replace: true })
+        showToast('✓ Welcome to the 2012 Girls Team Hub!')
+      } else if (['boys', 'u15', 'u15-boys', '2011boys', 'boys2026'].includes(input)) {
+        setSelectedTeamId('u15-boys-ss26')
+        navigate('/hub/u15-boys-ss26', { replace: true })
+        showToast('✓ Welcome to the 2011 Boys Team Hub!')
+      } else {
+        showToast('✓ Access granted! Welcome to the Team Hub.')
+      }
       setPasscodeError(false)
     } else {
       setPasscodeError(true)
@@ -241,15 +287,25 @@ export default function TeamPortal() {
             This portal is restricted to active EcoHoops players, parents, and coaching staff to safeguard athlete schedules and rosters.
           </p>
 
-          {/* WhatsApp Direct Access Highlight */}
-          <div className="p-5 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left mb-6 space-y-2">
-            <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
-              <MessageSquare size={16} />
-              <span>Direct WhatsApp Group Access</span>
+          {/* WhatsApp Direct Access Highlight (Girls & Boys) */}
+          <div className="space-y-3 mb-6">
+            <div className="p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 text-left space-y-1.5">
+              <div className="flex items-center gap-2 text-[#25D366] font-heading font-bold text-xs uppercase tracking-wider">
+                <MessageSquare size={16} />
+                <span>Direct WhatsApp Links (No Login Needed)</span>
+              </div>
+              <p className="text-xs text-eco-muted-light leading-relaxed">
+                Parents & players can tap their team's <strong>pinned WhatsApp link</strong> to open their private squad hub directly on their phone.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono">
+                <span className="px-2.5 py-1 rounded-md bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                  🌸 Girls Group: Passcode <strong>girls</strong>
+                </span>
+                <span className="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  🏀 Boys Group: Passcode <strong>boys</strong>
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-eco-muted-light leading-relaxed">
-              If you are a registered player or parent, tap the <strong>pinned link</strong> in your team's WhatsApp group chat to enter directly on your phone with no password needed.
-            </p>
           </div>
 
           {/* Passcode Unlock */}
@@ -262,7 +318,7 @@ export default function TeamPortal() {
                   setPasscode(e.target.value)
                   setPasscodeError(false)
                 }}
-                placeholder="Or enter team passcode (e.g. team)"
+                placeholder="Enter squad passcode (girls or boys)"
                 className="input-field flex-1 !py-3 !px-4 text-xs sm:text-sm bg-eco-surface border-white/10 focus:border-[#97B3D2]"
               />
               <button
@@ -274,7 +330,7 @@ export default function TeamPortal() {
             </div>
             {passcodeError && (
               <p className="text-xs text-red-400 text-left font-mono">
-                Incorrect passcode. Check your WhatsApp group or tap the secret link.
+                Incorrect passcode. Check your WhatsApp group or tap your squad's secret link.
               </p>
             )}
           </form>
@@ -282,22 +338,36 @@ export default function TeamPortal() {
           {/* Quick Member Access (Authorized Roles) */}
           <div className="pt-6 border-t border-white/10">
             <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
-              Quick Member Access (Authorized Roles)
+              Quick Member Access
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => loginAsRole('player')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
+                onClick={() => {
+                  loginAsRole('parent', {
+                    teamId: 'u14-girls-ss26',
+                    childName: 'Alisha Sapp',
+                    children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 }]
+                  })
+                  setSelectedTeamId('u14-girls-ss26')
+                }}
+                className="py-2.5 px-2 bg-pink-500/10 border border-pink-500/30 hover:border-pink-500/60 hover:bg-pink-500/20 text-pink-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
-                🏀 Player
+                🌸 Girls Family
               </button>
               <button
                 type="button"
-                onClick={() => loginAsRole('parent')}
-                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
+                onClick={() => {
+                  loginAsRole('parent', {
+                    teamId: 'u15-boys-ss26',
+                    childName: 'Jacob Sagat',
+                    children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }]
+                  })
+                  setSelectedTeamId('u15-boys-ss26')
+                }}
+                className="py-2.5 px-2 bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/20 text-blue-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
-                👪 Parent
+                🏀 Boys Family
               </button>
               <button
                 type="button"
@@ -368,34 +438,49 @@ export default function TeamPortal() {
                 <Bell size={12} className="animate-pulse" /> Live Team Feed
               </span>
               <span className="hidden sm:inline-block px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest text-eco-muted bg-white/5 border border-white/10">
-                One Link for Parents, Players & Coaches
+                {currentTeam.gender === 'Girls' ? '🌸 Girls Squad Hub' : '🏀 Boys Squad Hub'}
               </span>
             </div>
 
-            {/* Team Switcher */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-eco-muted font-heading uppercase tracking-wider hidden sm:inline">
-                Squad:
-              </span>
-              <div className="flex items-center gap-1 bg-eco-black/60 p-1 rounded-xl border border-eco-border">
-                {teams.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      setSelectedTeamId(t.id)
-                      navigate(`/hub/${t.id}`, { replace: true })
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-heading font-semibold uppercase tracking-wider transition-all cursor-pointer ${
-                      selectedTeamId === t.id
-                        ? 'bg-[#97B3D2] text-[#060A10] shadow-sm font-bold'
-                        : 'text-eco-muted hover:text-white'
-                    }`}
-                  >
-                    {t.name} ({t.gender === 'Girls' ? 'Girls' : 'Boys'})
-                  </button>
-                ))}
+            {/* Team Switcher: Scoped for Squad Members, Switchable for Coaches/Admins */}
+            {scopedTeamId && !isAdmin && !isCoach ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-eco-muted font-heading uppercase tracking-wider hidden sm:inline">
+                  Squad:
+                </span>
+                <span className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                  currentTeam.gender === 'Girls'
+                    ? 'bg-pink-500/15 text-pink-300 border border-pink-500/30'
+                    : 'bg-[#97B3D2]/15 text-[#97B3D2] border border-[#97B3D2]/30'
+                }`}>
+                  {currentTeam.gender === 'Girls' ? '🌸' : '🏀'} {currentTeam.name} ({currentTeam.gender} Rep)
+                </span>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-eco-muted font-heading uppercase tracking-wider hidden sm:inline">
+                  Squad:
+                </span>
+                <div className="flex items-center gap-1 bg-eco-black/60 p-1 rounded-xl border border-eco-border">
+                  {teams.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setSelectedTeamId(t.id)
+                        navigate(`/hub/${t.id}`, { replace: true })
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-heading font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                        selectedTeamId === t.id
+                          ? 'bg-[#97B3D2] text-[#060A10] shadow-sm font-bold'
+                          : 'text-eco-muted hover:text-white'
+                      }`}
+                    >
+                      {t.gender === 'Girls' ? '🌸' : '🏀'} {t.name} ({t.gender})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Team Banner Content */}
@@ -412,20 +497,47 @@ export default function TeamPortal() {
                 {currentTeam.name} <span className="text-[#97B3D2]">{currentTeam.gender} Rep Hub</span>
               </h1>
               <p className="text-sm text-eco-muted-light max-w-2xl leading-relaxed">
-                One unified link for athletes, parents, and coaching staff. View real-time schedule adjustments, 1-tap attendance RSVP, jersey requirements, team rosters, and direct coach contacts.
+                Dedicated squad portal for {currentTeam.name} athletes, parents, and coaching staff. View real-time schedule adjustments, 1-tap attendance RSVP, jersey requirements, team rosters, and direct coach contacts.
               </p>
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
-              <button
-                onClick={handleCopyLink}
-                className="px-4 py-2.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] text-[#25D366] hover:text-white hover:bg-[#25D366]/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-sm"
-                title="Copy secret link for WhatsApp group (no login needed for parents)"
-              >
-                {copiedLink ? <Check size={14} className="text-[#25D366]" /> : <MessageSquare size={14} className="text-[#25D366]" />}
-                <span>{copiedLink ? 'WhatsApp Link Copied!' : 'Copy WhatsApp Link'}</span>
-              </button>
+            <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+              {/* WhatsApp Links: Dedicated buttons for Girls and Boys */}
+              {isAdmin || isCoach ? (
+                <>
+                  <button
+                    onClick={() => handleCopyLink('girls')}
+                    className="px-3.5 py-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 hover:border-pink-400 text-pink-300 hover:text-white hover:bg-pink-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    title="Copy secret link for Girls WhatsApp group (no password needed for parents)"
+                  >
+                    {copiedLink === 'girls' ? <Check size={14} className="text-pink-300" /> : <MessageSquare size={14} className="text-pink-300" />}
+                    <span>{copiedLink === 'girls' ? 'Girls Link Copied!' : 'Copy Girls WhatsApp Link'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleCopyLink('boys')}
+                    className="px-3.5 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-400 text-blue-300 hover:text-white hover:bg-blue-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    title="Copy secret link for Boys WhatsApp group (no password needed for parents)"
+                  >
+                    {copiedLink === 'boys' ? <Check size={14} className="text-blue-300" /> : <MessageSquare size={14} className="text-blue-300" />}
+                    <span>{copiedLink === 'boys' ? 'Boys Link Copied!' : 'Copy Boys WhatsApp Link'}</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => handleCopyLink('current')}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-sm ${
+                    currentTeam.gender === 'Girls'
+                      ? 'bg-pink-500/10 border border-pink-500/30 hover:border-pink-400 text-pink-300 hover:bg-pink-500/20'
+                      : 'bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/20'
+                  }`}
+                  title="Share secret link with squad members"
+                >
+                  {copiedLink ? <Check size={14} /> : <MessageSquare size={14} />}
+                  <span>{copiedLink ? 'WhatsApp Link Copied!' : `Copy ${currentTeam.gender} WhatsApp Link`}</span>
+                </button>
+              )}
 
               <button
                 onClick={() => downloadCalendarIcs(`${currentTeam.name} Schedule`)}
