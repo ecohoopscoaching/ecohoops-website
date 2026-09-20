@@ -671,11 +671,31 @@ export default function TeamPortal() {
               {/* Schedule Section Header & Team Tabs */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/10 mb-6">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
                       Confirmed Rep Schedule
                     </span>
                     <span className="text-xs text-eco-muted font-mono">2026–2027 Season</span>
+                    <span className="text-white/20 hidden sm:inline">&middot;</span>
+                    <div className="inline-flex items-center gap-2 bg-eco-black/40 px-2.5 py-1 rounded-full border border-white/10">
+                      <div className="flex items-center gap-1.5">
+                        <img
+                          src="/images/branding/coalition-logo.png"
+                          alt="Coalition Basketball League"
+                          className="w-4 h-4 rounded-full object-cover border border-amber-500/40"
+                        />
+                        <span className="text-[11px] font-mono font-semibold text-amber-200/90">Coalition</span>
+                      </div>
+                      <span className="text-white/20">&middot;</span>
+                      <div className="flex items-center gap-1.5">
+                        <img
+                          src="/images/branding/obl-logo.jpg"
+                          alt="Ontario Basketball League (OBL)"
+                          className="w-4 h-4 rounded-full object-cover border border-red-500/40"
+                        />
+                        <span className="text-[11px] font-mono font-semibold text-rose-200/90">OBL</span>
+                      </div>
+                    </div>
                   </div>
                   <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight text-white">
                     {scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'}
@@ -750,13 +770,18 @@ export default function TeamPortal() {
                     {/* Left: Date, League & Session Details */}
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
-                        {/* League Badge: Clear separation between Coalition and OBL */}
-                        <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider border ${
+                        {/* League Badge: Clear separation with official logo */}
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider border shadow-sm ${
                           item.league === 'Coalition'
-                            ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/35'
-                            : 'bg-sky-500/15 text-sky-300 border-sky-500/35'
+                            ? 'bg-amber-500/10 text-amber-200 border-amber-500/35'
+                            : 'bg-rose-500/10 text-rose-200 border-rose-500/35'
                         }`}>
-                          {item.league}
+                          <img
+                            src={item.league === 'Coalition' ? '/images/branding/coalition-logo.png' : '/images/branding/obl-logo.jpg'}
+                            alt={item.league}
+                            className="w-4 h-4 rounded-full object-cover border border-white/20 flex-shrink-0"
+                          />
+                          <span>{item.league}</span>
                         </span>
 
                         {/* Special Badges: PLAYOFFS & All-Star */}
@@ -810,9 +835,23 @@ export default function TeamPortal() {
 
               {/* Bottom Quick Sync Button */}
               <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
-                <p className="text-xs text-eco-muted font-mono">
-                  Session dates confirmed by Coalition Basketball League and Ontario Basketball (OBL).
-                </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center -space-x-2">
+                    <img
+                      src="/images/branding/coalition-logo.png"
+                      alt="Coalition"
+                      className="w-7 h-7 rounded-full border-2 border-eco-surface2 object-cover shadow"
+                    />
+                    <img
+                      src="/images/branding/obl-logo.jpg"
+                      alt="OBL"
+                      className="w-7 h-7 rounded-full border-2 border-eco-surface2 object-cover shadow"
+                    />
+                  </div>
+                  <p className="text-xs text-eco-muted font-mono">
+                    Session dates confirmed by Coalition Basketball League and Ontario Basketball (OBL).
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => downloadCalendarIcs(`${scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'} Schedule`)}
