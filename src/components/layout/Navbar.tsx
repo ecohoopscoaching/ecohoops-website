@@ -22,6 +22,7 @@ interface NavLinkItem {
 
 const NAV_LINKS: NavLinkItem[] = [
   { label: 'Home', path: '/' },
+  { label: 'Nonprofit', path: '/nonprofit' },
   { label: 'Team Hub', path: '/hub' },
   { label: 'The Game Changer', path: '/game-changer/index.html' },
   { 

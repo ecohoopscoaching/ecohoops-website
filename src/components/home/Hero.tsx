@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
@@ -173,6 +174,32 @@ export default function Hero({ onRegisterClick }: HeroProps) {
                 className="h-6 sm:h-7 w-auto object-contain opacity-95 hover:opacity-100 transition-opacity"
               />
             </div>
+          </div>
+        </motion.div>
+
+        {/* Nonprofit Official Website & Entity Statement */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.85 }}
+          className="max-w-3xl mx-auto mb-10 px-4"
+        >
+          <div className="bg-[#050B14]/90 backdrop-blur-md border border-eco-blue/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl text-center sm:text-left">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-eco-blue animate-pulse flex-shrink-0" />
+              <p className="text-xs sm:text-sm text-eco-muted-light leading-relaxed">
+                <Link to="/nonprofit" className="text-white font-semibold underline decoration-eco-blue/60 hover:text-eco-blue transition-colors">
+                  EcoHoops for Kids Canada
+                </Link>{' '}
+                is the federally incorporated nonprofit organization behind EcoHoops’ community youth programming. Ecohoops.ca is its official website.
+              </p>
+            </div>
+            <Link
+              to="/nonprofit"
+              className="text-xs font-mono text-eco-blue hover:text-white font-bold whitespace-nowrap uppercase tracking-wider flex items-center gap-1 transition-colors flex-shrink-0"
+            >
+              Nonprofit Details &rarr;
+            </Link>
           </div>
         </motion.div>
 

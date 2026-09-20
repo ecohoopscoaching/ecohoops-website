@@ -27,7 +27,7 @@ const FOOTER_LINKS = [
     links: [
       { label: 'Friday Night Hoops', path: '/schedule' },
       { label: 'The Game Changer', path: '/game-changer/index.html' },
-      { label: 'Nonprofit', path: '/nonprofit' },
+      { label: 'EcoHoops for Kids Canada', path: '/nonprofit' },
       { label: 'Blog', path: '/blog' },
       { label: 'Contact', path: '/register' },
     ],
@@ -113,9 +113,20 @@ export default function Footer() {
               EcoHoops is a youth basketball movement focused on character, community, and joy. Building people, not just pros.
               Basketball is just the tool.
             </p>
-            <p className="text-eco-muted text-xs mb-6 max-w-sm">
-              EcoHoops for Kids Canada is a registered federal non-profit organization.
-            </p>
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-eco-muted-light space-y-1 mb-6 max-w-sm">
+              <div className="text-white font-semibold font-heading text-xs sm:text-sm">
+                EcoHoops for Kids Canada / EcoHoops pour Enfants Canada
+              </div>
+              <div className="text-eco-muted text-[11px]">
+                Federally incorporated Canadian nonprofit corporation
+              </div>
+              <div className="text-eco-muted text-[11px] font-mono">
+                Federal Corporation No. 1720493-1
+              </div>
+              <div className="text-eco-blue text-[11px] font-mono font-medium">
+                ecohoops.ca
+              </div>
+            </div>
             <div className="flex items-center gap-1 text-eco-muted text-sm mb-6">
               <MapPin size={14} />
               <span>Mississauga</span>
@@ -270,7 +281,9 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-eco-border flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-eco-muted">
-            <span>&copy; 2026 EcoHoops Inc. All rights reserved.</span>
+            <span>&copy; 2026 EcoHoops Inc. &bull; EcoHoops for Kids Canada. All rights reserved.</span>
+            <span className="hidden sm:inline">&bull;</span>
+            <Link to="/nonprofit" className="text-eco-blue hover:text-white transition-colors font-medium">Nonprofit</Link>
             <span className="hidden sm:inline">&bull;</span>
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>

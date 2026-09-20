@@ -26,7 +26,7 @@ export default function RefundPolicy() {
             <span className="gradient-text">CANCELLATION</span>
           </h1>
           <p className="text-xl text-eco-muted-light leading-relaxed">
-            As a non-profit sports organization, EcoHoops commits facility rentals, coaching staff, uniforms, and insurance based on advance program registrations. Here is our fair and transparent refund policy.
+            EcoHoops commits facility rentals, coaching staff, uniforms, and insurance based on advance program registrations. Here is our fair and transparent refund policy.
           </p>
           <p className="text-xs text-eco-muted mt-4">Last Updated: July 2026</p>
         </div>

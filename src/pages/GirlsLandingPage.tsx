@@ -729,7 +729,7 @@ export default function GirlsLandingPage() {
       {/* MINIMAL FOOTER (NO DISTRACTING NAV LINKS) */}
       <footer className="py-8 bg-eco-black border-t border-white/10 text-center text-xs text-eco-muted font-mono">
         <div className="max-w-7xl mx-auto px-6">
-          <p>© 2026 EcoHoops Basketball Canada. Federal Non-Profit Organization.</p>
+          <p>© 2026 EcoHoops for Kids Canada / EcoHoops pour Enfants Canada &bull; Federal Corporation No. 1720493-1 &bull; ecohoops.ca</p>
           <p className="mt-1 text-[11px] text-eco-muted-light">Designed for first-time rep players entering Grades 5 & 6 in Mississauga.</p>
         </div>
       </footer>

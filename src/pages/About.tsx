@@ -235,7 +235,7 @@ export default function About() {
             <span className="gradient-text">ORGANIZED</span>
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
-            EcoHoops has two separate parts. This clean split lets us focus on runs, coaching, and safety while keeping fees affordable and accessible.
+            EcoHoops for Kids Canada and EcoHoops Inc. are separate legal entities that share the EcoHoops brand and website. They are not the same corporation.
           </p>
         </motion.div>
 
@@ -266,7 +266,7 @@ export default function About() {
                   This includes coaching, skill development, practice design, team structure, program planning, and basketball-related activities.
                 </p>
                 <p className="border-t border-white/5 pt-4 text-white font-heading font-bold">
-                  This is the side that builds and runs the basketball experience.
+                  This is the entity that operates and delivers the competitive and instructional basketball training.
                 </p>
               </div>
             </div>
@@ -281,25 +281,29 @@ export default function About() {
             initial={{ opacity: 0, y: 30 }}
             animate={orgVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="glow-card p-8 bg-eco-surface border border-eco-border rounded-3xl relative overflow-hidden flex flex-col justify-between"
+            className="glow-card p-8 bg-eco-surface border border-eco-blue/40 rounded-3xl relative overflow-hidden flex flex-col justify-between"
           >
             <div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-                <h3 className="font-heading font-extrabold text-xl text-white uppercase tracking-wider">EcoHoops for Kids Canada</h3>
-                <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-[#97B3D2]/10 border border-[#97B3D2]/30 text-[#97B3D2] font-bold self-start sm:self-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                <div>
+                  <h3 className="font-heading font-extrabold text-xl text-white uppercase tracking-wider">EcoHoops for Kids Canada</h3>
+                  <div className="text-xs text-eco-muted font-body">EcoHoops pour Enfants Canada</div>
+                </div>
+                <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-eco-blue/15 border border-eco-blue/40 text-eco-blue font-bold self-start sm:self-auto">
                   Federal Non-Profit Corporation
                 </span>
               </div>
-              <div className="text-[11px] font-mono text-eco-muted uppercase tracking-wider mb-6">
-                Incorporated: July 31, 2025
+              <div className="space-y-1 text-[11px] font-mono text-eco-muted uppercase tracking-wider mb-6">
+                <div>Federal Corporation No: 1720493-1</div>
+                <div>Incorporated: July 31, 2025 &bull; Official Website: ecohoops.ca</div>
               </div>
               
               <div className="space-y-4 text-sm text-eco-muted-light leading-relaxed font-body">
                 <p>
-                  EcoHoops for Kids Canada helps make basketball more accessible for kids and families.
+                  EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization operating under the EcoHoops brand.
                 </p>
                 <p>
-                  This includes gym rentals, equipment purchases, financial aid, free community events, wellness support, and safe basketball opportunities for kids.
+                  Ecohoops.ca serves as its official website and web presence, helping make basketball accessible through gym rentals, equipment support, financial assistance and subsidies, free community events, all-girls sports initiatives, and wellness support.
                 </p>
                 <p className="border-t border-white/5 pt-4 text-white font-heading font-bold">
                   Its purpose is simple: To help more kids play, grow, and belong.

@@ -616,7 +616,7 @@ export default function Girls() {
                 <span>Financial Subsidies & Grants</span>
               </div>
               <p className="text-xs text-eco-muted-light max-w-sm leading-relaxed">
-                As a federal non-profit, we help parents coordinate funding from programs like Jumpstart, KidSport, and local aid groups. Contact our staff to learn more.
+                Through EcoHoops for Kids Canada, our federal non-profit arm, we help parents coordinate funding from programs like Jumpstart, KidSport, and local aid groups. Contact our staff to learn more.
               </p>
             </div>
           </motion.div>

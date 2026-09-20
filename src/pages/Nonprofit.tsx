@@ -1,10 +1,16 @@
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
-import { Heart, Brain, Users, HandHeart, Sparkles, Lightbulb, Zap, Layers, Quote } from 'lucide-react'
+import { 
+  Heart, Brain, Users, HandHeart, Sparkles, Lightbulb, Zap, Layers, Quote,
+  Building2, ShieldCheck, Globe, Calendar, FileText 
+} from 'lucide-react'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function Nonprofit() {
-  useDocumentTitle('EcoHoops for Kids Canada')
+  useDocumentTitle('EcoHoops for Kids Canada | Canadian Youth Basketball Nonprofit', {
+    raw: true,
+    metaDescription: 'EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization providing youth basketball and community programming through the EcoHoops brand.',
+  })
   const { ref, isVisible } = useScrollReveal(0.05)
 
   return (
@@ -15,16 +21,85 @@ export default function Nonprofit() {
           initial={{ opacity: 0, y: 30 }}
           animate={isVisible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
-          <span className="tag mb-4 inline-block">Our Foundation</span>
+          <span className="tag mb-4 inline-block !bg-[#003366]/80 !border-[#97B3D2]/40 !text-[#97B3D2]">
+            Official Nonprofit Entity
+          </span>
           <h1 className="font-display text-section uppercase tracking-tight mb-6">
-            <span className="text-white">MORE THAN </span>
-            <span className="gradient-text">BASKETBALL</span>
+            <span className="text-white">ECOHOOPS FOR KIDS </span>
+            <span className="gradient-text">CANADA</span>
           </h1>
-          <p className="text-eco-muted-light text-lg max-w-2xl mx-auto">
-            EcoHoops is a registered nonprofit group. We help kids grow strong and healthy through basketball. We make sure all kids can join, and we protect their mental health.
+          <p className="text-eco-muted-light text-lg max-w-3xl mx-auto leading-relaxed mb-6">
+            EcoHoops for Kids Canada is a federally incorporated Canadian nonprofit organization operating under the EcoHoops brand. Ecohoops.ca serves as the official website and web presence for EcoHoops for Kids Canada and its nonprofit youth programs.
           </p>
+          <p className="text-sm text-eco-muted max-w-2xl mx-auto">
+            We help kids grow strong, healthy, and resilient through youth basketball programming, community open gyms, equipment support, all-girls sports initiatives, financial assistance, and mental health education.
+          </p>
+        </motion.div>
+
+        {/* Organization Information Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="max-w-4xl mx-auto mb-20 glow-card p-6 sm:p-8 bg-eco-surface/90 border border-eco-blue/30 rounded-3xl relative overflow-hidden shadow-2xl"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-eco-blue block mb-1">
+                Official Entity Information
+              </span>
+              <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-white">
+                EcoHoops for Kids Canada / EcoHoops pour Enfants Canada
+              </h2>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-eco-blue/10 border border-eco-blue/30 text-eco-blue text-xs font-mono font-semibold uppercase tracking-wider self-start sm:self-auto">
+              Federal Nonprofit
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 text-left">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-eco-muted text-xs uppercase tracking-wider font-mono">
+                <Building2 size={14} className="text-eco-blue" />
+                <span>Entity Type</span>
+              </div>
+              <p className="text-sm font-semibold text-white">
+                Federally incorporated Canadian nonprofit corporation
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-eco-muted text-xs uppercase tracking-wider font-mono">
+                <FileText size={14} className="text-eco-blue" />
+                <span>Corporation No.</span>
+              </div>
+              <p className="text-sm font-semibold text-white font-mono">
+                1720493-1
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-eco-muted text-xs uppercase tracking-wider font-mono">
+                <Calendar size={14} className="text-eco-blue" />
+                <span>Incorporated</span>
+              </div>
+              <p className="text-sm font-semibold text-white">
+                July 31, 2025
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-eco-muted text-xs uppercase tracking-wider font-mono">
+                <Globe size={14} className="text-eco-blue" />
+                <span>Official Website</span>
+              </div>
+              <p className="text-sm font-semibold text-eco-blue font-mono">
+                ecohoops.ca
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Mental Health Section */}
@@ -254,36 +329,43 @@ export default function Nonprofit() {
               </div>
               <h2 className="font-heading font-bold text-2xl text-white uppercase">Our Legal Foundation</h2>
             </div>
-            <p className="text-eco-muted-light mb-8 leading-relaxed">
-              EcoHoops has two parts. This helps us run great basketball gyms while keeping program costs low for families who need help.
+            <p className="text-eco-muted-light mb-6 leading-relaxed">
+              EcoHoops for Kids Canada and EcoHoops Inc. are separate legal entities that share the EcoHoops brand and website. They are not the same corporation.
+            </p>
+            <p className="text-xs text-eco-muted mb-8 leading-relaxed">
+              Ecohoops.ca serves as the official website and web presence for EcoHoops for Kids Canada and its nonprofit youth programs.
             </p>
 
              <div className="space-y-4">
                {/* For-profit card */}
-               <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
+               <div className="bg-eco-surface2 p-6 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
                  <div className="flex justify-between items-start mb-2">
                    <h3 className="font-heading font-bold text-white text-base">EcoHoops Inc.</h3>
                    <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue-light font-bold">
                      For-Profit Corporation
                    </span>
                  </div>
-                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: SEP 11, 2024</p>
+                 <p className="text-[10px] text-eco-muted mb-3 font-mono">INCORPORATED: SEP 11, 2024</p>
                  <p className="text-xs text-eco-muted-light leading-relaxed">
                    Handles the basketball side of the program. This includes coaching, skill development, practice design, team structure, program planning, and basketball activities.
                  </p>
                </div>
 
                {/* Non-profit card */}
-               <div className="bg-eco-surface2 p-5 rounded-2xl border border-eco-border relative overflow-hidden group hover:border-eco-blue/30 transition-colors">
-                 <div className="flex justify-between items-start mb-2">
-                   <h3 className="font-heading font-bold text-white text-base">EcoHoops for Kids Canada</h3>
-                   <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/10 border border-eco-blue/30 text-eco-blue font-bold">
+               <div className="bg-eco-surface2 p-6 rounded-2xl border border-eco-blue/40 relative overflow-hidden group hover:border-eco-blue/60 transition-colors">
+                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-2">
+                   <div>
+                     <h3 className="font-heading font-bold text-white text-base">EcoHoops for Kids Canada</h3>
+                     <span className="text-[11px] text-eco-muted font-body">EcoHoops pour Enfants Canada</span>
+                   </div>
+                   <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded bg-eco-blue/15 border border-eco-blue/40 text-eco-blue font-bold self-start">
                      Federal Non-Profit Corporation
                    </span>
                  </div>
-                 <p className="text-[10px] text-eco-muted mb-2 font-mono">INCORPORATED: JUL 31, 2025</p>
+                 <p className="text-[10px] text-eco-muted mb-1 font-mono">FEDERAL CORPORATION NO: 1720493-1</p>
+                 <p className="text-[10px] text-eco-muted mb-3 font-mono">INCORPORATED: JUL 31, 2025 &bull; OFFICIAL WEBSITE: ECOHOOPS.CA</p>
                  <p className="text-xs text-eco-muted-light leading-relaxed">
-                   Helps make basketball more accessible. This includes gym rentals, equipment purchases, financial aid, free community events, wellness support, and safe play options.
+                   Helps make basketball accessible for youth and families. This includes gym rentals, equipment support, financial aid coordination, free community sessions, girls' sports initiatives, and wellness education. Ecohoops.ca serves as its official website and web presence.
                  </p>
                </div>
              </div>
