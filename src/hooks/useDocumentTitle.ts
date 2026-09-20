@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 export interface DocumentTitleOptions {
   raw?: boolean;
   metaDescription?: string;
+  noindex?: boolean;
 }
 
 export function useDocumentTitle(title: string, options?: DocumentTitleOptions) {
@@ -20,5 +21,15 @@ export function useDocumentTitle(title: string, options?: DocumentTitleOptions) 
       }
       metaTag.setAttribute('content', options.metaDescription)
     }
-  }, [title, options?.raw, options?.metaDescription])
+
+    if (options?.noindex) {
+      let robotsTag = document.querySelector('meta[name="robots"]')
+      if (!robotsTag) {
+        robotsTag = document.createElement('meta')
+        robotsTag.setAttribute('name', 'robots')
+        document.head.appendChild(robotsTag)
+      }
+      robotsTag.setAttribute('content', 'noindex, nofollow')
+    }
+  }, [title, options?.raw, options?.metaDescription, options?.noindex])
 }

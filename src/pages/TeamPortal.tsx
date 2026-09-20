@@ -132,7 +132,7 @@ export default function TeamPortal() {
     return teams.find((t) => t.id === selectedTeamId) || teams[0]
   }, [teams, selectedTeamId])
 
-  useDocumentTitle(currentTeam ? `${currentTeam.name} | EcoHoops Team Hub` : 'EcoHoops Team Hub')
+  useDocumentTitle(currentTeam ? `${currentTeam.name} | EcoHoops Team Hub` : 'EcoHoops Team Hub', { noindex: true })
 
   // Check access authorization
   const hasAccess = isAdmin || isCoach || userTeamIds.includes(selectedTeamId)
@@ -209,14 +209,14 @@ export default function TeamPortal() {
     let toastLabel = ''
 
     if (teamType === 'girls') {
-      hubUrl = `${window.location.origin}/hub/u14-girls-ss26?access=girls`
+      hubUrl = `${window.location.origin}/hub/u14-girls-ss26?token=G_7mA2qX9bV4cK8hP3nF6t`
       toastLabel = '🌸 U15 Girls WhatsApp link copied! Pin this in the Girls group.'
     } else if (teamType === 'boys') {
-      hubUrl = `${window.location.origin}/hub/u15-boys-ss26?access=boys`
+      hubUrl = `${window.location.origin}/hub/u15-boys-ss26?token=B_3xY9k2Lp5vQ8rN4jC7zW`
       toastLabel = '🏀 U16 Boys WhatsApp link copied! Pin this in the Boys group.'
     } else {
       const isGirls = selectedTeamId === 'u14-girls-ss26'
-      hubUrl = `${window.location.origin}/hub/${selectedTeamId}?access=${isGirls ? 'girls' : 'boys'}`
+      hubUrl = `${window.location.origin}/hub/${selectedTeamId}?token=${isGirls ? 'G_7mA2qX9bV4cK8hP3nF6t' : 'B_3xY9k2Lp5vQ8rN4jC7zW'}`
       toastLabel = `✓ ${isGirls ? 'U15 Girls' : 'U16 Boys'} WhatsApp link copied: ${hubUrl}`
     }
 

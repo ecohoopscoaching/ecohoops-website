@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import {
   Calendar, MapPin, Clock, Users, Check, X, HelpCircle,
   Trophy, Dumbbell, Star, PartyPopper, Filter,
@@ -39,6 +40,9 @@ export default function Schedule() {
   const location = useLocation()
   const { isAdmin, isCoach, isParent, isTeamMember, userProfile, loginAsRole } = useAuth()
   const { schedule, teams, addEvent, deleteEvent, updateEvent, downloadCalendarIcs, recordAttendance, checkInPlayer } = useData()
+  
+  useDocumentTitle('EcoHoops Team Hub', { noindex: true })
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedChildId, setSelectedChildId] = useState<string>(
     userProfile?.children?.[0]?.id || userProfile?.playerId || 'child-1'

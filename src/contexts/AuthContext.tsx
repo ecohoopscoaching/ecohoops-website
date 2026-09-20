@@ -100,31 +100,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     let scoped: string | null = localStorage.getItem('ecohoops_scoped_team') || null
     const params = new URLSearchParams(window.location.search)
-    const accessKey = (params.get('access') || params.get('key') || params.get('token') || params.get('pass') || params.get('team') || '').toLowerCase()
-    const path = window.location.pathname.toLowerCase()
+    const token = params.get('token')
 
-    if (
-      ['girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(accessKey) ||
-      (accessKey && path.includes('girls'))
-    ) {
+    if (token === 'G_7mA2qX9bV4cK8hP3nF6t') {
       scoped = 'u14-girls-ss26'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
       return { hasAccess: true, scopedTeam: scoped }
     }
 
-    if (
-      ['boys', 'u15', 'u15-boys', '2011boys', 'boys2026'].includes(accessKey) ||
-      (accessKey && path.includes('boys'))
-    ) {
+    if (token === 'B_3xY9k2Lp5vQ8rN4jC7zW') {
       scoped = 'u15-boys-ss26'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
-      return { hasAccess: true, scopedTeam: scoped }
-    }
-
-    if (['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(accessKey)) {
-      localStorage.setItem('ecohoops_whatsapp_access', 'true')
       return { hasAccess: true, scopedTeam: scoped }
     }
 
@@ -190,13 +178,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
-      const accessKey = (params.get('access') || params.get('key') || params.get('token') || params.get('pass') || params.get('team') || '').toLowerCase()
-      const path = window.location.pathname.toLowerCase()
+      const token = params.get('token')
 
-      if (
-        ['girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(accessKey) ||
-        (accessKey && path.includes('girls'))
-      ) {
+      if (token === 'G_7mA2qX9bV4cK8hP3nF6t') {
         localStorage.setItem('ecohoops_whatsapp_access', 'true')
         localStorage.setItem('ecohoops_scoped_team', 'u14-girls-ss26')
         setScopedTeamId('u14-girls-ss26')
@@ -216,10 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('ecohoops_user_role', 'parent')
           localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
         }
-      } else if (
-        ['boys', 'u15', 'u15-boys', '2011boys', 'boys2026'].includes(accessKey) ||
-        (accessKey && path.includes('boys'))
-      ) {
+      } else if (token === 'B_3xY9k2Lp5vQ8rN4jC7zW') {
         localStorage.setItem('ecohoops_whatsapp_access', 'true')
         localStorage.setItem('ecohoops_scoped_team', 'u15-boys-ss26')
         setScopedTeamId('u15-boys-ss26')
@@ -238,15 +219,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUserProfile(profile)
           localStorage.setItem('ecohoops_user_role', 'parent')
           localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
-        }
-      } else if (['team', 'ecohoops', 'members', 'ss26', 'rep', 'ecohoops2026'].includes(accessKey)) {
-        localStorage.setItem('ecohoops_whatsapp_access', 'true')
-        setHasSecretPass(true)
-        if (!userRole) {
-          setUserRole('parent')
-          setUserProfile(DEFAULT_PROFILES.parent)
-          localStorage.setItem('ecohoops_user_role', 'parent')
-          localStorage.setItem('ecohoops_user_profile', JSON.stringify(DEFAULT_PROFILES.parent))
         }
       }
     }
