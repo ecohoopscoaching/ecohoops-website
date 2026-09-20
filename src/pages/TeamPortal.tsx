@@ -51,9 +51,9 @@ export default function TeamPortal() {
       paramTeamId?.toLowerCase() === 'u15-girls' ||
       paramTeamId?.toLowerCase() === 'u15' ||
       paramTeamId?.toLowerCase() === 'u14' ||
-      paramTeamId === 'u14-girls-ss26'
+      paramTeamId === 'u15-girls'
     ) {
-      return 'u14-girls-ss26'
+      return 'u15-girls'
     }
     if (
       path.includes('boys') ||
@@ -61,9 +61,9 @@ export default function TeamPortal() {
       paramTeamId?.toLowerCase() === 'u16-boys' ||
       paramTeamId?.toLowerCase() === 'u16' ||
       paramTeamId?.toLowerCase() === 'u15' ||
-      paramTeamId === 'u15-boys-ss26'
+      paramTeamId === 'u16-boys'
     ) {
-      return 'u15-boys-ss26'
+      return 'u16-boys'
     }
     if (paramTeamId && teams.some((t) => t.id === paramTeamId)) {
       return paramTeamId
@@ -104,25 +104,25 @@ export default function TeamPortal() {
 
   // Dedicated Schedule Squad View State (U16 Boys vs U15 Girls)
   const [scheduleSquadFilter, setScheduleSquadFilter] = useState<'boys' | 'girls' | 'all'>(() => {
-    if (resolvedParamTeamId === 'u14-girls-ss26' || scopedTeamId === 'u14-girls-ss26') return 'girls'
-    if (resolvedParamTeamId === 'u15-boys-ss26' || scopedTeamId === 'u15-boys-ss26') return 'boys'
+    if (resolvedParamTeamId === 'u15-girls' || scopedTeamId === 'u15-girls') return 'girls'
+    if (resolvedParamTeamId === 'u16-boys' || scopedTeamId === 'u16-boys') return 'boys'
     return 'boys'
   })
 
   useEffect(() => {
     if (resolvedParamTeamId) {
       setSelectedTeamId(resolvedParamTeamId)
-      setScheduleSquadFilter(resolvedParamTeamId === 'u14-girls-ss26' ? 'girls' : 'boys')
+      setScheduleSquadFilter(resolvedParamTeamId === 'u15-girls' ? 'girls' : 'boys')
     } else if (scopedTeamId && teams.some((t) => t.id === scopedTeamId) && !isAdmin && !isCoach) {
       setSelectedTeamId(scopedTeamId)
-      setScheduleSquadFilter(scopedTeamId === 'u14-girls-ss26' ? 'girls' : 'boys')
+      setScheduleSquadFilter(scopedTeamId === 'u15-girls' ? 'girls' : 'boys')
     }
   }, [resolvedParamTeamId, scopedTeamId, teams, isAdmin, isCoach])
 
   useEffect(() => {
-    if (selectedTeamId === 'u14-girls-ss26') {
+    if (selectedTeamId === 'u15-girls') {
       setScheduleSquadFilter('girls')
-    } else if (selectedTeamId === 'u15-boys-ss26') {
+    } else if (selectedTeamId === 'u16-boys') {
       setScheduleSquadFilter('boys')
     }
   }, [selectedTeamId])
@@ -178,7 +178,7 @@ export default function TeamPortal() {
   const [selectedRsvpPlayerId, setSelectedRsvpPlayerId] = useState<string>(() => {
     return localStorage.getItem('ecohoops_parent_player_id') || ''
   })
-  const [copiedLink, setCopiedLink] = useState<'girls' | 'boys' | 'current' | null>(null)
+  
   const [showAddEventModal, setShowAddEventModal] = useState(false)
 
   const effectivePlayerId = useMemo(() => {
@@ -204,29 +204,7 @@ export default function TeamPortal() {
     showToast(`RSVP updated: ${status === 'going' ? 'Attending ✓' : status === 'maybe' ? 'Maybe ⏱️' : 'Can\'t Attend ✕'}${pLabel}`)
   }
 
-  const handleCopyLink = (teamType: 'girls' | 'boys' | 'current' = 'current') => {
-    let hubUrl = ''
-    let toastLabel = ''
 
-    if (teamType === 'girls') {
-      hubUrl = `${window.location.origin}/hub/u14-girls-ss26?token=G_7mA2qX9bV4cK8hP3nF6t`
-      toastLabel = '🌸 U15 Girls WhatsApp link copied! Pin this in the Girls group.'
-    } else if (teamType === 'boys') {
-      hubUrl = `${window.location.origin}/hub/u15-boys-ss26?token=B_3xY9k2Lp5vQ8rN4jC7zW`
-      toastLabel = '🏀 U16 Boys WhatsApp link copied! Pin this in the Boys group.'
-    } else {
-      const isGirls = selectedTeamId === 'u14-girls-ss26'
-      hubUrl = `${window.location.origin}/hub/${selectedTeamId}?token=${isGirls ? 'G_7mA2qX9bV4cK8hP3nF6t' : 'B_3xY9k2Lp5vQ8rN4jC7zW'}`
-      toastLabel = `✓ ${isGirls ? 'U15 Girls' : 'U16 Boys'} WhatsApp link copied: ${hubUrl}`
-    }
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(hubUrl)
-    }
-    setCopiedLink(teamType)
-    showToast(toastLabel)
-    setTimeout(() => setCopiedLink(null), 4000)
-  }
 
   // Split events into upcoming and past
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -465,41 +443,7 @@ export default function TeamPortal() {
 
             {/* Quick Actions */}
             <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-              {/* WhatsApp Links: Dedicated buttons for Girls and Boys */}
-              {isAdmin || isCoach ? (
-                <>
-                  <button
-                    onClick={() => handleCopyLink('girls')}
-                    className="px-3.5 py-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 hover:border-pink-400 text-pink-300 hover:text-white hover:bg-pink-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Copy secret link for U15 Girls WhatsApp group (no password needed for parents)"
-                  >
-                    {copiedLink === 'girls' ? <Check size={14} className="text-pink-300" /> : <MessageSquare size={14} className="text-pink-300" />}
-                    <span>{copiedLink === 'girls' ? 'U15 Girls Link Copied!' : 'Copy U15 Girls WhatsApp Link'}</span>
-                  </button>
 
-                  <button
-                    onClick={() => handleCopyLink('boys')}
-                    className="px-3.5 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-400 text-blue-300 hover:text-white hover:bg-blue-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Copy secret link for U16 Boys WhatsApp group (no password needed for parents)"
-                  >
-                    {copiedLink === 'boys' ? <Check size={14} className="text-blue-300" /> : <MessageSquare size={14} className="text-blue-300" />}
-                    <span>{copiedLink === 'boys' ? 'U16 Boys Link Copied!' : 'Copy U16 Boys WhatsApp Link'}</span>
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => handleCopyLink('current')}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-sm ${
-                    currentTeam.gender === 'Girls'
-                      ? 'bg-pink-500/10 border border-pink-500/30 hover:border-pink-400 text-pink-300 hover:bg-pink-500/20'
-                      : 'bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/20'
-                  }`}
-                  title="Share secret link with squad members"
-                >
-                  {copiedLink ? <Check size={14} /> : <MessageSquare size={14} />}
-                  <span>{copiedLink ? 'WhatsApp Link Copied!' : `Copy ${currentTeam.name} WhatsApp Link`}</span>
-                </button>
-              )}
 
               <button
                 onClick={() => downloadCalendarIcs(`${currentTeam.name} Schedule`)}
@@ -626,8 +570,8 @@ export default function TeamPortal() {
                     type="button"
                     onClick={() => {
                       setScheduleSquadFilter('boys')
-                      setSelectedTeamId('u15-boys-ss26')
-                      navigate('/hub/u15-boys-ss26', { replace: true })
+                      setSelectedTeamId('u16-boys')
+                      navigate('/hub/u16-boys', { replace: true })
                     }}
                     className={`px-4 py-2.5 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                       scheduleSquadFilter === 'boys'
@@ -642,8 +586,8 @@ export default function TeamPortal() {
                     type="button"
                     onClick={() => {
                       setScheduleSquadFilter('girls')
-                      setSelectedTeamId('u14-girls-ss26')
-                      navigate('/hub/u14-girls-ss26', { replace: true })
+                      setSelectedTeamId('u15-girls')
+                      navigate('/hub/u15-girls', { replace: true })
                     }}
                     className={`px-4 py-2.5 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
                       scheduleSquadFilter === 'girls'

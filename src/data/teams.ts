@@ -19,7 +19,7 @@ const createPlayer = (id: string, number: number, name: string, position?: strin
 
 export const TEAMS: Team[] = [
   {
-    id: 'u14-girls-ss26',
+    id: 'u15-girls',
     name: 'U15 Girls',
     gender: 'Girls',
     ageGroup: 'U15 Girls (Born 2012)',
@@ -67,7 +67,7 @@ export const TEAMS: Team[] = [
     ]
   },
   {
-    id: 'u15-boys-ss26',
+    id: 'u16-boys',
     name: 'U16 Boys',
     gender: 'Boys',
     ageGroup: 'U16 Boys (Born 2011)',

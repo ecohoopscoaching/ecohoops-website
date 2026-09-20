@@ -2,7 +2,7 @@ import { ScheduleEvent } from '../types'
 
 export interface LeagueWeekend {
   id: string
-  teamId: 'u15-boys-ss26' | 'u14-girls-ss26'
+  teamId: 'u16-boys' | 'u15-girls'
   dateRange: string
   startDate: string
   endDate: string
@@ -207,7 +207,7 @@ export const SCHEDULE_NOTICES = {
 export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   {
     id: 'b-coalition-1',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'October 31 – November 1, 2026',
     startDate: '2026-10-31',
     endDate: '2026-11-01',
@@ -217,7 +217,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-obl-1',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'November 21–22, 2026',
     startDate: '2026-11-21',
     endDate: '2026-11-22',
@@ -226,7 +226,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-2',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'December 5–6, 2026',
     startDate: '2026-12-05',
     endDate: '2026-12-06',
@@ -235,7 +235,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-3',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'January 9–10, 2027',
     startDate: '2027-01-09',
     endDate: '2027-01-10',
@@ -244,7 +244,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-4',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'January 30–31, 2027',
     startDate: '2027-01-30',
     endDate: '2027-01-31',
@@ -253,7 +253,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-obl-2',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'February 6–7, 2027',
     startDate: '2027-02-06',
     endDate: '2027-02-07',
@@ -262,7 +262,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-5',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'February 13–14, 2027',
     startDate: '2027-02-13',
     endDate: '2027-02-14',
@@ -271,7 +271,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-obl-3',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'February 20–21, 2027',
     startDate: '2027-02-20',
     endDate: '2027-02-21',
@@ -280,7 +280,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-playoffs',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'March 6–7, 2027',
     startDate: '2027-03-06',
     endDate: '2027-03-07',
@@ -290,7 +290,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-coalition-allstar',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'March 20–21, 2027',
     startDate: '2027-03-20',
     endDate: '2027-03-21',
@@ -300,7 +300,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-obl-4game',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'April 10–11, 2027',
     startDate: '2027-04-10',
     endDate: '2027-04-11',
@@ -310,7 +310,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'b-obl-final',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     dateRange: 'April 17–18, 2027',
     startDate: '2027-04-17',
     endDate: '2027-04-18',
@@ -322,7 +322,7 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
 export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   {
     id: 'g-obl-1',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'November 7–8, 2026',
     startDate: '2026-11-07',
     endDate: '2026-11-08',
@@ -331,7 +331,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-1',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'December 5–6, 2026',
     startDate: '2026-12-05',
     endDate: '2026-12-06',
@@ -340,7 +340,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-obl-2',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'December 12–13, 2026',
     startDate: '2026-12-12',
     endDate: '2026-12-13',
@@ -349,7 +349,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-2',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'January 9–10, 2027',
     startDate: '2027-01-09',
     endDate: '2027-01-10',
@@ -358,7 +358,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-obl-3',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'January 16–17, 2027',
     startDate: '2027-01-16',
     endDate: '2027-01-17',
@@ -367,7 +367,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-3',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'February 20–21, 2027',
     startDate: '2027-02-20',
     endDate: '2027-02-21',
@@ -376,7 +376,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-obl-4',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'February 27–28, 2027',
     startDate: '2027-02-27',
     endDate: '2027-02-28',
@@ -385,7 +385,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-4',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'March 6–7, 2027',
     startDate: '2027-03-06',
     endDate: '2027-03-07',
@@ -394,7 +394,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-allstar',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'March 13–14, 2027',
     startDate: '2027-03-13',
     endDate: '2027-03-14',
@@ -404,7 +404,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-obl-4game',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'April 3–4, 2027',
     startDate: '2027-04-03',
     endDate: '2027-04-04',
@@ -414,7 +414,7 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   },
   {
     id: 'g-coalition-playoffs',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     dateRange: 'April 10–11, 2027',
     startDate: '2027-04-10',
     endDate: '2027-04-11',
@@ -522,14 +522,14 @@ export const SCHEDULE: ScheduleEvent[] = [
   // 1. U16 Boys Regular Practices
   ...generatePracticeEvents(
     BOYS_PRACTICE_RULES[0],
-    'u15-boys-ss26',
+    'u16-boys',
     'b-mon',
     BOYS_NO_PRACTICE_DATES,
     'U16 Boys Practice'
   ),
   ...generatePracticeEvents(
     BOYS_PRACTICE_RULES[1],
-    'u15-boys-ss26',
+    'u16-boys',
     'b-thu',
     BOYS_NO_PRACTICE_DATES,
     'U16 Boys Practice'
@@ -538,14 +538,14 @@ export const SCHEDULE: ScheduleEvent[] = [
   // 2. U15 Girls Regular Practices
   ...generatePracticeEvents(
     GIRLS_PRACTICE_RULES[0],
-    'u14-girls-ss26',
+    'u15-girls',
     'g-tue',
     GIRLS_NO_PRACTICE_DATES,
     'U15 Girls Practice'
   ),
   ...generatePracticeEvents(
     GIRLS_PRACTICE_RULES[1],
-    'u14-girls-ss26',
+    'u15-girls',
     'g-wed',
     GIRLS_NO_PRACTICE_DATES,
     'U15 Girls Practice'

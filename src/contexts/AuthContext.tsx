@@ -32,7 +32,7 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
     name: 'Coach Adrian',
     email: 'coach.adrian@ecohoops.ca',
     role: 'coach',
-    teamId: 'u14-girls-ss26'
+    teamId: 'u15-girls'
   },
   parent: {
     id: 'parent-1',
@@ -40,10 +40,10 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
     email: 'parent@ecohoops.ca',
     role: 'parent',
     childName: 'Maya Jenkins',
-    teamId: 'u14-girls-ss26',
+    teamId: 'u15-girls',
     children: [
-      { id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 },
-      { id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }
+      { id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u15-girls', number: 3 },
+      { id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u16-boys', number: 7 }
     ]
   },
   player: {
@@ -51,7 +51,7 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
     name: 'Jacob Sagat',
     email: 'jacob.sagat@ecohoops.ca',
     role: 'player',
-    teamId: 'u15-boys-ss26',
+    teamId: 'u16-boys',
     playerId: 'b7-ss'
   }
 }
@@ -95,22 +95,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   // Check if device already has WhatsApp secret link access saved or in URL (with Girls / Boys scoping)
+  function getCookie(name: string) {
+    if (typeof document === 'undefined') return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return null;
+  }
+
   const checkInitialSecretAccess = (): { hasAccess: boolean; scopedTeam: string | null } => {
     if (typeof window === 'undefined') return { hasAccess: false, scopedTeam: null }
     
     let scoped: string | null = localStorage.getItem('ecohoops_scoped_team') || null
-    const params = new URLSearchParams(window.location.search)
-    const token = params.get('token')
+    const cookieAccess = getCookie('ecohoops_hub_access')
 
-    if (token === 'G_7mA2qX9bV4cK8hP3nF6t') {
-      scoped = 'u14-girls-ss26'
+    if (cookieAccess === 'girls') {
+      scoped = 'u15-girls'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
       return { hasAccess: true, scopedTeam: scoped }
     }
 
-    if (token === 'B_3xY9k2Lp5vQ8rN4jC7zW') {
-      scoped = 'u15-boys-ss26'
+    if (cookieAccess === 'boys') {
+      scoped = 'u16-boys'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
       return { hasAccess: true, scopedTeam: scoped }
@@ -141,26 +148,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return DEFAULT_PROFILES[savedRole]
     }
     if (initialAccess.hasAccess) {
-      if (initialAccess.scopedTeam === 'u14-girls-ss26') {
+      if (initialAccess.scopedTeam === 'u15-girls') {
         return {
           id: 'parent-girls',
           name: 'Girls Team Family',
           email: 'family@ecohoops.ca',
           role: 'parent',
           childName: 'Alisha Sapp',
-          teamId: 'u14-girls-ss26',
-          children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 }]
+          teamId: 'u15-girls',
+          children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u15-girls', number: 3 }]
         }
       }
-      if (initialAccess.scopedTeam === 'u15-boys-ss26') {
+      if (initialAccess.scopedTeam === 'u16-boys') {
         return {
           id: 'parent-boys',
           name: 'Boys Team Family',
           email: 'family@ecohoops.ca',
           role: 'parent',
           childName: 'Jacob Sagat',
-          teamId: 'u15-boys-ss26',
-          children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }]
+          teamId: 'u16-boys',
+          children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u16-boys', number: 7 }]
         }
       }
       return DEFAULT_PROFILES.parent
@@ -174,55 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isParent = userRole === 'parent' || (hasSecretPass && !userRole)
   const isPlayer = userRole === 'player'
 
-  // Listen for secret URL access parameters dynamically (Girls, Boys, or general team)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search)
-      const token = params.get('token')
 
-      if (token === 'G_7mA2qX9bV4cK8hP3nF6t') {
-        localStorage.setItem('ecohoops_whatsapp_access', 'true')
-        localStorage.setItem('ecohoops_scoped_team', 'u14-girls-ss26')
-        setScopedTeamId('u14-girls-ss26')
-        setHasSecretPass(true)
-        if (!userRole || userRole === 'parent') {
-          const profile: UserProfile = {
-            id: 'parent-girls',
-            name: 'Girls Team Family',
-            email: 'family@ecohoops.ca',
-            role: 'parent',
-            childName: 'Alisha Sapp',
-            teamId: 'u14-girls-ss26',
-            children: [{ id: 'g1-ss', name: 'Alisha Sapp', teamId: 'u14-girls-ss26', number: 3 }]
-          }
-          setUserRole('parent')
-          setUserProfile(profile)
-          localStorage.setItem('ecohoops_user_role', 'parent')
-          localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
-        }
-      } else if (token === 'B_3xY9k2Lp5vQ8rN4jC7zW') {
-        localStorage.setItem('ecohoops_whatsapp_access', 'true')
-        localStorage.setItem('ecohoops_scoped_team', 'u15-boys-ss26')
-        setScopedTeamId('u15-boys-ss26')
-        setHasSecretPass(true)
-        if (!userRole || userRole === 'parent') {
-          const profile: UserProfile = {
-            id: 'parent-boys',
-            name: 'Boys Team Family',
-            email: 'family@ecohoops.ca',
-            role: 'parent',
-            childName: 'Jacob Sagat',
-            teamId: 'u15-boys-ss26',
-            children: [{ id: 'b7-ss', name: 'Jacob Sagat', teamId: 'u15-boys-ss26', number: 7 }]
-          }
-          setUserRole('parent')
-          setUserProfile(profile)
-          localStorage.setItem('ecohoops_user_role', 'parent')
-          localStorage.setItem('ecohoops_user_profile', JSON.stringify(profile))
-        }
-      }
-    }
-  }, [userRole])
 
   useEffect(() => {
     if (!isFirebaseConfigured()) {
