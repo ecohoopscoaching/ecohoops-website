@@ -185,14 +185,19 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           className="max-w-3xl mx-auto mb-10 px-4"
         >
           <div className="bg-[#050B14]/90 backdrop-blur-md border border-eco-blue/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl text-center sm:text-left">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-eco-blue animate-pulse flex-shrink-0" />
-              <p className="text-xs sm:text-sm text-eco-muted-light leading-relaxed">
-                <Link to="/nonprofit" className="text-white font-semibold underline decoration-eco-blue/60 hover:text-eco-blue transition-colors">
-                  EcoHoops for Kids Canada
-                </Link>{' '}
-                is the federally incorporated not-for-profit corporation behind EcoHoops’ community youth programming. ecohoops.ca is its official website.
-              </p>
+            <div className="flex items-start sm:items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-eco-blue animate-pulse flex-shrink-0 mt-1 sm:mt-0" />
+              <div className="flex flex-col gap-1 text-center sm:text-left">
+                <p className="text-xs sm:text-sm text-eco-muted-light leading-relaxed">
+                  <Link to="/nonprofit" className="text-white font-semibold underline decoration-eco-blue/60 hover:text-eco-blue transition-colors">
+                    EcoHoops for Kids Canada
+                  </Link>{' '}
+                  is the federally incorporated not-for-profit corporation behind EcoHoops’ community youth programming. ecohoops.ca is its official website.
+                </p>
+                <p className="text-[11px] sm:text-xs text-[#97B3D2]/75 leading-normal font-sans">
+                  EcoHoops Inc. and EcoHoops for Kids Canada are separate legal entities operating under the shared EcoHoops brand.
+                </p>
+              </div>
             </div>
             <Link
               to="/nonprofit"
@@ -208,9 +213,9 @@ export default function Hero({ onRegisterClick }: HeroProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="max-w-4xl mx-auto mt-4"
+          className="max-w-3xl mx-auto mt-4"
         >
-          <div className="bg-eco-surface/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
+          <div className="bg-eco-surface/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:py-8 md:px-10 grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 shadow-2xl relative overflow-hidden">
             {/* Subtle internal border dividing elements on desktop */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#97B3D2]/5 to-transparent pointer-events-none" />
             
@@ -218,7 +223,6 @@ export default function Hero({ onRegisterClick }: HeroProps) {
               { value: 'OBA Club', label: 'Ontario Basketball' },
               { value: 'Jr. NBA', label: 'Canada Basketball' },
               { value: 'Coalition', label: 'League Participant' },
-              { value: 'Separate Legal Entities', label: 'EcoHoops Inc. + EcoHoops for Kids Canada' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -227,9 +231,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
                 transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
                 className="text-center flex flex-col justify-center items-center"
               >
-                <div className={`font-display font-bold text-white mb-2 tracking-tight ${
-                  stat.value.length > 15 ? 'text-base sm:text-lg md:text-xl lg:text-2xl leading-tight' : 'text-2xl md:text-3xl leading-none'
-                }`}>
+                <div className="font-display text-2xl md:text-3xl font-bold text-white mb-2 leading-none">
                   {stat.value}
                 </div>
                 <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#97B3D2] font-heading font-medium text-balance">
