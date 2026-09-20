@@ -40,7 +40,7 @@ export function useData() {
 export function DataProvider({ children }: { children: ReactNode }) {
   // Clean state: Load user-saved state from localStorage or initialize clean
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem('ecohoops_teams_v4')
+    const saved = localStorage.getItem('ecohoops_teams_v5')
     return saved ? JSON.parse(saved) : TEAMS
   })
 
@@ -67,9 +67,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // One-time automated update to ensure Winter season, U16 Boys / U15 Girls, and confirmed schedule are synced
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v12'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v14'
     if (!localStorage.getItem(cleanFlagKey)) {
-      localStorage.setItem('ecohoops_teams_v4', JSON.stringify(TEAMS))
+      localStorage.setItem('ecohoops_teams_v5', JSON.stringify(TEAMS))
       localStorage.setItem('ecohoops_schedule', JSON.stringify(SCHEDULE))
       localStorage.setItem(cleanFlagKey, 'true')
       setTeams(TEAMS)
@@ -79,7 +79,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // Synchronize state changes to localStorage
   useEffect(() => {
-    localStorage.setItem('ecohoops_teams_v4', JSON.stringify(teams))
+    localStorage.setItem('ecohoops_teams_v5', JSON.stringify(teams))
   }, [teams])
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('ecohoops_messages')
     localStorage.removeItem('ecohoops_jr_waitlist')
     localStorage.removeItem('ecohoops_sent_notifications_v1')
-    localStorage.setItem('ecohoops_teams_v4', JSON.stringify(TEAMS))
+    localStorage.setItem('ecohoops_teams_v5', JSON.stringify(TEAMS))
     setSchedule([])
     setPayments([])
     setMessages([])

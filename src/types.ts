@@ -27,6 +27,7 @@ export interface Player {
   position: string
   height: string
   age: number
+  birthDate?: string
   avatar?: string
   emergencyContact?: string
   medicalNotes?: string

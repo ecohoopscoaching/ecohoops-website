@@ -733,17 +733,34 @@ export default function TeamPortal() {
                 {currentTeam.roster.map((player: Player) => (
                   <div
                     key={player.id}
-                    className="p-4 rounded-2xl bg-[#0B131E] border-2 border-white/10 flex flex-col items-center text-center space-y-1.5"
+                    className="p-4 rounded-2xl bg-[#0B131E] border-2 border-white/10 flex flex-col items-center text-center space-y-2"
                   >
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-[#97B3D2]">
-                      #{player.number}
-                    </span>
-                    <h4 className="font-heading font-bold text-xs sm:text-sm text-white line-clamp-1">
+                    <div className="relative">
+                      {player.avatar ? (
+                        <img
+                          src={player.avatar}
+                          alt={player.name}
+                          className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-[#97B3D2]/30 shadow-md"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border-2 border-white/15 flex items-center justify-center text-lg font-black text-[#97B3D2]">
+                          {player.name.charAt(0)}
+                        </div>
+                      )}
+                      <span className="absolute -bottom-1.5 -right-1.5 px-2 py-0.5 rounded-md bg-[#060A10] border border-white/20 text-[11px] font-black font-mono text-[#97B3D2]">
+                        #{player.number}
+                      </span>
+                    </div>
+
+                    <h4 className="font-heading font-bold text-xs sm:text-sm text-white line-clamp-1 mt-1">
                       {player.name}
                     </h4>
-                    <span className="text-[10px] font-mono text-white/50 uppercase">
-                      {player.position || 'G/F'}
-                    </span>
+
+                    {player.birthDate && (
+                      <span className="text-[10px] font-mono text-white/50">
+                        {player.birthDate}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
