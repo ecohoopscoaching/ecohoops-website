@@ -1740,7 +1740,7 @@ export default function TeamPortal() {
                       {player.name}
                     </h4>
                     <p className="text-xs text-eco-muted mt-1 font-mono">
-                      {player.height ? `${player.height} • ` : ''}{player.age > 0 ? `${player.age} yrs` : 'Athlete'}
+                      {player.age > 0 ? `${player.age} yrs` : 'Athlete'}
                     </p>
                   </div>
 

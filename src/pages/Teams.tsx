@@ -383,7 +383,7 @@ export default function Teams() {
                     )}
                     <div>
                       <p className="font-heading font-semibold text-white leading-tight">{comparePlayers[0].name}</p>
-                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[0].position} &middot; {comparePlayers[0].height}</p>
+                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[0].position} &middot; #{comparePlayers[0].number}</p>
                     </div>
                   </div>
                   <span className="text-sm text-eco-muted-light font-heading italic">Select another player card's "Compare" tag to run analytics...</span>
@@ -401,7 +401,7 @@ export default function Teams() {
                     )}
                     <div>
                       <p className="font-heading font-bold text-white text-xs sm:text-sm leading-tight truncate max-w-[120px]">{comparePlayers[0].name}</p>
-                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[0].position} | {comparePlayers[0].height}</p>
+                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[0].position} | #{comparePlayers[0].number}</p>
                     </div>
                   </div>
 
@@ -458,7 +458,7 @@ export default function Teams() {
                     )}
                     <div>
                       <p className="font-heading font-bold text-white text-xs sm:text-sm leading-tight truncate max-w-[120px]">{comparePlayers[1].name}</p>
-                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[1].position} | {comparePlayers[1].height}</p>
+                      <p className="text-[10px] text-eco-muted uppercase tracking-widest">{comparePlayers[1].position} | #{comparePlayers[1].number}</p>
                     </div>
                   </div>
                 </div>

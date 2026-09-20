@@ -689,7 +689,7 @@ function TeamsTab() {
   const [editAge, setEditAge] = useState('')
 
   const handleAddSubmit = (teamId: string) => {
-    if (!addName.trim() || !addNumber || !addPosition || !addHeight || !addAge) {
+    if (!addName.trim() || !addNumber || !addPosition || !addAge) {
       alert('Please fill out all player details.')
       return
     }
@@ -699,7 +699,7 @@ function TeamsTab() {
       name: addName.trim(),
       number: parseInt(addNumber) || 0,
       position: addPosition.trim(),
-      height: addHeight.trim(),
+      height: addHeight.trim() || '-',
       age: parseInt(addAge) || 0,
       stats: { ppg: 0, rpg: 0, apg: 0, spg: 0, fgPct: 0 }
     }
@@ -721,12 +721,12 @@ function TeamsTab() {
     setEditName(player.name)
     setEditNumber(String(player.number))
     setEditPosition(player.position)
-    setEditHeight(player.height)
+    setEditHeight(player.height || '')
     setEditAge(String(player.age))
   }
 
   const handleSaveEdit = () => {
-    if (!editName.trim() || !editNumber || !editPosition || !editHeight || !editAge) {
+    if (!editName.trim() || !editNumber || !editPosition || !editAge) {
       alert('Please fill out all player details.')
       return
     }
@@ -736,7 +736,7 @@ function TeamsTab() {
         name: editName.trim(),
         number: parseInt(editNumber) || 0,
         position: editPosition.trim(),
-        height: editHeight.trim(),
+        height: editHeight.trim() || '-',
         age: parseInt(editAge) || 0
       })
       setEditPlayerId(null)
@@ -917,7 +917,7 @@ function TeamsTab() {
                           <span className="text-eco-blue font-mono text-xs w-6">#{player.number}</span>
                           <span className="text-white font-medium">{player.name}</span>
                           <span className="text-[10px] text-eco-muted px-2 py-0.5 bg-eco-surface rounded border border-eco-border text-xs">
-                            {player.position} • {player.height} • {player.age} yrs
+                            {player.position} • {player.age} yrs
                           </span>
                         </div>
                         <div className="flex items-center gap-2">

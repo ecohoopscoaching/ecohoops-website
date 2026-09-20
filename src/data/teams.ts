@@ -1,11 +1,11 @@
 import { Team, Player } from '../types'
 
-const createPlayer = (id: string, number: number, name: string, position?: string, height?: string, age?: number, avatar?: string): Player => ({
+const createPlayer = (id: string, number: number, name: string, position?: string, age?: number, avatar?: string): Player => ({
   id,
   number,
   name,
   position: position || 'G/F',
-  height: height || '-',
+  height: '-',
   age: age || 15,
   avatar,
   stats: {
@@ -28,18 +28,18 @@ export const TEAMS: Team[] = [
     isActive: true,
     record: '0-0',
     roster: [
-      createPlayer('g1-ss', 3, 'Alisha Sapp', 'PG', '5\'5"', 14, '/images/Player Profile Pics/Alisha.png'),
-      createPlayer('g9-ss', 5, 'Joury Elmorshedy', 'PF', '5\'8"', 14, '/images/Player Profile Pics/Joury.png'),
-      createPlayer('g8-ss', 8, 'Charlotte Barker', 'SF', '5\'7"', 14, '/images/Player Profile Pics/Charlotte.png'),
-      createPlayer('g2-ss', 10, 'Layla Khawja', 'SG', '5\'4"', 14, '/images/Player Profile Pics/Layla.png'),
-      createPlayer('g4-ss', 12, 'Calista Aznar', 'PF', '5\'6"', 14, '/images/Player Profile Pics/Calista.png'),
-      createPlayer('g10-ss', 13, 'Amaya Small', 'SG', '5\'6"', 14, '/images/Player Profile Pics/Amaya.png'),
-      createPlayer('g11-ss', 20, 'Simar Ahmed', 'SF', '5\'5"', 14, '/images/Player Profile Pics/Simar.png'),
-      createPlayer('g6-ss', 21, 'Muriam Dhawan', 'SG', '5\'5"', 14, '/images/Player Profile Pics/Muriam.png'),
-      createPlayer('g7-ss', 23, 'Aleena Hasan', 'PG', '5\'4"', 14, '/images/Player Profile Pics/Aleena.png'),
-      createPlayer('g-rasna-w26', 28, 'Rasna Purba', 'G/F', '5\'5"', 14),
-      createPlayer('g5-ss', 30, 'Laila Gaafar', 'C', '5\'8"', 14, '/images/Player Profile Pics/Laila.png'),
-      createPlayer('g-inaaya-w26', 35, 'Inaaya Sufian', 'G/F', '5\'7"', 14),
+      createPlayer('g1-ss', 3, 'Alisha Sapp', 'PG', 14, '/images/Player Profile Pics/Alisha.png'),
+      createPlayer('g9-ss', 5, 'Joury Elmorshedy', 'PF', 14, '/images/Player Profile Pics/Joury.png'),
+      createPlayer('g8-ss', 8, 'Charlotte Barker', 'SF', 14, '/images/Player Profile Pics/Charlotte.png'),
+      createPlayer('g2-ss', 10, 'Layla Khawja', 'SG', 14, '/images/Player Profile Pics/Layla.png'),
+      createPlayer('g4-ss', 12, 'Calista Aznar', 'PF', 14, '/images/Player Profile Pics/Calista.png'),
+      createPlayer('g10-ss', 13, 'Amaya Small', 'SG', 14, '/images/Player Profile Pics/Amaya.png'),
+      createPlayer('g11-ss', 20, 'Simar Ahmed', 'SF', 14, '/images/Player Profile Pics/Simar.png'),
+      createPlayer('g6-ss', 21, 'Muriam Dhawan', 'SG', 14, '/images/Player Profile Pics/Muriam.png'),
+      createPlayer('g7-ss', 23, 'Aleena Hasan', 'PG', 14, '/images/Player Profile Pics/Aleena.png'),
+      createPlayer('g-rasna-w26', 28, 'Rasna Purba', 'G/F', 14),
+      createPlayer('g5-ss', 30, 'Laila Gaafar', 'C', 14, '/images/Player Profile Pics/Laila.png'),
+      createPlayer('g-inaaya-w26', 35, 'Inaaya Sufian', 'G/F', 14),
     ],
     coaches: [
       {
@@ -76,16 +76,16 @@ export const TEAMS: Team[] = [
     isActive: true,
     record: '0-0',
     roster: [
-      createPlayer('b7-ss', 7, 'Jacob Sagat', 'PF', '5\'11"', 15, '/images/Player Profile Pics/Jacob.png'),
-      createPlayer('b3-ss', 21, 'Savva Donets', 'SF', '5\'11"', 15, '/images/Player Profile Pics/Savva.png'),
-      createPlayer('b6-ss', 13, 'Josh Uppal', 'SF', '6\'0"', 15, '/images/Player Profile Pics/Josh.png'),
-      createPlayer('b-dean-ss', 2, 'Dean', 'G', '5\'8"', 15),
-      createPlayer('b-rayan-ss', 4, 'Rayan', 'G', '5\'9"', 15),
-      createPlayer('b10-ss', 11, 'Gurveer Bhatti', 'SG', '5\'9"', 15, '/images/Player Profile Pics/Gurveer.png'),
-      createPlayer('b11-ss', 15, 'Adole Bhathal', 'PF', '6\'0"', 15, '/images/Player Profile Pics/Adole.png'),
-      createPlayer('b-avir-ss', 8, 'Avir', 'F', '5\'10"', 15),
-      createPlayer('b-ronit-ss', 23, 'Ronit (?)', 'G', '5\'9"', 15),
-      createPlayer('b-neal-ss', 24, 'Neal (?)', 'F', '5\'11"', 15),
+      createPlayer('b7-ss', 7, 'Jacob Sagat', 'PF', 15, '/images/Player Profile Pics/Jacob.png'),
+      createPlayer('b3-ss', 21, 'Savva Donets', 'SF', 15, '/images/Player Profile Pics/Savva.png'),
+      createPlayer('b6-ss', 13, 'Josh Uppal', 'SF', 15, '/images/Player Profile Pics/Josh.png'),
+      createPlayer('b-dean-ss', 2, 'Dean', 'G', 15),
+      createPlayer('b-rayan-ss', 4, 'Rayan', 'G', 15),
+      createPlayer('b10-ss', 11, 'Gurveer Bhatti', 'SG', 15, '/images/Player Profile Pics/Gurveer.png'),
+      createPlayer('b11-ss', 15, 'Adole Bhathal', 'PF', 15, '/images/Player Profile Pics/Adole.png'),
+      createPlayer('b-avir-ss', 8, 'Avir', 'F', 15),
+      createPlayer('b-ronit-ss', 23, 'Ronit (?)', 'G', 15),
+      createPlayer('b-neal-ss', 24, 'Neal (?)', 'F', 15),
     ],
     coaches: [
       {
