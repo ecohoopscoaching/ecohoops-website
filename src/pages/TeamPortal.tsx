@@ -650,7 +650,9 @@ export default function TeamPortal() {
               <p className="text-xl font-display text-[#97B3D2] mt-0.5">{teamEvents.length} Scheduled</p>
             </div>
             <div className="bg-eco-black/40 rounded-xl p-3 border border-white/5">
-              <span className="text-[10px] font-mono uppercase text-eco-muted">Head Coach</span>
+              <span className="text-[10px] font-mono uppercase text-eco-muted">
+                {currentTeam.coaches?.[0]?.role || 'Coach'}
+              </span>
               <p className="text-xl font-display text-white mt-0.5 truncate">
                 {currentTeam.coaches?.[0]?.name || 'Coach Adrian'}
               </p>
@@ -713,8 +715,8 @@ export default function TeamPortal() {
                 </h2>
                 <p className="text-xs text-eco-muted-light font-mono mt-0.5">
                   {scheduleSquadFilter === 'boys'
-                    ? '2011 Birth Year · Head Coach Adrian · Green Glade & Iona Permitted'
-                    : '2012 Birth Year · Head Coach Adrian · Iona & Green Glade Permitted'}
+                    ? '2011 Birth Year · Coaches: Adrian Sapp (Head Coach), Herald Sison (Coach), Adrian Yasay (Coach)'
+                    : '2012 Birth Year · Coaches: Adrian Sapp, Teepu Khawja (Assistant Coach)'}
                 </p>
               </div>
 

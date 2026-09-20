@@ -45,7 +45,7 @@ export const TEAMS: Team[] = [
       {
         id: 'c-adrian-g',
         name: 'Adrian Sapp',
-        role: 'Head Coach',
+        role: 'Coach',
         email: 'coach.adrian@ecohoops.ca',
         phone: '(647) 555-0194',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
@@ -91,7 +91,7 @@ export const TEAMS: Team[] = [
       {
         id: 'c-adrian-b',
         name: 'Adrian Sapp',
-        role: 'Coach',
+        role: 'Head Coach',
         email: 'coach.adrian@ecohoops.ca',
         phone: '(647) 555-0194',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
@@ -104,7 +104,7 @@ export const TEAMS: Team[] = [
         role: 'Coach',
         email: 'herald.sison@ecohoops.ca',
         phone: '(416) 555-0144',
-        bio: 'Coach for the 2011 Boys team, bringing passionate leadership, guard development, and competitive defensive intensity.',
+        bio: 'Coach for the U16 Boys team, bringing passionate leadership, guard development, and competitive defensive intensity.',
         certifications: ['NCCP Trained', 'Safe Sport Certified']
       },
       {
@@ -113,7 +113,7 @@ export const TEAMS: Team[] = [
         role: 'Coach',
         email: 'adrian.yasay@ecohoops.ca',
         phone: '(647) 555-0162',
-        bio: 'Coach for the 2011 Boys team, focused on skill execution, court spacing, and player confidence.',
+        bio: 'Coach for the U16 Boys team, focused on skill execution, court spacing, and player confidence.',
         certifications: ['Safe Sport Certified']
       }
     ],
