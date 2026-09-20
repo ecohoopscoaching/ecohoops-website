@@ -16,7 +16,6 @@ const FOOTER_LINKS = [
   {
     title: 'Platform',
     links: [
-      { label: 'Coach Login', path: '/login' },
       { label: 'AI Coach', path: '/coach' },
       { label: 'Safe Sport', path: '/safe-sport' },
     ],
@@ -288,7 +287,6 @@ export default function Footer() {
             <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link to="/refund-policy" className="hover:text-white transition-colors">Refunds</Link>
             <Link to="/waiver" className="hover:text-white transition-colors">Waiver</Link>
-            <Link to="/login" className="ml-1 hover:text-eco-blue/50 transition-colors opacity-30">Admin</Link>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-xs text-eco-muted">Built with</span>

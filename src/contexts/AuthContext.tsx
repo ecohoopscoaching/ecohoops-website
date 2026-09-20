@@ -103,36 +103,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }
 
-  const checkInitialSecretAccess = (): { hasAccess: boolean; scopedTeam: string | null } => {
-    if (typeof window === 'undefined') return { hasAccess: false, scopedTeam: null }
+  const checkInitialSecretAccess = (): { hasAccess: boolean; scopedTeam: string | null; isAdminSecret: boolean } => {
+    if (typeof window === 'undefined') return { hasAccess: false, scopedTeam: null, isAdminSecret: false }
     
     let scoped: string | null = localStorage.getItem('ecohoops_scoped_team') || null
     const cookieAccess = getCookie('ecohoops_hub_access')
+    const adminCookie = getCookie('ecohoops_admin_access')
+
+    if (adminCookie === 'true' || localStorage.getItem('ecohoops_admin_access') === 'true') {
+      localStorage.setItem('ecohoops_admin_access', 'true')
+      return { hasAccess: true, scopedTeam: null, isAdminSecret: true }
+    }
 
     if (cookieAccess === 'girls') {
       scoped = 'u15-girls'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
-      return { hasAccess: true, scopedTeam: scoped }
+      return { hasAccess: true, scopedTeam: scoped, isAdminSecret: false }
     }
 
     if (cookieAccess === 'boys') {
       scoped = 'u16-boys'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
-      return { hasAccess: true, scopedTeam: scoped }
+      return { hasAccess: true, scopedTeam: scoped, isAdminSecret: false }
     }
 
     const savedAccess = localStorage.getItem('ecohoops_whatsapp_access') === 'true'
-    return { hasAccess: savedAccess, scopedTeam: scoped }
+    return { hasAccess: savedAccess, scopedTeam: scoped, isAdminSecret: false }
   }
 
   const initialAccess = checkInitialSecretAccess()
   const [hasSecretPass, setHasSecretPass] = useState<boolean>(initialAccess.hasAccess)
   const [scopedTeamId, setScopedTeamId] = useState<string | null>(initialAccess.scopedTeam)
 
-  const savedRole = (localStorage.getItem('ecohoops_user_role') as UserRole) || 
-    (localStorage.getItem('mock_admin') === 'true' ? 'admin' : (initialAccess.hasAccess ? 'parent' : null))
+  const savedRole = initialAccess.isAdminSecret 
+    ? 'admin' 
+    : ((localStorage.getItem('ecohoops_user_role') as UserRole) || 
+      (localStorage.getItem('mock_admin') === 'true' ? 'admin' : (initialAccess.hasAccess ? 'parent' : null)))
   const savedProfile = localStorage.getItem('ecohoops_user_profile')
 
   const [userRole, setUserRole] = useState<UserRole | null>(savedRole || (initialAccess.hasAccess ? 'parent' : null))

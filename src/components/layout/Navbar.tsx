@@ -65,11 +65,10 @@ export default function Navbar() {
           }
         ]
       },
-      { label: 'Contact', path: '/contact' },
-      ...(isAdmin ? [{ label: 'Admin', path: '/admin' }] : [])
+      { label: 'Contact', path: '/contact' }
     ]
     return links
-  }, [isTeamMember, isAdmin])
+  }, [isTeamMember])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
