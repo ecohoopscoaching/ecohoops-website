@@ -16,6 +16,7 @@ import {
   dispatchTeamNotification
 } from '../lib/email-service'
 import type { ScheduleEvent, Player, CoachProfile, Team } from '../types'
+import { U16_BOYS_SCHEDULE, U15_GIRLS_SCHEDULE, LeagueWeekend } from '../data/schedule'
 import EventNotificationModal from '../components/schedule/EventNotificationModal'
 import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
 
@@ -33,10 +34,24 @@ export default function TeamPortal() {
   // Determine if URL path or param specifies girls or boys
   const resolvedParamTeamId = useMemo(() => {
     const path = location.pathname.toLowerCase()
-    if (path.includes('girls') || paramTeamId?.toLowerCase() === 'girls' || paramTeamId?.toLowerCase() === 'u14' || paramTeamId === 'u14-girls-ss26') {
+    if (
+      path.includes('girls') ||
+      paramTeamId?.toLowerCase() === 'girls' ||
+      paramTeamId?.toLowerCase() === 'u15-girls' ||
+      paramTeamId?.toLowerCase() === 'u15' ||
+      paramTeamId?.toLowerCase() === 'u14' ||
+      paramTeamId === 'u14-girls-ss26'
+    ) {
       return 'u14-girls-ss26'
     }
-    if (path.includes('boys') || paramTeamId?.toLowerCase() === 'boys' || paramTeamId?.toLowerCase() === 'u15' || paramTeamId === 'u15-boys-ss26') {
+    if (
+      path.includes('boys') ||
+      paramTeamId?.toLowerCase() === 'boys' ||
+      paramTeamId?.toLowerCase() === 'u16-boys' ||
+      paramTeamId?.toLowerCase() === 'u16' ||
+      paramTeamId?.toLowerCase() === 'u15' ||
+      paramTeamId === 'u15-boys-ss26'
+    ) {
       return 'u15-boys-ss26'
     }
     if (paramTeamId && teams.some((t) => t.id === paramTeamId)) {
@@ -76,13 +91,30 @@ export default function TeamPortal() {
     return teams[0]?.id || ''
   })
 
+  // Dedicated Schedule Squad View State (U16 Boys vs U15 Girls)
+  const [scheduleSquadFilter, setScheduleSquadFilter] = useState<'boys' | 'girls' | 'all'>(() => {
+    if (resolvedParamTeamId === 'u14-girls-ss26' || scopedTeamId === 'u14-girls-ss26') return 'girls'
+    if (resolvedParamTeamId === 'u15-boys-ss26' || scopedTeamId === 'u15-boys-ss26') return 'boys'
+    return 'boys'
+  })
+
   useEffect(() => {
     if (resolvedParamTeamId) {
       setSelectedTeamId(resolvedParamTeamId)
+      setScheduleSquadFilter(resolvedParamTeamId === 'u14-girls-ss26' ? 'girls' : 'boys')
     } else if (scopedTeamId && teams.some((t) => t.id === scopedTeamId) && !isAdmin && !isCoach) {
       setSelectedTeamId(scopedTeamId)
+      setScheduleSquadFilter(scopedTeamId === 'u14-girls-ss26' ? 'girls' : 'boys')
     }
   }, [resolvedParamTeamId, scopedTeamId, teams, isAdmin, isCoach])
+
+  useEffect(() => {
+    if (selectedTeamId === 'u14-girls-ss26') {
+      setScheduleSquadFilter('girls')
+    } else if (selectedTeamId === 'u15-boys-ss26') {
+      setScheduleSquadFilter('boys')
+    }
+  }, [selectedTeamId])
 
   // Selected Team Object
   const currentTeam = useMemo(() => {
@@ -167,14 +199,14 @@ export default function TeamPortal() {
 
     if (teamType === 'girls') {
       hubUrl = `${window.location.origin}/hub/u14-girls-ss26?access=girls`
-      toastLabel = '🌸 2012 Girls WhatsApp link copied! Pin this in the Girls group.'
+      toastLabel = '🌸 U15 Girls WhatsApp link copied! Pin this in the Girls group.'
     } else if (teamType === 'boys') {
       hubUrl = `${window.location.origin}/hub/u15-boys-ss26?access=boys`
-      toastLabel = '🏀 2011 Boys WhatsApp link copied! Pin this in the Boys group.'
+      toastLabel = '🏀 U16 Boys WhatsApp link copied! Pin this in the Boys group.'
     } else {
       const isGirls = selectedTeamId === 'u14-girls-ss26'
       hubUrl = `${window.location.origin}/hub/${selectedTeamId}?access=${isGirls ? 'girls' : 'boys'}`
-      toastLabel = `✓ ${isGirls ? 'Girls' : 'Boys'} WhatsApp link copied: ${hubUrl}`
+      toastLabel = `✓ ${isGirls ? 'U15 Girls' : 'U16 Boys'} WhatsApp link copied: ${hubUrl}`
     }
 
     if (navigator.clipboard) {
@@ -247,14 +279,14 @@ export default function TeamPortal() {
     e.preventDefault()
     const input = passcode.trim().toLowerCase()
     if (unlockWithPasscode(passcode)) {
-      if (['girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(input)) {
+      if (['girls', 'u15', 'u15-girls', 'u14', 'u14-girls', '2012girls', 'girls2026'].includes(input)) {
         setSelectedTeamId('u14-girls-ss26')
         navigate('/hub/u14-girls-ss26', { replace: true })
-        showToast('✓ Welcome to the 2012 Girls Team Hub!')
-      } else if (['boys', 'u15', 'u15-boys', '2011boys', 'boys2026'].includes(input)) {
+        showToast('✓ Welcome to the EcoHoops U15 Girls Team Hub!')
+      } else if (['boys', 'u16', 'u16-boys', 'u15-boys', '2011boys', 'boys2026'].includes(input)) {
         setSelectedTeamId('u15-boys-ss26')
         navigate('/hub/u15-boys-ss26', { replace: true })
-        showToast('✓ Welcome to the 2011 Boys Team Hub!')
+        showToast('✓ Welcome to the EcoHoops U16 Boys Team Hub!')
       } else {
         showToast('✓ Access granted! Welcome to the Team Hub.')
       }
@@ -299,10 +331,10 @@ export default function TeamPortal() {
               </p>
               <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono">
                 <span className="px-2.5 py-1 rounded-md bg-pink-500/20 text-pink-300 border border-pink-500/30">
-                  🌸 Girls Group: Passcode <strong>girls</strong>
+                  🌸 U15 Girls Group: Passcode <strong>girls</strong>
                 </span>
                 <span className="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  🏀 Boys Group: Passcode <strong>boys</strong>
+                  🏀 U16 Boys Group: Passcode <strong>boys</strong>
                 </span>
               </div>
             </div>
@@ -353,7 +385,7 @@ export default function TeamPortal() {
                 }}
                 className="py-2.5 px-2 bg-pink-500/10 border border-pink-500/30 hover:border-pink-500/60 hover:bg-pink-500/20 text-pink-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
-                🌸 Girls Family
+                🌸 U15 Girls Family
               </button>
               <button
                 type="button"
@@ -367,7 +399,7 @@ export default function TeamPortal() {
                 }}
                 className="py-2.5 px-2 bg-blue-500/10 border border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/20 text-blue-200 rounded-xl text-xs font-heading font-semibold transition-all cursor-pointer"
               >
-                🏀 Boys Family
+                🏀 U16 Boys Family
               </button>
               <button
                 type="button"
@@ -509,19 +541,19 @@ export default function TeamPortal() {
                   <button
                     onClick={() => handleCopyLink('girls')}
                     className="px-3.5 py-2.5 rounded-xl bg-pink-500/10 border border-pink-500/30 hover:border-pink-400 text-pink-300 hover:text-white hover:bg-pink-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Copy secret link for Girls WhatsApp group (no password needed for parents)"
+                    title="Copy secret link for U15 Girls WhatsApp group (no password needed for parents)"
                   >
                     {copiedLink === 'girls' ? <Check size={14} className="text-pink-300" /> : <MessageSquare size={14} className="text-pink-300" />}
-                    <span>{copiedLink === 'girls' ? 'Girls Link Copied!' : 'Copy Girls WhatsApp Link'}</span>
+                    <span>{copiedLink === 'girls' ? 'U15 Girls Link Copied!' : 'Copy U15 Girls WhatsApp Link'}</span>
                   </button>
 
                   <button
                     onClick={() => handleCopyLink('boys')}
                     className="px-3.5 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-400 text-blue-300 hover:text-white hover:bg-blue-500/20 text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    title="Copy secret link for Boys WhatsApp group (no password needed for parents)"
+                    title="Copy secret link for U16 Boys WhatsApp group (no password needed for parents)"
                   >
                     {copiedLink === 'boys' ? <Check size={14} className="text-blue-300" /> : <MessageSquare size={14} className="text-blue-300" />}
-                    <span>{copiedLink === 'boys' ? 'Boys Link Copied!' : 'Copy Boys WhatsApp Link'}</span>
+                    <span>{copiedLink === 'boys' ? 'U16 Boys Link Copied!' : 'Copy U16 Boys WhatsApp Link'}</span>
                   </button>
                 </>
               ) : (
@@ -535,7 +567,7 @@ export default function TeamPortal() {
                   title="Share secret link with squad members"
                 >
                   {copiedLink ? <Check size={14} /> : <MessageSquare size={14} />}
-                  <span>{copiedLink ? 'WhatsApp Link Copied!' : `Copy ${currentTeam.gender} WhatsApp Link`}</span>
+                  <span>{copiedLink ? 'WhatsApp Link Copied!' : `Copy ${currentTeam.name} WhatsApp Link`}</span>
                 </button>
               )}
 
@@ -625,10 +657,213 @@ export default function TeamPortal() {
 
         {/* Tab 1: Schedule & Events */}
         {activeTab === 'schedule' && (
-          <div className="space-y-6">
-            {/* Filter Pills */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
+          <div className="space-y-8">
+            {/* Confirmed Season Competition Schedule Card */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-5 sm:p-8 shadow-2xl">
+              {/* Mandatory Top Note */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-start sm:items-center gap-3.5 mb-6 shadow-sm">
+                <Info size={20} className="text-[#97B3D2] flex-shrink-0 mt-0.5 sm:mt-0" />
+                <p className="text-xs sm:text-sm text-[#97B3D2] font-semibold leading-relaxed">
+                  Session dates are confirmed league competition weekends. Exact game times, opponents and venues will be added as they are released.
+                </p>
+              </div>
+
+              {/* Schedule Section Header & Team Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/10 mb-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
+                      Confirmed Rep Schedule
+                    </span>
+                    <span className="text-xs text-eco-muted font-mono">2026–2027 Season</span>
+                  </div>
+                  <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight text-white">
+                    {scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'}
+                  </h2>
+                  <p className="text-xs text-eco-muted-light mt-1 font-mono">
+                    {scheduleSquadFilter === 'boys'
+                      ? 'Birth Year: 2011 · Coalition Basketball League & Ontario Basketball League (OBL)'
+                      : 'Birth Year: 2012 · Coalition Basketball League & Ontario Basketball League (OBL)'}
+                  </p>
+                </div>
+
+                {/* Team Switcher Buttons / Tabs */}
+                {scopedTeamId && !isAdmin && !isCoach ? (
+                  <div className="inline-flex items-center gap-2 p-1.5 rounded-xl bg-eco-black/60 border border-white/10">
+                    <span className={`px-4 py-2 rounded-lg text-xs font-heading font-extrabold uppercase tracking-wider flex items-center gap-1.5 ${
+                      scheduleSquadFilter === 'girls'
+                        ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
+                        : 'bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30'
+                    }`}>
+                      {scheduleSquadFilter === 'girls' ? '🌸 U15 GIRLS' : '🏀 U16 BOYS'}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 p-1.5 bg-eco-black/60 rounded-2xl border border-white/10 self-start sm:self-auto shadow-inner">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setScheduleSquadFilter('boys')
+                        setSelectedTeamId('u15-boys-ss26')
+                        navigate('/hub/u15-boys-ss26', { replace: true })
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+                        scheduleSquadFilter === 'boys'
+                          ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
+                          : 'text-eco-muted hover:text-white'
+                      }`}
+                    >
+                      🏀 U16 BOYS
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setScheduleSquadFilter('girls')
+                        setSelectedTeamId('u14-girls-ss26')
+                        navigate('/hub/u14-girls-ss26', { replace: true })
+                      }}
+                      className={`px-4 py-2 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+                        scheduleSquadFilter === 'girls'
+                          ? 'bg-pink-400 text-[#060A10] shadow-md'
+                          : 'text-eco-muted hover:text-white'
+                      }`}
+                    >
+                      🌸 U15 GIRLS
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Chronological Confirmed Weekend List */}
+              <div className="space-y-3">
+                {(scheduleSquadFilter === 'girls' ? U15_GIRLS_SCHEDULE : U16_BOYS_SCHEDULE).map((item) => (
+                  <div
+                    key={item.id}
+                    className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      item.isPlayoffs
+                        ? 'bg-gradient-to-r from-amber-500/15 via-eco-surface to-eco-surface2 border-amber-400/50 shadow-[0_0_25px_rgba(251,191,36,0.15)] ring-1 ring-amber-400/30'
+                        : item.isAllStar
+                        ? 'bg-gradient-to-r from-purple-500/15 via-eco-surface to-eco-surface2 border-purple-400/40 shadow-sm'
+                        : 'bg-eco-surface/90 border-white/10 hover:border-white/20 shadow-sm'
+                    }`}
+                  >
+                    {/* Left: Date, League & Session Details */}
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* League Badge: Clear separation between Coalition and OBL */}
+                        <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider border ${
+                          item.league === 'Coalition'
+                            ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/35'
+                            : 'bg-sky-500/15 text-sky-300 border-sky-500/35'
+                        }`}>
+                          {item.league}
+                        </span>
+
+                        {/* Special Badges: PLAYOFFS & All-Star */}
+                        {item.isPlayoffs && (
+                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-heading font-extrabold uppercase tracking-wider bg-amber-400 text-[#060A10] flex items-center gap-1 shadow-sm">
+                            <Trophy size={13} /> PLAYOFFS
+                          </span>
+                        )}
+
+                        {item.isAllStar && (
+                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-heading font-bold uppercase tracking-wider bg-purple-400/20 text-purple-200 border border-purple-400/40 flex items-center gap-1">
+                            <Sparkles size={12} /> All-Star Weekend
+                          </span>
+                        )}
+
+                        {item.gamesCount && (
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25">
+                            {item.gamesCount}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Strong Date Hierarchy */}
+                      <div className="text-base sm:text-xl font-heading font-bold text-white tracking-wide">
+                        {item.dateRange}
+                      </div>
+
+                      {/* Session Subtitle */}
+                      <div className="text-xs text-eco-muted-light font-mono flex items-center gap-2">
+                        <span>{item.sessionType}</span>
+                        <span>&middot;</span>
+                        <span className="text-white/60">Confirmed Competition Weekend</span>
+                      </div>
+                    </div>
+
+                    {/* Right: Status Pill */}
+                    <div className="flex items-center gap-2 sm:flex-col sm:items-end flex-shrink-0">
+                      <span className={`text-[10px] sm:text-[11px] font-mono px-3 py-1 rounded-full uppercase tracking-wider font-semibold ${
+                        item.isPlayoffs
+                          ? 'text-amber-300 bg-amber-500/15 border border-amber-500/35'
+                          : item.isAllStar
+                          ? 'text-purple-300 bg-purple-500/15 border border-purple-500/35'
+                          : 'text-eco-muted-light bg-white/5 border border-white/10'
+                      }`}>
+                        {item.isPlayoffs ? 'Championship' : 'Confirmed'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Quick Sync Button */}
+              <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                <p className="text-xs text-eco-muted font-mono">
+                  Session dates confirmed by Coalition Basketball League and Ontario Basketball (OBL).
+                </p>
+                <button
+                  type="button"
+                  onClick={() => downloadCalendarIcs(`${scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'} Schedule`)}
+                  className="px-4 py-2.5 rounded-xl bg-eco-surface2 border border-eco-border hover:border-[#97B3D2] text-white text-xs font-heading font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer"
+                  title="Download .ics file to sync this team schedule with iPhone, Google, or Outlook calendar"
+                >
+                  <Download size={14} className="text-[#97B3D2]" />
+                  <span>Sync {scheduleSquadFilter === 'boys' ? 'U16 Boys' : 'U15 Girls'} Schedule (.ics)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Team Practices & Special Sessions Header */}
+            <div className="pt-6 border-t border-white/10">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-base font-heading font-bold uppercase tracking-wider text-white">
+                    Team Practices & Special Sessions
+                  </h3>
+                  <p className="text-xs text-eco-muted font-mono">
+                    Practices, gym times, and parent RSVP tracking for {currentTeam.name}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  {(isAdmin || isCoach) && (
+                    <>
+                      <button
+                        onClick={() => setShowAddEventModal(true)}
+                        className="btn-glow text-xs !px-3.5 !py-1.5 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Plus size={13} /> Add Event
+                      </button>
+                      <button
+                        onClick={() => setShowEmergencyBroadcast(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/15 border border-red-500/35 text-red-300 text-xs font-heading font-bold uppercase tracking-wider hover:bg-red-500/25 transition-all cursor-pointer shadow-glow-sm"
+                        title="Broadcast urgent gym closure or inclement weather notice"
+                      >
+                        <AlertTriangle size={13} className="text-red-400" />
+                        <span>Weather Alert</span>
+                      </button>
+                    </>
+                  )}
+                  <div className="text-xs text-eco-muted font-mono">
+                    Showing {teamEvents.length} events for {currentTeam.name}
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Pills */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
                 <Filter size={14} className="text-eco-muted" />
                 {(['all', 'game', 'practice', 'tournament'] as const).map((type) => (
                   <button
@@ -643,30 +878,6 @@ export default function TeamPortal() {
                     {type === 'all' ? 'All Events' : type === 'game' ? 'Games' : type === 'practice' ? 'Practices' : 'Tournaments'}
                   </button>
                 ))}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                {(isAdmin || isCoach) && (
-                  <>
-                    <button
-                      onClick={() => setShowAddEventModal(true)}
-                      className="btn-glow text-xs !px-3.5 !py-1.5 flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Plus size={13} /> Add Event
-                    </button>
-                    <button
-                      onClick={() => setShowEmergencyBroadcast(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/15 border border-red-500/35 text-red-300 text-xs font-heading font-bold uppercase tracking-wider hover:bg-red-500/25 transition-all cursor-pointer shadow-glow-sm"
-                      title="Broadcast urgent gym closure or inclement weather notice"
-                    >
-                      <AlertTriangle size={13} className="text-red-400" />
-                      <span>Weather Alert</span>
-                    </button>
-                  </>
-                )}
-                <div className="text-xs text-eco-muted font-mono">
-                  Showing {teamEvents.length} events for {currentTeam.name}
-                </div>
               </div>
             </div>
 

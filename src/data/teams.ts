@@ -20,9 +20,9 @@ const createPlayer = (id: string, number: number, name: string, position?: strin
 export const TEAMS: Team[] = [
   {
     id: 'u14-girls-ss26',
-    name: '2012 Girls',
+    name: 'U15 Girls',
     gender: 'Girls',
-    ageGroup: 'Born 2012',
+    ageGroup: 'U15 Girls (Born 2012)',
     birthYear: 2012,
     season: 'Winter 2026-2027',
     isActive: true,
@@ -58,7 +58,7 @@ export const TEAMS: Team[] = [
         role: 'Assistant Coach',
         email: 'teepu.khawja@ecohoops.ca',
         phone: '(647) 555-0188',
-        bio: 'Assistant Coach for the 2012 Girls team, dedicated to fundamental skill development, high energy, and team camaraderie.',
+        bio: 'Assistant Coach for the U15 Girls team, dedicated to fundamental skill development, high energy, and team camaraderie.',
         certifications: ['Safe Sport Certified']
       }
     ],
@@ -68,9 +68,9 @@ export const TEAMS: Team[] = [
   },
   {
     id: 'u15-boys-ss26',
-    name: '2011 Boys',
+    name: 'U16 Boys',
     gender: 'Boys',
-    ageGroup: 'Born 2011',
+    ageGroup: 'U16 Boys (Born 2011)',
     birthYear: 2011,
     season: 'Winter 2026-2027',
     isActive: true,

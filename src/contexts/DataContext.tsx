@@ -46,13 +46,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const [schedule, setSchedule] = useState<ScheduleEvent[]>(() => {
     const saved = localStorage.getItem('ecohoops_schedule')
-    if (!saved) return []
+    if (!saved) return SCHEDULE
     try {
       const parsed: ScheduleEvent[] = JSON.parse(saved)
       // Filter out any legacy mock events with IDs like e1..e19
-      return parsed.filter(e => !e.id || !e.id.match(/^e\d+$/))
+      const cleaned = parsed.filter(e => !e.id || !e.id.match(/^e\d+$/))
+      return cleaned.length > 0 ? cleaned : SCHEDULE
     } catch {
-      return []
+      return SCHEDULE
     }
   })
 
@@ -66,13 +67,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : []
   })
 
-  // One-time automated update to ensure Winter season and new players are synced
+  // One-time automated update to ensure Winter season, U16 Boys / U15 Girls, and confirmed schedule are synced
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v8'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v10'
     if (!localStorage.getItem(cleanFlagKey)) {
       localStorage.setItem('ecohoops_teams_v2', JSON.stringify(TEAMS))
+      localStorage.setItem('ecohoops_schedule', JSON.stringify(SCHEDULE))
       localStorage.setItem(cleanFlagKey, 'true')
       setTeams(TEAMS)
+      setSchedule(SCHEDULE)
     }
   }, [])
 
