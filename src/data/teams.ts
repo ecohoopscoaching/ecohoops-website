@@ -54,9 +54,9 @@ export const TEAMS: Team[] = [
       {
         id: 'c-adrian-g',
         name: 'Adrian Sapp',
-        role: 'Coach',
-        email: 'coach.adrian@ecohoops.ca',
-        phone: '(647) 555-0194',
+        role: 'Founder / Head Coach',
+        email: 'asapp@ecohoops.ca',
+        phone: '289-233-8050',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
         avatar: '/images/coach.png',
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
@@ -65,14 +65,14 @@ export const TEAMS: Team[] = [
         id: 'c-teepu-g',
         name: 'Teepu Khawja',
         role: 'Assistant Coach',
-        email: 'teepu.khawja@ecohoops.ca',
-        phone: '(647) 555-0188',
+        email: 'teepushaheed@rogers.com',
+        phone: '(416) 898-5597',
         bio: 'Assistant Coach for the U15 Girls team, dedicated to fundamental skill development, high energy, and team camaraderie.',
         certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: [
-      { id: 'p-adrian-test', name: 'Adrian Sapp (Parent / Test Contact)', email: 'ecohoopscoaching@gmail.com', phone: '(647) 555-0194', linkedPlayerName: 'Alisha Sapp', linkedPlayerNumber: 3 }
+      { id: 'p-adrian-test', name: 'Adrian Sapp (Parent / Test Contact)', email: 'asapp@ecohoops.ca', phone: '289-233-8050', linkedPlayerName: 'Alisha Sapp', linkedPlayerNumber: 3 }
     ]
   },
   {
@@ -100,9 +100,9 @@ export const TEAMS: Team[] = [
       {
         id: 'c-adrian-b',
         name: 'Adrian Sapp',
-        role: 'Head Coach',
-        email: 'coach.adrian@ecohoops.ca',
-        phone: '(647) 555-0194',
+        role: 'Founder / Head Coach',
+        email: 'asapp@ecohoops.ca',
+        phone: '289-233-8050',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
         avatar: '/images/coach.png',
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
@@ -111,8 +111,8 @@ export const TEAMS: Team[] = [
         id: 'c-herald-b',
         name: 'Herald Sison',
         role: 'Coach',
-        email: 'herald.sison@ecohoops.ca',
-        phone: '(416) 555-0144',
+        email: 'hsison@gmail.com',
+        phone: '647-400-4359',
         bio: 'Coach for the U16 Boys team, bringing passionate leadership, guard development, and competitive defensive intensity.',
         certifications: ['NCCP Trained', 'Safe Sport Certified']
       },
@@ -120,14 +120,14 @@ export const TEAMS: Team[] = [
         id: 'c-adrian-y-b',
         name: 'Adrian Yasay',
         role: 'Coach',
-        email: 'adrian.yasay@ecohoops.ca',
-        phone: '(647) 555-0162',
+        email: 'adriantyasay@gmail.com',
+        phone: '(204) 898-7759',
         bio: 'Coach for the U16 Boys team, focused on skill execution, court spacing, and player confidence.',
         certifications: ['Safe Sport Certified']
       }
     ],
     parentContacts: [
-      { id: 'p-adrian-test-b', name: 'Adrian Sapp (Parent / Test Contact)', email: 'ecohoopscoaching@gmail.com', phone: '(647) 555-0194', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 }
+      { id: 'p-adrian-test-b', name: 'Adrian Sapp (Parent / Test Contact)', email: 'asapp@ecohoops.ca', phone: '289-233-8050', linkedPlayerName: 'Jacob Sagat', linkedPlayerNumber: 7 }
     ]
   }
 ]

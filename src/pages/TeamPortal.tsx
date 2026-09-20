@@ -701,10 +701,10 @@ export default function TeamPortal() {
                       )}
                       <a
                         href={`mailto:${coach.email}?subject=[EcoHoops ${currentTeam.name}] Inquiry`}
-                        className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                        className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all truncate"
                       >
-                        <Mail size={15} className="text-[#97B3D2]" />
-                        <span>Email Coach</span>
+                        <Mail size={15} className="text-[#97B3D2] flex-shrink-0" />
+                        <span className="truncate">Email ({coach.email})</span>
                       </a>
                     </div>
                   </div>
