@@ -45,13 +45,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   })
 
   const [schedule, setSchedule] = useState<ScheduleEvent[]>(() => {
-    const saved = localStorage.getItem('ecohoops_schedule')
+    const saved = localStorage.getItem('ecohoops_schedule_v4')
     if (!saved) return SCHEDULE
     try {
       const parsed: ScheduleEvent[] = JSON.parse(saved)
-      // Filter out any legacy mock events with IDs like e1..e19
-      const cleaned = parsed.filter(e => !e.id || !e.id.match(/^e\d+$/))
-      return cleaned.length > 0 ? cleaned : SCHEDULE
+      return parsed.length > 0 ? parsed : SCHEDULE
     } catch {
       return SCHEDULE
     }
@@ -85,7 +83,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [teams])
 
   useEffect(() => {
-    localStorage.setItem('ecohoops_schedule', JSON.stringify(schedule))
+    localStorage.setItem('ecohoops_schedule_v4', JSON.stringify(schedule))
   }, [schedule])
 
   useEffect(() => {
@@ -97,7 +95,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [messages])
 
   const clearAllData = () => {
-    localStorage.removeItem('ecohoops_schedule')
+    localStorage.removeItem('ecohoops_schedule_v4')
     localStorage.removeItem('ecohoops_payments')
     localStorage.removeItem('ecohoops_messages')
     localStorage.removeItem('ecohoops_jr_waitlist')
@@ -110,7 +108,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }
 
   const clearSchedule = () => {
-    localStorage.removeItem('ecohoops_schedule')
+    localStorage.removeItem('ecohoops_schedule_v4')
     setSchedule([])
   }
 

@@ -5,7 +5,7 @@ import {
   Calendar, Users, Shield, Clock, MapPin, CheckCircle2,
   AlertTriangle, Mail, Phone, ChevronRight, Download, Send,
   Sparkles, Bell, ExternalLink, Info, Filter, ArrowRight, UserCheck, X, Plus,
-  Copy, Check, Share2, Trophy, Lock, MessageSquare
+  Copy, Check, Share2, Trophy, Lock, MessageSquare, Dumbbell, CalendarDays
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useData } from '../contexts/DataContext'
@@ -16,7 +16,20 @@ import {
   dispatchTeamNotification
 } from '../lib/email-service'
 import type { ScheduleEvent, Player, CoachProfile, Team } from '../types'
-import { U16_BOYS_SCHEDULE, U15_GIRLS_SCHEDULE, LeagueWeekend } from '../data/schedule'
+import {
+  U16_BOYS_SCHEDULE,
+  U15_GIRLS_SCHEDULE,
+  BOYS_PRACTICE_RULES,
+  GIRLS_PRACTICE_RULES,
+  BOYS_NO_PRACTICE_DATES,
+  GIRLS_NO_PRACTICE_DATES,
+  FRIDAY_CONFIG,
+  FRIDAY_NO_GYM_DATES,
+  APPROVED_PA_DAYS,
+  OBA_ONTARIO_CUP_STATUS,
+  SCHEDULE_NOTICES,
+  LeagueWeekend
+} from '../data/schedule'
 import EventNotificationModal from '../components/schedule/EventNotificationModal'
 import EmergencyBroadcastModal from '../components/schedule/EmergencyBroadcastModal'
 
@@ -218,7 +231,7 @@ export default function TeamPortal() {
   }
 
   // Split events into upcoming and past
-  const todayStr = new Date().toISOString().split('T')[0]
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
   const upcomingEvents = useMemo(() => {
     return teamEvents.filter((e) => e.date >= todayStr)
   }, [teamEvents, todayStr])
@@ -226,6 +239,34 @@ export default function TeamPortal() {
   const pastEvents = useMemo(() => {
     return teamEvents.filter((e) => e.date < todayStr).reverse()
   }, [teamEvents, todayStr])
+
+  // Next Upcoming Event for current team (unfiltered by eventTypeFilter)
+  const nextTeamEvent = useMemo(() => {
+    if (!currentTeam) return null
+    const allForTeam = schedule
+      .filter((e) => e.teamId === currentTeam.id || e.teamId === 'all' || !e.teamId)
+      .sort((a, b) => a.date.localeCompare(b.date))
+    return allForTeam.find((e) => e.date >= todayStr) || allForTeam[0] || null
+  }, [schedule, currentTeam, todayStr])
+
+  // Check if current week has any closure / holiday
+  const currentWeekClosure = useMemo(() => {
+    const isBoys = scheduleSquadFilter === 'boys'
+    const teamClosures = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
+    const allClosures = [...teamClosures, ...FRIDAY_NO_GYM_DATES]
+
+    const now = new Date()
+    const day = now.getDay()
+    const diffToMonday = day === 0 ? -6 : 1 - day
+    const monday = new Date(now)
+    monday.setDate(now.getDate() + diffToMonday)
+    const sunday = new Date(monday)
+    sunday.setDate(monday.getDate() + 6)
+    const monStr = monday.toISOString().split('T')[0]
+    const sunStr = sunday.toISOString().split('T')[0]
+
+    return allClosures.find((c) => c.date >= monStr && c.date <= sunStr) || null
+  }, [scheduleSquadFilter])
 
   const handleAddEvent = async (newEventData: ScheduleEvent, sendEmail: boolean) => {
     addEvent(newEventData)
@@ -658,22 +699,509 @@ export default function TeamPortal() {
         {/* Tab 1: Schedule & Events */}
         {activeTab === 'schedule' && (
           <div className="space-y-8">
-            {/* Confirmed Season Competition Schedule Card */}
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-5 sm:p-8 shadow-2xl">
-              {/* Mandatory Top Note */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-start sm:items-center gap-3.5 mb-6 shadow-sm">
-                <Info size={20} className="text-[#97B3D2] flex-shrink-0 mt-0.5 sm:mt-0" />
-                <p className="text-xs sm:text-sm text-[#97B3D2] font-semibold leading-relaxed">
-                  Session dates are confirmed league competition weekends. Exact game times, opponents and venues will be added as they are released.
+            {/* Squad Switcher Bar */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-eco-surface2/90 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl backdrop-blur-md">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
+                    Private Team Hub
+                  </span>
+                  <span className="text-xs text-eco-muted font-mono">2026–2027 Season</span>
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white">
+                  {scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'}
+                </h2>
+                <p className="text-xs text-eco-muted-light font-mono mt-0.5">
+                  {scheduleSquadFilter === 'boys'
+                    ? '2011 Birth Year · Head Coach Adrian · Green Glade & Iona Permitted'
+                    : '2012 Birth Year · Head Coach Adrian · Iona & Green Glade Permitted'}
                 </p>
               </div>
 
-              {/* Schedule Section Header & Team Tabs */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/10 mb-6">
+              {/* Team Switcher Buttons / Tabs */}
+              {scopedTeamId && !isAdmin && !isCoach ? (
+                <div className="inline-flex items-center gap-2 p-1.5 rounded-xl bg-eco-black/60 border border-white/10">
+                  <span className={`px-4 py-2 rounded-lg text-xs font-heading font-extrabold uppercase tracking-wider flex items-center gap-1.5 ${
+                    scheduleSquadFilter === 'girls'
+                      ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
+                      : 'bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30'
+                  }`}>
+                    {scheduleSquadFilter === 'girls' ? '🌸 U15 GIRLS' : '🏀 U16 BOYS'}
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 p-1.5 bg-eco-black/60 rounded-2xl border border-white/10 self-start sm:self-auto shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScheduleSquadFilter('boys')
+                      setSelectedTeamId('u15-boys-ss26')
+                      navigate('/hub/u15-boys-ss26', { replace: true })
+                    }}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                      scheduleSquadFilter === 'boys'
+                        ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
+                        : 'text-eco-muted hover:text-white'
+                    }`}
+                  >
+                    <span>🏀</span>
+                    <span>U16 BOYS</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScheduleSquadFilter('girls')
+                      setSelectedTeamId('u14-girls-ss26')
+                      navigate('/hub/u14-girls-ss26', { replace: true })
+                    }}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 ${
+                      scheduleSquadFilter === 'girls'
+                        ? 'bg-pink-400 text-[#060A10] shadow-md'
+                        : 'text-eco-muted hover:text-white'
+                    }`}
+                  >
+                    <span>🌸</span>
+                    <span>U15 GIRLS</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 1. NEXT EVENT FEATURE */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-eco-surface2 via-eco-surface to-[#060A10] p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-[#97B3D2]/5 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Weekly Closure Alert if any this week */}
+              {currentWeekClosure && (
+                <div className="mb-5 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+                  <AlertTriangle className="text-amber-400 flex-shrink-0 mt-0.5" size={18} />
+                  <div>
+                    <div className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                      NO PRACTICE THIS WEEK ({currentWeekClosure.dayOfWeek}, {currentWeekClosure.date})
+                    </div>
+                    <div className="text-xs text-white/90 mt-0.5 font-sans">
+                      Reason: <span className="font-semibold text-white">{currentWeekClosure.reason}</span> at {currentWeekClosure.venue}.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest font-extrabold bg-[#97B3D2] text-[#060A10]">
+                      ⚡ NEXT EVENT
+                    </span>
+                    <span className="text-xs text-eco-muted font-mono">
+                      {scheduleSquadFilter === 'boys' ? 'U16 Boys (2011)' : 'U15 Girls (2012)'}
+                    </span>
+                  </div>
+
+                  {nextTeamEvent ? (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`px-3 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider border shadow-sm ${
+                          nextTeamEvent.isPlayoffs
+                            ? 'bg-amber-400 text-[#060A10] border-amber-300'
+                            : nextTeamEvent.isAllStar
+                            ? 'bg-purple-500/20 text-purple-200 border-purple-400/40'
+                            : nextTeamEvent.league === 'Coalition'
+                            ? 'bg-amber-500/10 text-amber-200 border-amber-500/35'
+                            : nextTeamEvent.league === 'OBL'
+                            ? 'bg-rose-500/10 text-rose-200 border-rose-500/35'
+                            : nextTeamEvent.isOptional
+                            ? 'bg-cyan-500/15 text-cyan-200 border-cyan-500/35'
+                            : 'bg-emerald-500/15 text-emerald-200 border-emerald-500/35'
+                        }`}>
+                          {nextTeamEvent.isPlayoffs
+                            ? '🏆 PLAYOFFS'
+                            : nextTeamEvent.isAllStar
+                            ? '✨ ALL-STAR WEEKEND'
+                            : nextTeamEvent.league
+                            ? `🏀 ${nextTeamEvent.league} GAME WEEKEND`
+                            : nextTeamEvent.isOptional
+                            ? '⭐️ FRIDAY NIGHT HOOPS (OPTIONAL)'
+                            : '🏀 TEAM PRACTICE'}
+                        </span>
+
+                        <span className="text-xs font-mono text-eco-muted-light">
+                          {nextTeamEvent.title}
+                        </span>
+                      </div>
+
+                      <div className="text-2xl sm:text-3xl font-heading font-extrabold text-white tracking-wide">
+                        {new Date(nextTeamEvent.date + 'T12:00:00').toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-eco-muted-light pt-1">
+                        <div className="flex items-center gap-1.5 text-white">
+                          <Clock size={14} className="text-[#97B3D2]" />
+                          <span>{nextTeamEvent.time}</span>
+                        </div>
+                        <span className="text-white/20">&middot;</span>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin size={14} className="text-[#97B3D2]" />
+                          {nextTeamEvent.mapUrl ? (
+                            <a
+                              href={nextTeamEvent.mapUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white hover:text-[#97B3D2] underline underline-offset-2 transition-colors flex items-center gap-1"
+                            >
+                              <span>{nextTeamEvent.location}</span>
+                              <ExternalLink size={11} />
+                            </a>
+                          ) : (
+                            <span className="text-white">{nextTeamEvent.location}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-white/80 font-mono text-sm">
+                      No upcoming sessions scheduled for this week.
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct RSVP Toggle for Next Event */}
+                {nextTeamEvent && (
+                  <div className="p-4 rounded-2xl bg-eco-black/60 border border-white/10 flex-shrink-0 flex flex-col justify-center gap-2.5">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-eco-muted text-center">
+                      Quick RSVP {effectivePlayerId && currentTeam?.roster?.find(p => p.id === effectivePlayerId) ? `for ${currentTeam.roster.find(p => p.id === effectivePlayerId)?.name}` : ''}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleRsvp(nextTeamEvent.id, 'going')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                          nextTeamEvent.attendance?.[effectivePlayerId]?.status === 'going'
+                            ? 'bg-emerald-500 text-black shadow-glow-sm'
+                            : 'bg-white/5 hover:bg-emerald-500/20 text-eco-muted hover:text-emerald-300'
+                        }`}
+                      >
+                        ✓ Going
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRsvp(nextTeamEvent.id, 'maybe')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                          nextTeamEvent.attendance?.[effectivePlayerId]?.status === 'maybe'
+                            ? 'bg-amber-400 text-black shadow-glow-sm'
+                            : 'bg-white/5 hover:bg-amber-500/20 text-eco-muted hover:text-amber-300'
+                        }`}
+                      >
+                        ? Maybe
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRsvp(nextTeamEvent.id, 'notGoing')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                          nextTeamEvent.attendance?.[effectivePlayerId]?.status === 'notGoing'
+                            ? 'bg-red-500 text-white shadow-glow-sm'
+                            : 'bg-white/5 hover:bg-red-500/20 text-eco-muted hover:text-red-300'
+                        }`}
+                      >
+                        ✕ Can't Go
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 2. REGULAR WEEKLY PRACTICES */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-6 sm:p-8 shadow-2xl space-y-6">
+              {/* Mandatory Practice Notice */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-start gap-3.5 shadow-sm">
+                <Info size={20} className="text-[#97B3D2] flex-shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm text-[#97B3D2] font-semibold leading-relaxed">
+                  {SCHEDULE_NOTICES.practice}
+                </p>
+              </div>
+
+              {/* Big Regular Practices Header */}
+              <div className="pb-4 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-[11px] font-mono font-extrabold uppercase tracking-widest text-[#97B3D2]">
+                    Permit-Approved Gym Schedule
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-display font-extrabold uppercase tracking-tight text-white mt-1">
+                    {scheduleSquadFilter === 'boys' ? 'BOYS REGULAR PRACTICES: MONDAY + THURSDAY' : 'GIRLS REGULAR PRACTICES: TUESDAY + WEDNESDAY'}
+                  </h3>
+                  <p className="text-xs text-eco-muted font-mono mt-0.5">
+                    Friday is handled separately below as Phase 1 Joint Practice & Phase 2 Friday Night Hoops.
+                  </p>
+                </div>
+
+                <span className="px-3 py-1 rounded-full bg-eco-black/60 border border-white/15 text-white text-xs font-mono self-start sm:self-auto font-semibold">
+                  2 Required Practices / Wk
+                </span>
+              </div>
+
+              {/* Practice Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {(scheduleSquadFilter === 'boys' ? BOYS_PRACTICE_RULES : GIRLS_PRACTICE_RULES).map((rule) => (
+                  <div
+                    key={rule.id}
+                    className="p-5 sm:p-6 rounded-2xl bg-eco-surface/90 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between gap-4 shadow-sm"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-3 py-1 rounded-lg bg-[#97B3D2]/15 border border-[#97B3D2]/35 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
+                          {rule.dayOfWeek}
+                        </span>
+                        <span className="text-xs font-mono text-emerald-400 font-semibold flex items-center gap-1">
+                          <CheckCircle2 size={13} /> Approved Permit
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="text-2xl font-heading font-extrabold text-white">
+                          {rule.time}
+                        </div>
+                        <div className="text-sm font-semibold text-[#97B3D2] mt-1 flex items-center gap-1.5">
+                          <MapPin size={14} className="text-[#97B3D2]" />
+                          <span>{rule.venue}</span>
+                        </div>
+                        <a
+                          href={rule.mapUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-eco-muted-light hover:text-white underline underline-offset-2 transition-colors block mt-0.5"
+                        >
+                          {rule.address}
+                        </a>
+                      </div>
+
+                      <div className="pt-2 border-t border-white/10 text-xs font-mono space-y-1">
+                        <div className="text-white/80">
+                          <span className="text-eco-muted">First Practice:</span> {new Date(rule.firstDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                        <div className="text-white/80">
+                          <span className="text-eco-muted">Final Practice:</span> {new Date(rule.finalDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {rule.permitNote && (
+                      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] font-mono text-amber-200 leading-snug">
+                        <strong>Notice:</strong> {rule.permitNote}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. FRIDAY SCHEDULE — BOTH TEAMS */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="pb-4 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/35 text-cyan-300 text-[10px] font-mono uppercase tracking-wider mb-2 font-bold">
+                    <span>Shared Gym Session</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-display font-extrabold uppercase tracking-tight text-white">
+                    FRIDAY SCHEDULE — BOTH TEAMS
+                  </h3>
+                  <p className="text-xs text-eco-muted font-mono mt-0.5">
+                    Shared by BOTH U16 Boys and U15 Girls at {FRIDAY_CONFIG.venue} ({FRIDAY_CONFIG.time})
+                  </p>
+                </div>
+
+                <div className="text-xs font-mono text-eco-muted-light self-start sm:self-auto">
+                  Sept 25, 2026 – Apr 30, 2027
+                </div>
+              </div>
+
+              {/* Two Phase Comparison Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Phase 1 */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-eco-surface/90 border border-sky-500/30 flex flex-col justify-between gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-500/35 text-sky-300 text-xs font-mono font-bold uppercase tracking-wider">
+                        PHASE 1
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-sky-200 uppercase tracking-wider px-2 py-0.5 rounded bg-sky-500/20 border border-sky-500/30">
+                        {FRIDAY_CONFIG.phase1.label}
+                      </span>
+                    </div>
+
+                    <h4 className="text-xl font-heading font-extrabold text-white">
+                      {FRIDAY_CONFIG.phase1.title}
+                    </h4>
+
+                    <div className="text-xs font-mono text-[#97B3D2]">
+                      Friday, September 25, 2026 – Friday, November 6, 2026
+                    </div>
+
+                    <p className="text-xs text-white/80 leading-relaxed font-sans">
+                      {FRIDAY_CONFIG.phase1.description}
+                    </p>
+
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-eco-muted-light">
+                      The Girls' first game session is November 7–8, 2026. After that weekend, Friday shifts into Phase 2.
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-eco-muted">
+                    <span>Attendance: Required</span>
+                    <span className="text-sky-300">7 Total Sessions</span>
+                  </div>
+                </div>
+
+                {/* Phase 2 */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 via-eco-surface/90 to-eco-surface border border-amber-400/40 flex flex-col justify-between gap-4 shadow-lg ring-1 ring-amber-400/20">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2.5 py-1 rounded-md bg-amber-400 text-[#060A10] text-xs font-mono font-extrabold uppercase tracking-wider shadow-sm">
+                        PHASE 2
+                      </span>
+                      <span className="text-[11px] font-mono font-extrabold text-amber-300 uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 animate-pulse">
+                        {FRIDAY_CONFIG.phase2.label}
+                      </span>
+                    </div>
+
+                    <h4 className="text-xl font-heading font-extrabold text-white">
+                      {FRIDAY_CONFIG.phase2.title}
+                    </h4>
+
+                    <div className="text-xs font-mono text-amber-300">
+                      Beginning Friday, November 13, 2026 – Friday, April 30, 2027
+                    </div>
+
+                    <blockquote className="p-3.5 rounded-xl bg-amber-500/10 border-l-4 border-amber-400 text-xs text-amber-100 font-sans italic font-medium">
+                      "{FRIDAY_CONFIG.phase2.tagline}"
+                    </blockquote>
+
+                    <p className="text-xs text-white/80 leading-relaxed font-sans">
+                      {FRIDAY_CONFIG.phase2.description}
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-white/90 pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-bold">✓</span> Extra basketball reps
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-bold">✓</span> Shoot & scrimmage
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-bold">✓</span> Ask coaches for help
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-bold">✓</span> Bring a friend
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-eco-black/60 border border-amber-400/30 text-[11px] font-mono text-amber-200">
+                    <strong>Rule:</strong> Do NOT list Friday Night Hoops as a third mandatory weekly team practice.
+                  </div>
+                </div>
+              </div>
+
+              {/* Friday Closures & PA Day Confirmation */}
+              <div className="p-4 rounded-2xl bg-eco-black/50 border border-white/10 space-y-2">
+                <div className="text-xs font-mono font-bold uppercase tracking-wider text-eco-muted-light flex items-center gap-1.5">
+                  <CalendarDays size={14} className="text-[#97B3D2]" />
+                  <span>Friday Gym Closures (No Gym)</span>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs font-mono text-white/80">
+                  {FRIDAY_NO_GYM_DATES.map((f) => (
+                    <span key={f.date} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-rose-300">
+                      {f.date} ({f.reason})
+                    </span>
+                  ))}
+                </div>
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-300 mt-2">
+                  <strong>✓ Approved PA Day Confirmation:</strong> Friday, February 12, 2027 IS an approved Friday Night Hoops date. Even though Dufferin-Peel Catholic District School Board has a secondary-school PA Day on February 12, the approved EcoHoops permit includes the Iona gym that evening. <strong>Practice is ON.</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. NO PRACTICE DATES / FACILITY CLOSURES */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="pb-4 border-b border-white/10">
+                <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-amber-300">
+                  School Breaks & Facility Closures
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-display font-extrabold uppercase tracking-tight text-white mt-1">
+                  {scheduleSquadFilter === 'boys' ? 'U16 BOYS — NO PRACTICE DATES' : 'U15 GIRLS — NO PRACTICE DATES'}
+                </h3>
+                <p className="text-xs text-eco-muted font-mono mt-0.5">
+                  Do NOT schedule team practice on these specific dates.
+                </p>
+              </div>
+
+              {/* Special PA Day callout for Boys */}
+              {scheduleSquadFilter === 'boys' && (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/35 text-xs font-mono text-emerald-300">
+                  <strong>✓ IMPORTANT APPROVED DATE:</strong> Monday, January 18, 2027 IS an approved practice date. Even though it is a school PA Day, EcoHoops has an approved gym permit for that evening. <strong>Do NOT cancel January 18.</strong>
+                </div>
+              )}
+
+              {/* Closure List Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(scheduleSquadFilter === 'boys' ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES).map((np, idx) => (
+                  <div
+                    key={`${np.date}-${idx}`}
+                    className="p-4 rounded-xl bg-eco-surface/80 border border-white/10 flex items-center justify-between gap-3"
+                  >
+                    <div>
+                      <div className="text-sm font-mono font-bold text-white">
+                        {new Date(np.date + 'T12:00:00').toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </div>
+                      <div className="text-xs text-eco-muted font-mono mt-0.5">
+                        {np.venue}
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <span className="px-2.5 py-1 rounded-md bg-rose-500/15 border border-rose-500/35 text-rose-300 text-[11px] font-mono font-bold uppercase tracking-wider">
+                        NO PRACTICE
+                      </span>
+                      <div className="text-[11px] text-white/70 font-sans mt-1">
+                        {np.reason}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Permit End Note */}
+              <div className="p-4 rounded-2xl bg-eco-black/50 border border-white/10 text-xs font-mono text-eco-muted-light">
+                {scheduleSquadFilter === 'boys'
+                  ? 'After Monday, March 22, 2027, there are no further Monday practices because the Green Glade Monday permit has ended. The final Boys Thursday practice is April 29, 2027.'
+                  : 'The final Girls Wednesday practice is March 31, 2027. After March 31, the Girls continue their Tuesday practices at Iona through April 27, but there are no more Wednesday Green Glade practices.'}
+              </div>
+            </div>
+
+            {/* 5. CONFIRMED SEASON COMPETITION SESSIONS */}
+            <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-eco-surface2 to-eco-surface p-6 sm:p-8 shadow-2xl space-y-6">
+              {/* Mandatory Game Notice */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-start gap-3.5 shadow-sm">
+                <Info size={20} className="text-[#97B3D2] flex-shrink-0 mt-0.5" />
+                <p className="text-xs sm:text-sm text-[#97B3D2] font-semibold leading-relaxed">
+                  {SCHEDULE_NOTICES.game}
+                </p>
+              </div>
+
+              {/* Section Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-white/10">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest font-bold bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
-                      Confirmed Rep Schedule
+                      Confirmed League Weekends
                     </span>
                     <span className="text-xs text-eco-muted font-mono">2026–2027 Season</span>
                     <span className="text-white/20 hidden sm:inline">&middot;</span>
@@ -697,61 +1225,13 @@ export default function TeamPortal() {
                       </div>
                     </div>
                   </div>
-                  <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight text-white">
-                    {scheduleSquadFilter === 'boys' ? 'EcoHoops U16 Boys' : 'EcoHoops U15 Girls'}
-                  </h2>
-                  <p className="text-xs text-eco-muted-light mt-1 font-mono">
-                    {scheduleSquadFilter === 'boys'
-                      ? 'Birth Year: 2011 · Coalition Basketball League & Ontario Basketball League (OBL)'
-                      : 'Birth Year: 2012 · Coalition Basketball League & Ontario Basketball League (OBL)'}
+                  <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white">
+                    {scheduleSquadFilter === 'boys' ? 'U16 BOYS SEASON SESSION DATES' : 'U15 GIRLS SEASON SESSION DATES'}
+                  </h3>
+                  <p className="text-xs text-eco-muted font-mono mt-0.5">
+                    Confirmed competition weekends in chronological order
                   </p>
                 </div>
-
-                {/* Team Switcher Buttons / Tabs */}
-                {scopedTeamId && !isAdmin && !isCoach ? (
-                  <div className="inline-flex items-center gap-2 p-1.5 rounded-xl bg-eco-black/60 border border-white/10">
-                    <span className={`px-4 py-2 rounded-lg text-xs font-heading font-extrabold uppercase tracking-wider flex items-center gap-1.5 ${
-                      scheduleSquadFilter === 'girls'
-                        ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
-                        : 'bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30'
-                    }`}>
-                      {scheduleSquadFilter === 'girls' ? '🌸 U15 GIRLS' : '🏀 U16 BOYS'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="inline-flex items-center gap-1.5 p-1.5 bg-eco-black/60 rounded-2xl border border-white/10 self-start sm:self-auto shadow-inner">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setScheduleSquadFilter('boys')
-                        setSelectedTeamId('u15-boys-ss26')
-                        navigate('/hub/u15-boys-ss26', { replace: true })
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-                        scheduleSquadFilter === 'boys'
-                          ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
-                          : 'text-eco-muted hover:text-white'
-                      }`}
-                    >
-                      🏀 U16 BOYS
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setScheduleSquadFilter('girls')
-                        setSelectedTeamId('u14-girls-ss26')
-                        navigate('/hub/u14-girls-ss26', { replace: true })
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs font-heading font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-                        scheduleSquadFilter === 'girls'
-                          ? 'bg-pink-400 text-[#060A10] shadow-md'
-                          : 'text-eco-muted hover:text-white'
-                      }`}
-                    >
-                      🌸 U15 GIRLS
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Chronological Confirmed Weekend List */}
@@ -761,7 +1241,7 @@ export default function TeamPortal() {
                     key={item.id}
                     className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                       item.isPlayoffs
-                        ? 'bg-gradient-to-r from-amber-500/15 via-eco-surface to-eco-surface2 border-amber-400/50 shadow-[0_0_25px_rgba(251,191,36,0.15)] ring-1 ring-amber-400/30'
+                        ? 'bg-gradient-to-r from-amber-500/20 via-eco-surface to-eco-surface2 border-amber-400/60 shadow-[0_0_25px_rgba(251,191,36,0.15)] ring-1 ring-amber-400/40'
                         : item.isAllStar
                         ? 'bg-gradient-to-r from-purple-500/15 via-eco-surface to-eco-surface2 border-purple-400/40 shadow-sm'
                         : 'bg-eco-surface/90 border-white/10 hover:border-white/20 shadow-sm'
@@ -833,6 +1313,38 @@ export default function TeamPortal() {
                 ))}
               </div>
 
+              {/* 6. OBA ONTARIO CUP CARD */}
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-eco-surface via-eco-black to-eco-surface2 border border-sky-500/30 space-y-3 mt-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/images/branding/obl-logo.jpg"
+                      alt="Ontario Basketball"
+                      className="w-6 h-6 rounded-full object-cover border border-white/20"
+                    />
+                    <h4 className="text-lg font-heading font-bold uppercase tracking-wider text-white">
+                      {OBA_ONTARIO_CUP_STATUS.title}
+                    </h4>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-full bg-sky-500/15 border border-sky-500/35 text-sky-300 text-xs font-mono font-bold">
+                      {OBA_ONTARIO_CUP_STATUS.dateLabel}
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-mono font-bold">
+                      {OBA_ONTARIO_CUP_STATUS.status}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-sans">
+                  {OBA_ONTARIO_CUP_STATUS.details}
+                </p>
+
+                <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-eco-muted-light">
+                  {OBA_ONTARIO_CUP_STATUS.notice}
+                </div>
+              </div>
+
               {/* Bottom Quick Sync Button */}
               <div className="pt-6 mt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -864,15 +1376,15 @@ export default function TeamPortal() {
               </div>
             </div>
 
-            {/* Team Practices & Special Sessions Header */}
+            {/* 7. INTERACTIVE TEAM EVENTS & RSVP */}
             <div className="pt-6 border-t border-white/10">
               <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <div>
                   <h3 className="text-base font-heading font-bold uppercase tracking-wider text-white">
-                    Team Practices & Special Sessions
+                    Interactive Team Practices & Game Sessions
                   </h3>
                   <p className="text-xs text-eco-muted font-mono">
-                    Practices, gym times, and parent RSVP tracking for {currentTeam.name}
+                    Practices, Friday Night Hoops, game sessions, and RSVP attendance tracking for {currentTeam.name}
                   </p>
                 </div>
 
@@ -908,13 +1420,13 @@ export default function TeamPortal() {
                   <button
                     key={type}
                     onClick={() => setEventTypeFilter(type)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-heading font-semibold uppercase tracking-wider transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-heading font-semibold uppercase tracking-wider transition-all cursor-pointer ${
                       eventTypeFilter === type
                         ? 'bg-[#97B3D2]/20 border border-[#97B3D2] text-[#97B3D2]'
                         : 'bg-eco-surface border border-eco-border text-eco-muted hover:text-white'
                     }`}
                   >
-                    {type === 'all' ? 'All Events' : type === 'game' ? 'Games' : type === 'practice' ? 'Practices' : 'Tournaments'}
+                    {type === 'all' ? 'All Events' : type === 'game' ? 'Games' : type === 'practice' ? 'Practices' : 'Tournaments / Playoffs'}
                   </button>
                 ))}
               </div>

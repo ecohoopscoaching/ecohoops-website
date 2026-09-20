@@ -112,6 +112,14 @@ export interface ScheduleEvent {
   }
   lastAlertSent?: string
   lastAlertType?: 'pre_game' | 'weather' | 'update' | 'rsvp' | string
+  isOptional?: boolean
+  isPhase1?: boolean
+  isPhase2?: boolean
+  isPlayoffs?: boolean
+  isAllStar?: boolean
+  league?: 'Coalition' | 'OBL'
+  sessionType?: string
+  category?: 'practice' | 'friday_night_hoops' | 'league_session' | 'playoffs' | 'all_star' | string
 }
 
 export interface EmailNotification {
