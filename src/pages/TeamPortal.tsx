@@ -5,7 +5,7 @@ import {
   Calendar, Users, Shield, Clock, MapPin, CheckCircle2,
   AlertTriangle, Mail, Phone, ChevronRight, Download, Send,
   Sparkles, Bell, ExternalLink, Info, Filter, ArrowRight, UserCheck, X, Plus,
-  Copy, Check, Share2, Trophy, Lock
+  Copy, Check, Share2, Trophy, Lock, MessageSquare
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useData } from '../contexts/DataContext'
