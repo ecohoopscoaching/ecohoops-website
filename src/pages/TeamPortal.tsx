@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   Calendar, Users, Shield, Clock, MapPin, CheckCircle2,
   AlertTriangle, Mail, Phone, ChevronRight, Download, Send,
   Sparkles, Bell, ExternalLink, Info, Filter, ArrowRight, UserCheck, X, Plus,
-  Copy, Check, Share2, Trophy
+  Copy, Check, Share2, Trophy, Lock
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useData } from '../contexts/DataContext'
@@ -24,7 +24,8 @@ type PortalTab = 'schedule' | 'roster' | 'coaches' | 'emails'
 export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
   const navigate = useNavigate()
-  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, loginAsRole } = useAuth()
+  const location = useLocation()
+  const { currentUser, userProfile, userRole, isAdmin, isCoach, isParent, isTeamMember, loginAsRole } = useAuth()
   const { teams, schedule, recordAttendance, downloadCalendarIcs, updateEvent, addEvent, deleteEvent } = useData()
 
   // Determine authorized teams for current user
@@ -203,6 +204,80 @@ export default function TeamPortal() {
     setBroadcastMessage('')
     setNotifications(getSentNotifications(selectedTeamId))
     showToast(`Dispatched email alert to ${result.notification.recipientCount} parents!`)
+  }
+
+  if (!isTeamMember) {
+    return (
+      <section className="pt-32 pb-24 min-h-screen relative overflow-hidden bg-eco-black text-white flex items-center justify-center px-4">
+        {/* Ambient glow effects */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#97B3D2]/10 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="glow-card w-full max-w-xl p-8 sm:p-12 relative z-10 text-center border border-white/10 bg-eco-surface2/90 backdrop-blur-xl rounded-3xl shadow-2xl">
+          <div className="w-20 h-20 rounded-3xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-center justify-center mx-auto mb-6 text-[#97B3D2] shadow-[0_0_30px_rgba(151,179,210,0.15)]">
+            <Lock size={36} />
+          </div>
+
+          <span className="px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-[#97B3D2] font-mono text-xs uppercase tracking-widest inline-block mb-3">
+            Private Team Hub
+          </span>
+
+          <h1 className="font-display text-3xl sm:text-4xl uppercase tracking-tight text-white mb-3">
+            Team Members Only
+          </h1>
+
+          <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed mb-8 max-w-md mx-auto">
+            The EcoHoops Team Hub is a private portal reserved exclusively for registered players, parents, and coaching staff. Rosters, game schedules, attendance, and team communications are protected to safeguard athlete privacy.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <button
+              onClick={() => navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`)}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#97B3D2] text-[#060A10] font-heading font-bold text-sm uppercase tracking-wider hover:bg-[#B0C8E0] hover:shadow-[0_0_25px_rgba(151,179,210,0.4)] transition-all flex items-center justify-center gap-2"
+            >
+              <span>Sign In to Team Hub</span>
+              <ArrowRight size={16} />
+            </button>
+
+            <Link
+              to="/"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/10 hover:border-white/20 bg-white/5 text-eco-muted-light hover:text-white font-heading font-semibold text-sm uppercase tracking-wider transition-all"
+            >
+              Back to Home
+            </Link>
+          </div>
+
+          {/* Quick Member Access */}
+          <div className="pt-6 border-t border-white/10">
+            <p className="text-xs font-mono uppercase tracking-wider text-eco-muted mb-3">
+              Quick Member Sign-In
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => loginAsRole('player')}
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+              >
+                🏀 Player
+              </button>
+              <button
+                type="button"
+                onClick={() => loginAsRole('parent')}
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-[#97B3D2]/50 hover:bg-[#97B3D2]/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+              >
+                👪 Parent
+              </button>
+              <button
+                type="button"
+                onClick={() => loginAsRole('coach')}
+                className="py-2.5 px-2 bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-400/10 text-eco-muted-light hover:text-white rounded-xl text-xs font-heading font-semibold transition-all"
+              >
+                👑 Coach
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   if (!currentTeam) {

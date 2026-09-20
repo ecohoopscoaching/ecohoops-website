@@ -6,11 +6,12 @@ import { UserRole, UserProfile } from '../types'
 interface AuthContextType {
   currentUser: User | null
   userProfile: UserProfile | null
-  userRole: UserRole
+  userRole: UserRole | null
   isAdmin: boolean
   isCoach: boolean
   isParent: boolean
   isPlayer: boolean
+  isTeamMember: boolean
   loading: boolean
   loginAsRole: (role: UserRole, profileDetails?: Partial<UserProfile>) => void
   loginMockAdmin: () => void
@@ -57,11 +58,12 @@ const DEFAULT_PROFILES: Record<UserRole, UserProfile> = {
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   userProfile: null,
-  userRole: 'player',
+  userRole: null,
   isAdmin: false,
   isCoach: false,
   isParent: false,
-  isPlayer: true,
+  isPlayer: false,
+  isTeamMember: false,
   loading: true,
   loginAsRole: () => {},
   loginMockAdmin: () => {},
@@ -93,18 +95,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const savedRole = (localStorage.getItem('ecohoops_user_role') as UserRole) || (localStorage.getItem('mock_admin') === 'true' ? 'admin' : null)
   const savedProfile = localStorage.getItem('ecohoops_user_profile')
 
-  const [userRole, setUserRole] = useState<UserRole>(savedRole || 'player')
+  const [userRole, setUserRole] = useState<UserRole | null>(savedRole || null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    if (savedProfile) {
+    if (savedProfile && savedRole) {
       try {
         return JSON.parse(savedProfile)
       } catch {
-        return DEFAULT_PROFILES[userRole || 'player']
+        return DEFAULT_PROFILES[savedRole] || null
       }
     }
-    return DEFAULT_PROFILES[userRole || 'player']
+    if (savedRole && DEFAULT_PROFILES[savedRole]) {
+      return DEFAULT_PROFILES[savedRole]
+    }
+    return null
   })
 
+  const isTeamMember = !!(userRole || currentUser)
   const isAdmin = userRole === 'admin' || currentUser !== null
   const isCoach = userRole === 'coach'
   const isParent = userRole === 'parent'
@@ -163,8 +169,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('mock_admin')
     localStorage.removeItem('ecohoops_user_role')
     localStorage.removeItem('ecohoops_user_profile')
-    setUserRole('player')
-    setUserProfile(DEFAULT_PROFILES.player)
+    setUserRole(null)
+    setUserProfile(null)
   }
 
   const value = {
@@ -175,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isCoach,
     isParent,
     isPlayer,
+    isTeamMember,
     loading,
     loginAsRole,
     loginMockAdmin,

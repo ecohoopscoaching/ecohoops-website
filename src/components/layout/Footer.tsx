@@ -8,28 +8,28 @@ const FOOTER_LINKS = [
     title: 'Program',
     links: [
       { label: 'Philosophy', path: '/philosophy' },
-      { label: 'Teams', path: '/teams' },
-      { label: 'Schedule', path: '/schedule' },
+      { label: 'Rep Program', path: '/rep' },
+      { label: 'Jr. NBA / WNBA', path: '/jr' },
       { label: 'Register', path: '/register' },
     ],
   },
   {
     title: 'Platform',
     links: [
-      { label: 'Dashboard', path: '/dashboard' },
-      { label: 'AI Coach', path: '/dashboard' },
-      { label: 'Team Chat', path: '/dashboard' },
-      { label: 'Stats', path: '/dashboard' },
+      { label: 'Team Hub (Members)', path: '/hub' },
+      { label: 'Member Login', path: '/login' },
+      { label: 'AI Coach', path: '/coach' },
+      { label: 'Safe Sport', path: '/safe-sport' },
     ],
   },
   {
     title: 'Community',
     links: [
-      { label: 'Friday Night Hoops', path: '/schedule' },
-      { label: 'The Game Changer', path: '/game-changer/index.html' },
       { label: 'EcoHoops for Kids Canada', path: '/nonprofit' },
+      { label: 'Girls In Motion', path: '/girls' },
+      { label: 'The Game Changer', path: '/game-changer/index.html' },
       { label: 'Blog', path: '/blog' },
-      { label: 'Contact', path: '/register' },
+      { label: 'Contact', path: '/contact' },
     ],
   },
   {

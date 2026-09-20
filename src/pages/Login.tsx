@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { auth } from '../lib/firebase'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Lock, LogOut, ArrowRight, User as UserIcon, Shield, HeartHandshake, Dribbble } from 'lucide-react'
 import { UserRole } from '../types'
 
@@ -14,6 +14,14 @@ export default function Login() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('player')
   const { currentUser, userProfile, userRole, loginAsRole, logout } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTarget = searchParams.get('redirect')
+
+  const getDestination = (role: UserRole) => {
+    if (redirectTarget) return redirectTarget
+    if (role === 'admin') return '/admin'
+    return '/hub'
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -23,7 +31,7 @@ export default function Login() {
     if (import.meta.env.VITE_FIREBASE_API_KEY === "dummy_api_key" || !import.meta.env.VITE_FIREBASE_API_KEY) {
       // Prototype demo fallback
       loginAsRole(selectedRole, { email })
-      navigate('/dashboard')
+      navigate(getDestination(selectedRole))
       setLoading(false)
       return
     }
@@ -31,7 +39,7 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password)
       loginAsRole(selectedRole, { email })
-      navigate('/dashboard')
+      navigate(getDestination(selectedRole))
     } catch (err: any) {
       setError('Failed to securely log in. Check your credentials.')
       console.error(err)
@@ -47,11 +55,7 @@ export default function Login() {
 
   function handleDemoRoleLogin(role: UserRole) {
     loginAsRole(role)
-    if (role === 'admin' || role === 'coach') {
-      navigate('/admin')
-    } else {
-      navigate('/dashboard')
-    }
+    navigate(getDestination(role))
   }
 
   return (
@@ -99,19 +103,27 @@ export default function Login() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-2.5">
               <button
-                onClick={() => navigate('/dashboard')}
-                className="py-3 px-4 bg-eco-orange text-eco-black font-heading font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-eco-orange/90 transition-colors"
+                onClick={() => navigate('/hub')}
+                className="py-3 px-4 bg-eco-orange text-eco-black font-heading font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-eco-orange/90 transition-colors w-full text-center"
               >
-                Go to Dashboard
+                Go to Team Hub
               </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 py-3 px-4 bg-transparent border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 text-eco-muted hover:text-red-400 rounded-xl transition-all font-heading font-bold text-xs uppercase tracking-wider"
-              >
-                Sign Out <LogOut size={14} />
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="py-2.5 px-3 bg-eco-surface border border-white/10 hover:border-white/30 text-eco-muted-light hover:text-white font-heading font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-transparent border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 text-eco-muted hover:text-red-400 rounded-xl transition-all font-heading font-bold text-xs uppercase tracking-wider"
+                >
+                  Sign Out <LogOut size={13} />
+                </button>
+              </div>
             </div>
           </div>
         ) : (

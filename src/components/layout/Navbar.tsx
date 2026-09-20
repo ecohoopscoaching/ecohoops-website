@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, LogOut } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import AnnouncementBar from '../home/AnnouncementBar'
 
@@ -20,45 +20,6 @@ interface NavLinkItem {
   }[];
 }
 
-const NAV_LINKS: NavLinkItem[] = [
-  { label: 'Home', path: '/' },
-  { label: 'Nonprofit', path: '/nonprofit' },
-  { label: 'Team Hub', path: '/hub' },
-  { label: 'The Game Changer', path: '/game-changer/index.html' },
-  { 
-    label: 'Explore Programs', 
-    path: '#',
-    isMega: true,
-    megaMenu: [
-      {
-        title: 'Youth Programs',
-        links: [
-          { label: 'EcoHoops for Kids Canada', path: '/nonprofit', description: 'Our community programs & subsidies' },
-          { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA for Ages 5–6 Co-Ed, 7–9 & 10–11' },
-          { label: 'All Girls Program', path: '/girls', description: 'Empowering spaces & female leadership' }
-        ]
-      },
-      {
-        title: 'Competitive',
-        links: [
-          { label: 'Rep Teams', path: '/rep', description: 'Divisions, schedules, and tryouts' },
-          { label: 'Team Hub (Parents & Players)', path: '/hub', description: 'One link for schedules, RSVP, roster & updates' },
-          { label: 'Rosters & Player Stats', path: '/teams', description: 'Meet the players & track performance' },
-          { label: 'Watch Videos', path: '/videos', description: 'Game highlights & team videos' }
-        ]
-      },
-      {
-        title: 'Safety & Inclusion',
-        links: [
-          { label: 'Safe Sport & Financial Aid', path: '/safe-sport', description: 'Athlete safety, maltreatment reporting & funding grants' }
-        ]
-      }
-    ]
-  },
-  { label: 'Blog', path: '/blog' },
-  { label: 'Contact', path: '/contact' }
-]
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -66,11 +27,50 @@ export default function Navbar() {
   const [hoveredDropdownLabel, setHoveredDropdownLabel] = useState<string | null>(null)
   const [mobileExpandedLabel, setMobileExpandedLabel] = useState<string | null>(null)
   const location = useLocation()
-  const { isAdmin } = useAuth()
+  const { isAdmin, isTeamMember, userRole, logout } = useAuth()
 
-  const activeLinks = isAdmin 
-    ? [...NAV_LINKS, { label: 'Admin', path: '/admin' }]
-    : NAV_LINKS
+  const activeLinks = useMemo(() => {
+    const links: NavLinkItem[] = [
+      { label: 'Home', path: '/' },
+      { label: 'Nonprofit', path: '/nonprofit' },
+      ...(isTeamMember ? [{ label: 'Team Hub', path: '/hub' }] : []),
+      { label: 'The Game Changer', path: '/game-changer/index.html' },
+      { 
+        label: 'Explore Programs', 
+        path: '#',
+        isMega: true,
+        megaMenu: [
+          {
+            title: 'Youth Programs',
+            links: [
+              { label: 'EcoHoops for Kids Canada', path: '/nonprofit', description: 'Our community programs & subsidies' },
+              { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA for Ages 5–6 Co-Ed, 7–9 & 10–11' },
+              { label: 'All Girls Program', path: '/girls', description: 'Empowering spaces & female leadership' }
+            ]
+          },
+          {
+            title: 'Competitive',
+            links: [
+              { label: 'Rep Teams', path: '/rep', description: 'Divisions, schedules, and tryouts' },
+              ...(isTeamMember ? [{ label: 'Team Hub (Active)', path: '/hub', description: 'Schedules, roster, attendance & updates' }] : []),
+              { label: 'Rosters & Player Stats', path: '/teams', description: 'Meet the players & track performance' },
+              { label: 'Watch Videos', path: '/videos', description: 'Game highlights & team videos' }
+            ]
+          },
+          {
+            title: 'Safety & Inclusion',
+            links: [
+              { label: 'Safe Sport & Financial Aid', path: '/safe-sport', description: 'Athlete safety, maltreatment reporting & funding grants' }
+            ]
+          }
+        ]
+      },
+      { label: 'Blog', path: '/blog' },
+      { label: 'Contact', path: '/contact' },
+      ...(isAdmin ? [{ label: 'Admin', path: '/admin' }] : [])
+    ]
+    return links
+  }, [isTeamMember, isAdmin])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -322,8 +322,37 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Desktop Call-to-Action Button */}
-            <div className="hidden lg:block flex-shrink-0">
+            {/* Desktop Call-to-Action & Member Controls */}
+            <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
+              {isTeamMember ? (
+                <div className="flex items-center gap-2">
+                  <Link 
+                    to="/hub" 
+                    className="px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white transition-all flex items-center gap-2 group"
+                    title="Go to Team Hub"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#97B3D2] animate-pulse" />
+                    <span className="capitalize font-mono text-[11px] tracking-wide text-eco-muted-light group-hover:text-white">
+                      {userRole || 'Team Member'}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={logout}
+                    title="Sign Out"
+                    className="p-1.5 rounded-lg text-eco-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  >
+                    <LogOut size={15} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="text-xs font-heading font-semibold uppercase tracking-wider text-eco-muted-light hover:text-white transition-colors px-2 py-1"
+                >
+                  Member Login
+                </Link>
+              )}
+
               <a 
                 href="/#jr-nba-waitlist" 
                 onClick={(e) => {
@@ -637,10 +666,35 @@ export default function Navbar() {
                     <a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-[#97B3D2] transition-colors">YouTube</a>
                   </div>
                   
-                  <div className="flex items-center gap-6">
-                    <Link to="/login" className="text-sm font-heading font-bold uppercase tracking-widest text-eco-muted-light hover:text-white transition-colors" onClick={() => setIsOpen(false)}>
-                      Member Login
-                    </Link>
+                  <div className="flex items-center gap-5">
+                    {isTeamMember ? (
+                      <div className="flex items-center gap-4">
+                        <Link 
+                          to="/hub" 
+                          className="text-xs font-heading font-bold uppercase tracking-widest text-[#97B3D2] hover:text-white transition-colors"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Team Hub
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout()
+                            setIsOpen(false)
+                          }}
+                          className="text-xs font-heading font-bold uppercase tracking-widest text-eco-muted hover:text-red-400 transition-colors flex items-center gap-1"
+                        >
+                          Sign Out <LogOut size={13} />
+                        </button>
+                      </div>
+                    ) : (
+                      <Link 
+                        to="/login" 
+                        className="text-xs font-heading font-bold uppercase tracking-widest text-eco-muted-light hover:text-white transition-colors" 
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Member Login
+                      </Link>
+                    )}
                     <a 
                       href="/#jr-nba-waitlist" 
                       className="px-5 py-2.5 text-xs font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] transition-colors cursor-pointer" 
