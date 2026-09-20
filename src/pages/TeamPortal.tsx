@@ -20,6 +20,7 @@ import {
   GIRLS_PRACTICE_RULES,
   BOYS_NO_PRACTICE_DATES,
   GIRLS_NO_PRACTICE_DATES,
+  FRIDAY_NO_GYM_DATES,
   FRIDAY_CONFIG,
   OBA_ONTARIO_CUP_STATUS
 } from '../data/schedule'
@@ -110,7 +111,8 @@ export default function TeamPortal() {
   // Check if current week has a holiday closure
   const currentWeekClosure = useMemo(() => {
     const isBoys = selectedTeamId === 'u16-boys'
-    const closures = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
+    const teamClosures = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
+    const closures = [...teamClosures, ...FRIDAY_NO_GYM_DATES].sort((a, b) => a.date.localeCompare(b.date))
     const now = new Date()
     const day = now.getDay()
     const diff = now.getDate() - day + (day === 0 ? -6 : 1)
@@ -195,7 +197,17 @@ export default function TeamPortal() {
   const isBoys = selectedTeamId === 'u16-boys'
   const currentSchedule = isBoys ? U16_BOYS_SCHEDULE : U15_GIRLS_SCHEDULE
   const practiceRules = isBoys ? BOYS_PRACTICE_RULES : GIRLS_PRACTICE_RULES
-  const noPracticeDates = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
+  const noPracticeDates = useMemo(() => {
+    const specific = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
+    const combined = [...specific, ...FRIDAY_NO_GYM_DATES]
+    const map = new Map<string, typeof combined[0]>()
+    for (const item of combined) {
+      if (!map.has(item.date)) {
+        map.set(item.date, item)
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.date.localeCompare(b.date))
+  }, [isBoys])
 
   return (
     <div className="pt-20 sm:pt-24 pb-32 min-h-screen bg-[#060A10] text-white font-sans selection:bg-[#97B3D2] selection:text-[#060A10] overflow-x-hidden">
@@ -638,7 +650,7 @@ export default function TeamPortal() {
                     <span>Holiday & No-Practice Dates ({noPracticeDates.length})</span>
                   </h3>
                   <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
-                    Tap to check school holidays and gym closures
+                    School holidays and facility closures in chronological order
                   </p>
                 </div>
                 {showClosures ? <ChevronUp size={18} className="text-white/60" /> : <ChevronDown size={18} className="text-white/60" />}
@@ -650,16 +662,23 @@ export default function TeamPortal() {
                     {noPracticeDates.map((np, idx) => (
                       <div
                         key={`${np.date}-${idx}`}
-                        className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs"
+                        className="p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs"
                       >
-                        <span className="font-bold text-white">
-                          {new Date(np.date + 'T12:00:00').toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-bold text-white">
+                            {new Date(np.date + 'T12:00:00').toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                          <span className="text-white/40 text-[11px] font-mono">
+                            &bull; {np.venue.replace(' Public School', ' PS').replace(' Secondary School', ' SS')}
+                          </span>
+                        </div>
+                        <span className="text-rose-300 font-mono text-[11px] uppercase font-bold self-start sm:self-auto">
+                          {np.reason}
                         </span>
-                        <span className="text-rose-300 font-mono text-[11px] uppercase font-bold">{np.reason}</span>
                       </div>
                     ))}
                   </div>

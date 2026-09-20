@@ -126,35 +126,29 @@ export const FRIDAY_CONFIG = {
 // ==========================================
 
 export const BOYS_NO_PRACTICE_DATES: NoPracticeDate[] = [
-  // Monday - Green Glade
   { date: '2026-10-12', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'Thanksgiving', category: 'holiday' },
+  { date: '2026-10-22', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Gym not included on approved permit', category: 'permit' },
   { date: '2026-10-26', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'School PA Day / no approved gym permit', category: 'permit' },
   { date: '2026-12-21', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'Winter Break', category: 'winter_break' },
+  { date: '2026-12-24', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
   { date: '2026-12-28', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'Winter Break', category: 'winter_break' },
+  { date: '2026-12-31', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
   { date: '2027-02-15', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'Family Day', category: 'holiday' },
   { date: '2027-03-15', dayOfWeek: 'Monday', venue: 'Green Glade Senior PS', reason: 'March Break', category: 'march_break' },
-
-  // Thursday - Iona
-  { date: '2026-10-22', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Gym not included on approved permit', category: 'permit' },
-  { date: '2026-12-24', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
-  { date: '2026-12-31', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
   { date: '2027-03-18', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'March Break', category: 'march_break' },
   { date: '2027-03-25', dayOfWeek: 'Thursday', venue: 'Iona Catholic SS', reason: 'Gym not included on approved permit', category: 'permit' }
 ]
 
 export const GIRLS_NO_PRACTICE_DATES: NoPracticeDate[] = [
-  // Tuesday - Iona
   { date: '2026-12-22', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
-  { date: '2026-12-29', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
-  { date: '2027-03-16', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'March Break', category: 'march_break' },
-  { date: '2027-03-23', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'Gym not included on approved permit', category: 'permit' },
-
-  // Wednesday - Green Glade
   { date: '2026-12-23', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'Winter Break', category: 'winter_break' },
+  { date: '2026-12-29', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'Winter Break', category: 'winter_break' },
   { date: '2026-12-30', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'Winter Break', category: 'winter_break' },
   { date: '2027-01-06', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'Gym not included on approved permit', category: 'permit' },
   { date: '2027-02-10', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'Gym not included on approved permit', category: 'permit' },
-  { date: '2027-03-17', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'March Break', category: 'march_break' }
+  { date: '2027-03-16', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'March Break', category: 'march_break' },
+  { date: '2027-03-17', dayOfWeek: 'Wednesday', venue: 'Green Glade Senior PS', reason: 'March Break', category: 'march_break' },
+  { date: '2027-03-23', dayOfWeek: 'Tuesday', venue: 'Iona Catholic SS', reason: 'Gym not included on approved permit', category: 'permit' }
 ]
 
 export const FRIDAY_NO_GYM_DATES: NoPracticeDate[] = [
