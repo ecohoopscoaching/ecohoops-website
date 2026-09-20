@@ -3,24 +3,21 @@ import { auth } from '../lib/firebase'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Lock, LogOut, ArrowRight, User as UserIcon, Shield, HeartHandshake, Dribbble } from 'lucide-react'
-import { UserRole } from '../types'
+import { Lock, LogOut, ArrowRight, User as UserIcon } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [selectedRole, setSelectedRole] = useState<UserRole>('player')
   const { currentUser, userProfile, userRole, loginAsRole, logout } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTarget = searchParams.get('redirect')
 
-  const getDestination = (role: UserRole) => {
+  const getDestination = () => {
     if (redirectTarget) return redirectTarget
-    if (role === 'admin') return '/admin'
-    return '/hub'
+    return '/admin'
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -30,16 +27,16 @@ export default function Login() {
 
     if (import.meta.env.VITE_FIREBASE_API_KEY === "dummy_api_key" || !import.meta.env.VITE_FIREBASE_API_KEY) {
       // Prototype demo fallback
-      loginAsRole(selectedRole, { email })
-      navigate(getDestination(selectedRole))
+      loginAsRole('admin', { email })
+      navigate(getDestination())
       setLoading(false)
       return
     }
 
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      loginAsRole(selectedRole, { email })
-      navigate(getDestination(selectedRole))
+      loginAsRole('admin', { email })
+      navigate(getDestination())
     } catch (err: any) {
       setError('Failed to securely log in. Check your credentials.')
       console.error(err)
@@ -51,11 +48,6 @@ export default function Login() {
     await signOut(auth)
     logout()
     navigate('/')
-  }
-
-  function handleDemoRoleLogin(role: UserRole) {
-    loginAsRole(role)
-    navigate(getDestination(role))
   }
 
   return (
@@ -71,9 +63,7 @@ export default function Login() {
           <h1 className="font-display flex flex-col text-3xl uppercase tracking-tight text-white mb-2">
             EcoHoops <span className="text-eco-orange text-4xl">Portal</span>
           </h1>
-          <p className="text-eco-muted-light text-xs font-mono uppercase tracking-wider">
-            Select your account type to sign in
-          </p>
+
         </div>
 
         {currentUser || userProfile ? (
@@ -134,53 +124,6 @@ export default function Login() {
               </div>
             )}
 
-            {/* Role Switcher Tabs */}
-            <div>
-              <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted mb-2">
-                Account Type
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedRole('player')}
-                  className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
-                    selectedRole === 'player'
-                      ? 'bg-eco-orange/20 border-eco-orange text-white'
-                      : 'bg-eco-surface border-white/10 text-eco-muted hover:text-white'
-                  }`}
-                >
-                  <Dribbble size={18} className={selectedRole === 'player' ? 'text-eco-orange' : ''} />
-                  <span className="text-xs font-bold font-heading uppercase">Player</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedRole('parent')}
-                  className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
-                    selectedRole === 'parent'
-                      ? 'bg-eco-blue/20 border-eco-blue text-white'
-                      : 'bg-eco-surface border-white/10 text-eco-muted hover:text-white'
-                  }`}
-                >
-                  <HeartHandshake size={18} className={selectedRole === 'parent' ? 'text-eco-blue' : ''} />
-                  <span className="text-xs font-bold font-heading uppercase">Parent</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedRole('admin')}
-                  className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center gap-1.5 ${
-                    selectedRole === 'admin'
-                      ? 'bg-purple-500/20 border-purple-500 text-white'
-                      : 'bg-eco-surface border-white/10 text-eco-muted hover:text-white'
-                  }`}
-                >
-                  <Shield size={18} className={selectedRole === 'admin' ? 'text-purple-400' : ''} />
-                  <span className="text-xs font-bold font-heading uppercase">Coach</span>
-                </button>
-              </div>
-            </div>
-
             <div>
               <label className="block text-xs font-mono uppercase tracking-widest text-eco-muted mb-2">
                 Email Address
@@ -189,7 +132,7 @@ export default function Login() {
                 type="email"
                 required
                 className="input-field w-full shadow-inner bg-eco-surface/50 text-xs"
-                placeholder={selectedRole === 'player' ? 'player@ecohoops.ca' : selectedRole === 'parent' ? 'parent@example.com' : 'coach@ecohoops.ca'}
+                placeholder="coach@ecohoops.ca"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -214,39 +157,9 @@ export default function Login() {
               type="submit"
               className="btn-glow w-full flex items-center justify-center gap-2 mt-4 py-3.5 text-xs font-bold uppercase font-heading tracking-wider"
             >
-              {loading ? 'Authenticating...' : `Sign In as ${selectedRole.toUpperCase()}`}
+              {loading ? 'Authenticating...' : 'Sign In as Coach'}
               {!loading && <ArrowRight size={16} />}
             </button>
-
-            {/* Quick Demo Account Launchers */}
-            <div className="pt-5 border-t border-white/10">
-              <p className="text-[11px] font-mono text-center text-eco-muted mb-3 uppercase tracking-wider">
-                Instant Demo Access
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleDemoRoleLogin('player')}
-                  className="py-2.5 px-2 bg-eco-surface border border-white/10 hover:border-eco-orange/50 hover:bg-eco-orange/10 text-eco-muted hover:text-eco-orange rounded-xl text-[11px] font-heading font-bold uppercase transition-all"
-                >
-                  🏀 Player Demo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoRoleLogin('parent')}
-                  className="py-2.5 px-2 bg-eco-surface border border-white/10 hover:border-eco-blue/50 hover:bg-eco-blue/10 text-eco-muted hover:text-eco-blue rounded-xl text-[11px] font-heading font-bold uppercase transition-all"
-                >
-                  👪 Parent Demo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoRoleLogin('admin')}
-                  className="py-2.5 px-2 bg-eco-surface border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 text-eco-muted hover:text-purple-400 rounded-xl text-[11px] font-heading font-bold uppercase transition-all"
-                >
-                  👑 Coach Demo
-                </button>
-              </div>
-            </div>
           </form>
         )}
       </div>
