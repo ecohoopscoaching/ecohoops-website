@@ -343,14 +343,7 @@ export default function Navbar() {
                     <LogOut size={15} />
                   </button>
                 </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="text-xs font-heading font-semibold uppercase tracking-wider text-eco-muted-light hover:text-white transition-colors px-2 py-1"
-                >
-                  Coach Login
-                </Link>
-              )}
+              ) : null}
 
               <a 
                 href="/#jr-nba-waitlist" 
@@ -685,15 +678,7 @@ export default function Navbar() {
                           Sign Out <LogOut size={13} />
                         </button>
                       </div>
-                    ) : (
-                      <Link 
-                        to="/login" 
-                        className="text-xs font-heading font-bold uppercase tracking-widest text-eco-muted-light hover:text-white transition-colors" 
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Coach Login
-                      </Link>
-                    )}
+                    ) : null}
                     <a 
                       href="/#jr-nba-waitlist" 
                       className="px-5 py-2.5 text-xs font-semibold rounded-full bg-[#97B3D2] text-[#060A10] hover:bg-[#B0C8E0] transition-colors cursor-pointer" 
