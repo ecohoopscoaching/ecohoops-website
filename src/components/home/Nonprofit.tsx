@@ -53,7 +53,7 @@ export default function Nonprofit() {
           className="text-center mb-16"
         >
           <span className="tag mb-4 inline-block !bg-[#003366]/80 !border-[#97B3D2]/40 !text-[#97B3D2]">
-            FEDERAL NONPROFIT ARM
+            FEDERAL NOT-FOR-PROFIT CORPORATION
           </span>
           <h2 className="font-display text-section uppercase mb-4">
             <span className="text-white">ECOHOOPS FOR KIDS </span>

@@ -218,7 +218,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
               { value: 'OBA Club', label: 'Ontario Basketball' },
               { value: 'Jr. NBA', label: 'Canada Basketball' },
               { value: 'Coalition', label: 'League Participant' },
-              { value: 'Dual Entity', label: 'Inc. + Non-Profit Arm' },
+              { value: 'Separate Legal Entities', label: 'EcoHoops Inc. + EcoHoops for Kids Canada' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -227,7 +227,9 @@ export default function Hero({ onRegisterClick }: HeroProps) {
                 transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
                 className="text-center flex flex-col justify-center items-center"
               >
-                <div className="font-display text-2xl md:text-3xl font-bold text-white mb-2 leading-none">
+                <div className={`font-display font-bold text-white mb-2 tracking-tight ${
+                  stat.value.length > 15 ? 'text-base sm:text-lg md:text-xl lg:text-2xl leading-tight' : 'text-2xl md:text-3xl leading-none'
+                }`}>
                   {stat.value}
                 </div>
                 <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#97B3D2] font-heading font-medium text-balance">

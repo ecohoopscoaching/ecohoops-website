@@ -33,7 +33,7 @@ const PROGRAMS = [
   },
   {
     title: 'EcoHoops for Kids Canada',
-    description: 'Our registered nonprofit arm dedicated to ensuring access, offering financial subsidies, and driving community wellness programs.',
+    description: 'Federally incorporated not-for-profit corporation dedicated to ensuring access, offering financial subsidies, and driving community wellness programs.',
     target: 'Families seeking financial aid & community programs.',
     path: '/nonprofit',
     icon: HeartHandshake,
