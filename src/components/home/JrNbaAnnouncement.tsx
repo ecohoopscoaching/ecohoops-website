@@ -20,6 +20,8 @@ import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { getTrackingParams, saveWaitlistEntry, WaitlistEntry } from '../../data/waitlist'
 import { dispatchWaitlistConfirmationEmail } from '../../lib/email-service'
 
+declare const fbq: any
+
 const BENEFITS = [
   'Targeting a mid-October 2026 start in Southwest Mississauga',
   'Weekly session day and venue to be confirmed (Friday or Saturday options pending permit)',
@@ -185,6 +187,17 @@ const WaitlistForm = memo(function WaitlistForm() {
     setStatus('success')
     setFormData(INITIAL_FORM_STATE)
 
+    // Fire Meta Pixel Lead event immediately where confirmation message shows
+    try {
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead')
+      } else if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead')
+      }
+    } catch {
+      // Ignore tracking errors if blocked by privacy extensions
+    }
+
     // Smoothly ensure user sees the confirmation
     setTimeout(() => {
       containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -241,18 +254,6 @@ const WaitlistForm = memo(function WaitlistForm() {
       clearTimeout(timer)
     } catch {
       // Intentionally absorbed: data is safely secured locally and queued for email dispatch
-    }
-
-    // 5. Meta Pixel Lead tracking (for real parents)
-    if (!isTest && typeof window !== 'undefined' && (window as any).fbq) {
-      try {
-        (window as any).fbq('track', 'Lead', {
-          content_name: 'EcoHoops Jr. Waitlist',
-          content_category: newEntry.ageGroup,
-          currency: 'CAD',
-          value: 0,
-        })
-      } catch {}
     }
   }
 

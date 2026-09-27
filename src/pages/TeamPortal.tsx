@@ -25,7 +25,7 @@ import {
   OBA_ONTARIO_CUP_STATUS
 } from '../data/schedule'
 
-type HubView = 'games' | 'practices' | 'roster'
+type HubView = 'games' | 'practices' | 'events' | 'roster'
 
 export default function TeamPortal() {
   const { teamId: paramTeamId } = useParams<{ teamId?: string }>()
@@ -208,6 +208,37 @@ export default function TeamPortal() {
     }
     return Array.from(map.values()).sort((a, b) => a.date.localeCompare(b.date))
   }, [isBoys])
+
+  // Dedicated Events Tab Data: Tournaments, Playoffs, All-Star, Scrimmages, and Coach-Added Events
+  const teamEvents = useMemo(() => {
+    if (!currentTeam) return []
+    return schedule
+      .filter((e) => {
+        const matchesTeam = e.teamId === currentTeam.id || e.teamId === 'all' || !e.teamId
+        if (!matchesTeam) return false
+
+        const isTournament = e.type === 'tournament' || e.category === 'playoffs' || e.category === 'all_star' || e.isPlayoffs || e.isAllStar
+        const isCustomCoachEvent = e.id.startsWith('custom-event-') || e.type === 'event'
+        return isTournament || isCustomCoachEvent
+      })
+      .sort((a, b) => a.date.localeCompare(b.date))
+  }, [schedule, currentTeam])
+
+  // Custom games added via Coach Console
+  const customGames = useMemo(() => {
+    if (!currentTeam) return []
+    return schedule
+      .filter((e) => (e.teamId === currentTeam.id || e.teamId === 'all' || !e.teamId) && e.id.startsWith('custom-event-') && e.type === 'game')
+      .sort((a, b) => a.date.localeCompare(b.date))
+  }, [schedule, currentTeam])
+
+  // Custom practices added via Coach Console
+  const customPractices = useMemo(() => {
+    if (!currentTeam) return []
+    return schedule
+      .filter((e) => (e.teamId === currentTeam.id || e.teamId === 'all' || !e.teamId) && e.id.startsWith('custom-event-') && e.type === 'practice')
+      .sort((a, b) => a.date.localeCompare(b.date))
+  }, [schedule, currentTeam])
 
   return (
     <div className="pt-20 sm:pt-24 pb-32 min-h-screen bg-[#060A10] text-white font-sans selection:bg-[#97B3D2] selection:text-[#060A10] overflow-x-hidden">
@@ -402,43 +433,56 @@ export default function TeamPortal() {
 
         {/* STICKY MOBILE SEGMENTED CONTROL */}
         <div className="sticky top-16 sm:top-20 z-30 -mx-3.5 px-3.5 sm:mx-0 sm:px-0 py-2.5 bg-[#060A10]/95 backdrop-blur-xl">
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 p-1 bg-[#0B131E] rounded-2xl sm:rounded-3xl border-2 border-white/10 shadow-2xl">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 p-1 bg-[#0B131E] rounded-2xl sm:rounded-3xl border-2 border-white/10 shadow-2xl">
             <button
               type="button"
               onClick={() => setActiveView('games')}
-              className={`py-3 sm:py-3.5 px-2 rounded-xl sm:rounded-2xl text-xs sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+              className={`py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 cursor-pointer ${
                 activeView === 'games'
                   ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
                   : 'text-white/70 hover:text-white'
               }`}
             >
-              <Trophy size={16} className="flex-shrink-0" />
+              <Trophy size={15} className="flex-shrink-0" />
               <span>Games</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveView('practices')}
-              className={`py-3 sm:py-3.5 px-2 rounded-xl sm:rounded-2xl text-xs sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+              className={`py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 cursor-pointer ${
                 activeView === 'practices'
                   ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
                   : 'text-white/70 hover:text-white'
               }`}
             >
-              <Dumbbell size={16} className="flex-shrink-0" />
+              <Dumbbell size={15} className="flex-shrink-0" />
               <span>Practices</span>
             </button>
 
             <button
               type="button"
+              onClick={() => setActiveView('events')}
+              className={`py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 cursor-pointer ${
+                activeView === 'events'
+                  ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <Calendar size={15} className="flex-shrink-0" />
+              <span>Events</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setActiveView('roster')}
-              className={`py-3 sm:py-3.5 px-2 rounded-xl sm:rounded-2xl text-xs sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+              className={`py-2.5 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-base font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 cursor-pointer ${
                 activeView === 'roster'
                   ? 'bg-[#97B3D2] text-[#060A10] shadow-md'
                   : 'text-white/70 hover:text-white'
               }`}
             >
-              <Users size={16} className="flex-shrink-0" />
+              <Users size={15} className="flex-shrink-0" />
               <span>Roster</span>
             </button>
           </div>
@@ -455,6 +499,107 @@ export default function TeamPortal() {
                 {currentSchedule.length} Weekends
               </span>
             </div>
+
+            {/* Coach-Added Games via Coach Console */}
+            {customGames.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] px-1 font-bold">
+                  Coach-Added Games & Matchups ({customGames.length})
+                </div>
+                {customGames.map((cg) => {
+                  const userStatus = cg.attendance?.[effectivePlayerId]?.status
+                  return (
+                    <div
+                      key={cg.id}
+                      className="p-5 rounded-2xl sm:rounded-3xl border-2 border-[#97B3D2]/40 bg-gradient-to-r from-[#0F1B2B] via-[#0B131E] to-[#0B131E] space-y-3 shadow-lg"
+                    >
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
+                          Added Game
+                        </span>
+                        {cg.uniformColor && (
+                          <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-amber-200">
+                            Jersey: {cg.uniformColor}
+                          </span>
+                        )}
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/60">
+                          {new Date(cg.date + 'T12:00:00').toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="text-xl sm:text-2xl font-black uppercase text-white">
+                          {cg.title}
+                        </div>
+                        {cg.opponent && (
+                          <div className="text-sm font-bold text-[#97B3D2] mt-0.5">
+                            vs. {cg.opponent}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-white/70 flex-wrap">
+                          <span className="flex items-center gap-1">
+                            <Clock size={13} className="text-[#97B3D2]" />
+                            <span>{cg.time}</span>
+                          </span>
+                          {cg.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin size={13} className="text-[#97B3D2]" />
+                              <span>{cg.location}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* RSVP Buttons */}
+                      <div className="pt-2 border-t border-white/10">
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cg.id, 'going')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'going'
+                                ? 'bg-emerald-500 text-[#060A10] shadow-md'
+                                : 'bg-white/5 hover:bg-emerald-500/20 text-white/80'
+                            }`}
+                          >
+                            <Check size={13} />
+                            <span>Going</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cg.id, 'maybe')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'maybe'
+                                ? 'bg-amber-400 text-[#060A10] shadow-md'
+                                : 'bg-white/5 hover:bg-amber-400/20 text-white/80'
+                            }`}
+                          >
+                            <Clock size={13} />
+                            <span>Maybe</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cg.id, 'notGoing')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'notGoing'
+                                ? 'bg-rose-500 text-white shadow-md'
+                                : 'bg-white/5 hover:bg-rose-500/20 text-white/80'
+                            }`}
+                          >
+                            <X size={13} />
+                            <span>Out</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
             <div className="space-y-2.5">
               {currentSchedule.map((item) => (
@@ -549,6 +694,97 @@ export default function TeamPortal() {
                 ✓ Approved Permits
               </span>
             </div>
+
+            {/* Coach-Added Practices via Coach Console */}
+            {customPractices.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] px-1 font-bold">
+                  Coach-Added Practice Sessions ({customPractices.length})
+                </div>
+                {customPractices.map((cp) => {
+                  const userStatus = cp.attendance?.[effectivePlayerId]?.status
+                  return (
+                    <div
+                      key={cp.id}
+                      className="p-5 rounded-2xl sm:rounded-3xl border-2 border-[#97B3D2]/40 bg-gradient-to-r from-[#0F1B2B] via-[#0B131E] to-[#0B131E] space-y-3 shadow-lg"
+                    >
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider bg-[#97B3D2]/20 text-[#97B3D2] border border-[#97B3D2]/30">
+                          Added Practice
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/60">
+                          {new Date(cp.date + 'T12:00:00').toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="text-xl sm:text-2xl font-black uppercase text-white">
+                          {cp.title}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-white/70 flex-wrap">
+                          <span className="flex items-center gap-1">
+                            <Clock size={13} className="text-[#97B3D2]" />
+                            <span>{cp.time}</span>
+                          </span>
+                          {cp.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin size={13} className="text-[#97B3D2]" />
+                              <span>{cp.location}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* RSVP Buttons */}
+                      <div className="pt-2 border-t border-white/10">
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cp.id, 'going')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'going'
+                                ? 'bg-emerald-500 text-[#060A10] shadow-md'
+                                : 'bg-white/5 hover:bg-emerald-500/20 text-white/80'
+                            }`}
+                          >
+                            <Check size={13} />
+                            <span>Going</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cp.id, 'maybe')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'maybe'
+                                ? 'bg-amber-400 text-[#060A10] shadow-md'
+                                : 'bg-white/5 hover:bg-amber-400/20 text-white/80'
+                            }`}
+                          >
+                            <Clock size={13} />
+                            <span>Maybe</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(cp.id, 'notGoing')}
+                            className={`py-2 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
+                              userStatus === 'notGoing'
+                                ? 'bg-rose-500 text-white shadow-md'
+                                : 'bg-white/5 hover:bg-rose-500/20 text-white/80'
+                            }`}
+                          >
+                            <X size={13} />
+                            <span>Out</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
             {/* 2 Main Weekly Practice Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -688,7 +924,232 @@ export default function TeamPortal() {
           </div>
         )}
 
-        {/* VIEW 3: ROSTER & DIRECT CONTACTS */}
+        {/* VIEW 3: EVENTS & TOURNAMENTS */}
+        {activeView === 'events' && (
+          <div className="space-y-4 pt-1">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-lg sm:text-2xl font-black uppercase tracking-tight text-white">
+                Tournaments & Events
+              </h2>
+              <span className="text-xs font-mono text-[#97B3D2]">
+                {teamEvents.length} Scheduled
+              </span>
+            </div>
+
+            {/* OBA Ontario Cup Status Banner */}
+            <div className="p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-950/40 via-[#0B131E] to-[#0B131E] border-2 border-sky-500/30 space-y-2 shadow-lg">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/images/branding/obl-logo.jpg"
+                    alt="OBA"
+                    className="w-5 h-5 rounded-full object-cover"
+                  />
+                  <h3 className="font-heading font-black text-base sm:text-lg uppercase text-white">
+                    {OBA_ONTARIO_CUP_STATUS.title}
+                  </h3>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-xs font-mono font-bold">
+                  {OBA_ONTARIO_CUP_STATUS.dateLabel}
+                </span>
+              </div>
+              <p className="text-xs text-white/70 leading-relaxed">
+                {OBA_ONTARIO_CUP_STATUS.details}
+              </p>
+            </div>
+
+            {/* Event List */}
+            {teamEvents.length > 0 ? (
+              <div className="space-y-3">
+                {teamEvents.map((evt) => {
+                  const isPlayoffs = evt.isPlayoffs || evt.category === 'playoffs'
+                  const isAllStar = evt.isAllStar || evt.category === 'all_star'
+                  const isCustom = evt.id.startsWith('custom-event-')
+                  const userStatus = evt.attendance?.[effectivePlayerId]?.status
+
+                  return (
+                    <div
+                      key={evt.id}
+                      className={`p-5 rounded-2xl sm:rounded-3xl border-2 transition-all space-y-4 shadow-lg ${
+                        isPlayoffs
+                          ? 'bg-gradient-to-br from-amber-500/15 via-[#0B131E] to-[#0B131E] border-amber-400/60 shadow-[0_0_25px_rgba(251,191,36,0.12)]'
+                          : isAllStar
+                          ? 'bg-gradient-to-br from-purple-500/15 via-[#0B131E] to-[#0B131E] border-purple-400/50'
+                          : isCustom
+                          ? 'bg-gradient-to-br from-[#0F1B2B] via-[#0B131E] to-[#0B131E] border-[#97B3D2]/40'
+                          : 'bg-[#0B131E] border-white/10'
+                      }`}
+                    >
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider border ${
+                            isPlayoffs
+                              ? 'bg-amber-400 text-[#060A10] border-amber-300'
+                              : isAllStar
+                              ? 'bg-purple-500/20 text-purple-200 border-purple-400/40'
+                              : evt.type === 'tournament'
+                              ? 'bg-sky-500/20 text-sky-200 border-sky-400/40'
+                              : 'bg-[#97B3D2]/20 text-[#97B3D2] border-[#97B3D2]/30'
+                          }`}>
+                            {isPlayoffs ? 'Playoffs' : isAllStar ? 'All-Star' : evt.type === 'tournament' ? 'Tournament' : 'Special Event'}
+                          </span>
+
+                          {evt.league && (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-white/70">
+                              {evt.league}
+                            </span>
+                          )}
+
+                          {evt.uniformColor && (
+                            <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-amber-200">
+                              Jersey: {evt.uniformColor}
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/50">
+                          {new Date(evt.date + 'T12:00:00').toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+
+                      {/* Title & Timing */}
+                      <div>
+                        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-wide text-white">
+                          {evt.title}
+                        </h3>
+                        {evt.opponent && (
+                          <div className="text-sm font-bold text-[#97B3D2] mt-0.5">
+                            vs. {evt.opponent}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-white/70 flex-wrap">
+                          <span className="flex items-center gap-1">
+                            <Clock size={13} className="text-[#97B3D2]" />
+                            <span>{evt.time}</span>
+                          </span>
+                          {evt.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin size={13} className="text-[#97B3D2]" />
+                              <span>{evt.location}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Location Details & Directions */}
+                      {(evt.venueDetails || evt.location) && (
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 flex-wrap text-xs">
+                          <div className="text-white/80">
+                            <div className="font-bold text-white">{evt.location}</div>
+                            {evt.venueDetails && <div className="text-white/60 text-[11px] mt-0.5">{evt.venueDetails}</div>}
+                          </div>
+                          <a
+                            href={evt.mapUrl || `https://maps.google.com/?q=${encodeURIComponent(evt.venueDetails || evt.location)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-heading font-bold uppercase text-[#97B3D2] hover:text-white bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 hover:border-[#97B3D2]/40 transition-colors"
+                          >
+                            <Navigation size={11} />
+                            <span>Directions</span>
+                            <ExternalLink size={10} />
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Notes / Logistics */}
+                      {(evt.notes || evt.arrivalNote) && (
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1 text-xs">
+                          {evt.arrivalNote && (
+                            <div className="font-bold text-amber-200">
+                              ⏰ Arrival: {evt.arrivalNote}
+                            </div>
+                          )}
+                          {evt.notes && (
+                            <p className="text-white/70 leading-relaxed">
+                              {evt.notes}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* RSVP Buttons */}
+                      <div className="pt-2 border-t border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono">
+                          <span className="text-white/50 uppercase tracking-wider">Player Attendance</span>
+                          {userStatus && (
+                            <span className={`font-bold uppercase tracking-wider ${
+                              userStatus === 'going' ? 'text-emerald-400' : userStatus === 'maybe' ? 'text-amber-300' : 'text-rose-400'
+                            }`}>
+                              Status: {userStatus === 'going' ? 'Attending ✓' : userStatus === 'maybe' ? 'Maybe ⏱️' : 'Out ✕'}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(evt.id, 'going')}
+                            className={`py-2.5 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+                              userStatus === 'going'
+                                ? 'bg-emerald-500 text-[#060A10] shadow-md ring-2 ring-emerald-400'
+                                : 'bg-white/5 hover:bg-emerald-500/20 text-white/80 hover:text-emerald-300'
+                            }`}
+                          >
+                            <Check size={14} />
+                            <span>Going</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(evt.id, 'maybe')}
+                            className={`py-2.5 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+                              userStatus === 'maybe'
+                                ? 'bg-amber-400 text-[#060A10] shadow-md ring-2 ring-amber-300'
+                                : 'bg-white/5 hover:bg-amber-400/20 text-white/80 hover:text-amber-300'
+                            }`}
+                          >
+                            <Clock size={14} />
+                            <span>Maybe</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRsvp(evt.id, 'notGoing')}
+                            className={`py-2.5 px-2 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer ${
+                              userStatus === 'notGoing'
+                                ? 'bg-rose-500 text-white shadow-md ring-2 ring-rose-400'
+                                : 'bg-white/5 hover:bg-rose-500/20 text-white/80 hover:text-rose-300'
+                            }`}
+                          >
+                            <X size={14} />
+                            <span>Out</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="p-8 rounded-2xl sm:rounded-3xl bg-[#0B131E] border-2 border-white/10 text-center space-y-2">
+                <Calendar size={32} className="mx-auto text-white/30" />
+                <h3 className="font-heading font-black text-lg uppercase text-white">
+                  No Special Events Scheduled Yet
+                </h3>
+                <p className="text-xs text-white/50 max-w-sm mx-auto">
+                  Tournaments, playoffs, scrimmages, and special team events added by coaches will automatically appear here.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 4: ROSTER & DIRECT CONTACTS */}
         {activeView === 'roster' && (
           <div className="space-y-6 pt-1">
             {/* Coaching Staff Contact Cards */}
