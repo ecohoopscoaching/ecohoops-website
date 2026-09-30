@@ -26,7 +26,7 @@ const BENEFITS = [
   'Targeting a mid-October 2026 start in Southwest Mississauga',
   'Weekly session day and venue to be confirmed (Friday or Saturday options pending permit)',
   '10 weekly sessions, 60 minutes each (max 12 children per group)',
-  'Ages 5–6 (co-ed), Ages 7–9 & 10–11 (separate girls’ and boys’ groups)',
+  'Ages 5–6 (co-ed), Ages 7–8 & 9–10 (separate girls’ and boys’ groups)',
   'Groups will run based on registration numbers',
   'Confirmed price: $249 per player',
   'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball included',
@@ -37,7 +37,7 @@ interface FormState {
   parentName: string
   email: string
   phone: string
-  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Ages 10–11'
+  ageGroup: 'Ages 5–6' | 'Ages 7–8' | 'Ages 9–10'
   groupPreference: 'Boys’ group' | 'Girls’ group' | ''
   daysAvailable: 'Friday' | 'Saturday' | 'Either' | ''
   neighbourhood: string
@@ -121,7 +121,7 @@ const WaitlistForm = memo(function WaitlistForm() {
       errors.ageGroup = 'Please select an age group.'
     }
 
-    // For Ages 7–9 and 10–11, require group preference
+    // For Ages 7–8 and 9–10, require group preference
     if (formData.ageGroup !== 'Ages 5–6' && !formData.groupPreference) {
       errors.groupPreference = 'Please select which group you are interested in.'
     }
@@ -545,7 +545,7 @@ const WaitlistForm = memo(function WaitlistForm() {
           <span>Child's Age Group <span className="text-red-400">*</span></span>
         </label>
         <div role="radiogroup" aria-label="Child's Age Group" className="grid grid-cols-3 gap-1.5">
-          {(['Ages 5–6', 'Ages 7–9', 'Ages 10–11'] as const).map((group) => {
+          {(['Ages 5–6', 'Ages 7–8', 'Ages 9–10'] as const).map((group) => {
             const isSelected = formData.ageGroup === group
             return (
               <label
@@ -836,7 +836,7 @@ export default function JrNbaAnnouncement() {
                 NEW FROM ECOHOOPS JR.
               </div>
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-eco-blue/15 border border-eco-blue/35 text-eco-blue-light text-xs font-mono font-bold uppercase tracking-wider">
-                Ages 5–6 (Co-Ed) • Ages 7–9 & 10–11 (Separate Groups)
+                Ages 5–6 (Co-Ed) • Ages 7–8 & 9–10 (Separate Groups)
               </div>
             </div>
 
@@ -848,13 +848,13 @@ export default function JrNbaAnnouncement() {
 
             {/* Subheadline */}
             <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
-              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 Co-Ed, Ages 7–9 & 10–11 Separate Girls’ and Boys’ Groups).
+              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 Co-Ed, Ages 7–8 & 9–10 Separate Girls’ and Boys’ Groups).
             </p>
 
             {/* Body */}
             <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
               <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a mid-October 2026 start across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, <strong className="text-white font-semibold">Ages 7–9 (separate girls’ and boys’ groups)</strong>, and <strong className="text-white font-semibold">Ages 10–11 (separate girls’ and boys’ groups)</strong>.
+                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a mid-October 2026 start across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, <strong className="text-white font-semibold">Ages 7–8 (separate girls’ and boys’ groups)</strong>, and <strong className="text-white font-semibold">Ages 9–10 (separate girls’ and boys’ groups)</strong>.
               </p>
               <p>
                 Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first. Groups will run based on registration numbers.

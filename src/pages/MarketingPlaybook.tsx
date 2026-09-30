@@ -193,7 +193,7 @@ Register now before spots fill up: www.ecohoops.ca/register`
                     className="w-full bg-eco-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue text-xs font-body"
                   >
                     <option>August Tryouts (Mississauga)</option>
-                    <option>Junior Hoops (Ages 5-11)</option>
+                    <option>Junior Hoops (Ages 5-10)</option>
                     <option>Girls Basketball Program</option>
                     <option>General Club Registration</option>
                   </select>

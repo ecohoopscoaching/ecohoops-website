@@ -3,7 +3,7 @@ export interface WaitlistEntry {
   parentName: string
   email: string
   phone: string // "Not provided" or formatted string
-  ageGroup: 'Ages 5–6' | 'Ages 7–9' | 'Ages 10–11'
+  ageGroup: 'Ages 5–6' | 'Ages 7–8' | 'Ages 9–10'
   groupPreference: 'Boys’ group' | 'Girls’ group' | 'Co-ed' | 'Not provided'
   daysAvailable: 'Friday' | 'Saturday' | 'Either' | 'Not provided'
   neighbourhood: string // Optional string or "Not provided"
@@ -34,8 +34,8 @@ export interface WaitlistMetrics {
   testSubmissions: number
   divisionBreakdown: {
     'Ages 5–6': number
-    'Ages 7–9': number
-    'Ages 10–11': number
+    'Ages 7–8': number
+    'Ages 9–10': number
   }
 }
 
@@ -191,8 +191,8 @@ export function calculateWaitlistMetrics(entries: WaitlistEntry[]): WaitlistMetr
 
   const divisionBreakdown = {
     'Ages 5–6': realEntries.filter((e) => e.ageGroup === 'Ages 5–6').length,
-    'Ages 7–9': realEntries.filter((e) => e.ageGroup === 'Ages 7–9').length,
-    'Ages 10–11': realEntries.filter((e) => e.ageGroup === 'Ages 10–11').length,
+    'Ages 7–8': realEntries.filter((e) => e.ageGroup === 'Ages 7–8').length,
+    'Ages 9–10': realEntries.filter((e) => e.ageGroup === 'Ages 9–10').length,
   }
 
   return {
