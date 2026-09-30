@@ -25,6 +25,7 @@ const FOOTER_LINKS = [
     links: [
       { label: 'EcoHoops for Kids Canada', path: '/nonprofit' },
       { label: 'Girls In Motion', path: '/girls' },
+      { label: 'Volunteer Coaching', path: '/volunteer' },
       { label: 'The Game Changer', path: '/game-changer/index.html' },
       { label: 'Blog', path: '/blog' },
       { label: 'Contact', path: '/contact' },

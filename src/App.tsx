@@ -36,6 +36,7 @@ const RefundPolicy = lazy(() => import('./pages/RefundPolicy'))
 const Waiver = lazy(() => import('./pages/Waiver'))
 const GirlsLandingPage = lazy(() => import('./pages/GirlsLandingPage'))
 const TeamPortal = lazy(() => import('./pages/TeamPortal'))
+const Volunteer = lazy(() => import('./pages/Volunteer'))
 
 function PageFallback() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
               <Route path="rep" element={<Rep />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="volunteer" element={<Volunteer />} />
               <Route path="register" element={<Register />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="admin" element={<AdminDashboard />} />

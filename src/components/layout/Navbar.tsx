@@ -58,13 +58,15 @@ export default function Navbar() {
             ]
           },
           {
-            title: 'Safety & Inclusion',
+            title: 'Community & Safety',
             links: [
+              { label: 'Volunteer Coaching', path: '/volunteer', description: 'Join our coaching staff & mentor youth' },
               { label: 'Safe Sport & Financial Aid', path: '/safe-sport', description: 'Athlete safety, maltreatment reporting & funding grants' }
             ]
           }
         ]
       },
+      { label: 'Volunteer', path: '/volunteer' },
       { label: 'Contact', path: '/contact' }
     ]
     return links

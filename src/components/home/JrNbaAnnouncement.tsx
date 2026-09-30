@@ -198,6 +198,17 @@ const WaitlistForm = memo(function WaitlistForm() {
       // Ignore tracking errors if blocked by privacy extensions
     }
 
+    // Fire Google Ads waitlist conversion event (guarded, fires once per successful submit)
+    try {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'conversion', {
+          send_to: 'AW-18484354648/cSy9CKDYhIwdENi8g-5E',
+        })
+      }
+    } catch {
+      // Ignore tracking errors if blocked by privacy extensions
+    }
+
     // Smoothly ensure user sees the confirmation
     setTimeout(() => {
       containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
