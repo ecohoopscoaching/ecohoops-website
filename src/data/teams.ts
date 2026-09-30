@@ -92,7 +92,7 @@ export const TEAMS: Team[] = [
       createPlayer('b-adole', 15, 'Adole Bhathal', 'July 12, 2011', 'PF', '/images/Player Profile Pics/Adole.png'),
       createPlayer('b-josh', 13, 'Josh Uppal', 'July 28, 2011', 'SF', '/images/Player Profile Pics/Josh.png'),
       createPlayer('b-gurveer', 11, 'Gurveer Bhatti', 'July 30, 2011', 'SG', '/images/Player Profile Pics/Gurveer.png'),
-      createPlayer('b-avir', 0, 'Avir Channa', 'December 7, 2011', 'F'),
+      createPlayer('b-avir', 1, 'Avir Channa', 'December 7, 2011', 'F'),
       createPlayer('b-dean', 19, 'Dean Kerr', 'December 19, 2011', 'G'),
     ],
     coaches: [
