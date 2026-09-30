@@ -41,8 +41,25 @@ export function useData() {
 export function DataProvider({ children }: { children: ReactNode }) {
   // Clean state: Load user-saved state from localStorage or initialize clean
   const [teams, setTeams] = useState<Team[]>(() => {
-    const saved = localStorage.getItem('ecohoops_teams_v7')
-    return saved ? JSON.parse(saved) : TEAMS
+    try {
+      localStorage.removeItem('ecohoops_teams_v7')
+      localStorage.removeItem('ecohoops_teams_v6')
+      localStorage.removeItem('ecohoops_teams')
+    } catch {}
+
+    const saved = localStorage.getItem('ecohoops_teams_v8')
+    if (!saved) return TEAMS
+    try {
+      const parsed: Team[] = JSON.parse(saved)
+      return parsed.map((t) => ({
+        ...t,
+        roster: (t.roster || [])
+          .filter((p) => p.id !== 'b-ronit' && !p.name.toLowerCase().includes('ronit'))
+          .map((p) => (p.id === 'b-avir' || p.name.toLowerCase().includes('avir') ? { ...p, number: 1 } : p))
+      }))
+    } catch {
+      return TEAMS
+    }
   })
 
   const [schedule, setSchedule] = useState<ScheduleEvent[]>(() => {
@@ -68,9 +85,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // One-time automated update to ensure Winter season, U16 Boys / U15 Girls, and confirmed schedule are synced
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v16'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v20'
     if (!localStorage.getItem(cleanFlagKey)) {
-      localStorage.setItem('ecohoops_teams_v7', JSON.stringify(TEAMS))
+      try {
+        localStorage.removeItem('ecohoops_teams_v7')
+        localStorage.removeItem('ecohoops_teams_v6')
+        localStorage.removeItem('ecohoops_teams')
+      } catch {}
+      localStorage.setItem('ecohoops_teams_v8', JSON.stringify(TEAMS))
       localStorage.setItem('ecohoops_schedule', JSON.stringify(SCHEDULE))
       localStorage.setItem(cleanFlagKey, 'true')
       setTeams(TEAMS)
@@ -80,7 +102,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // Synchronize state changes to localStorage
   useEffect(() => {
-    localStorage.setItem('ecohoops_teams_v7', JSON.stringify(teams))
+    localStorage.setItem('ecohoops_teams_v8', JSON.stringify(teams))
   }, [teams])
 
   useEffect(() => {
@@ -101,7 +123,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('ecohoops_messages')
     localStorage.removeItem('ecohoops_jr_waitlist')
     localStorage.removeItem('ecohoops_sent_notifications_v1')
-    localStorage.setItem('ecohoops_teams_v7', JSON.stringify(TEAMS))
+    localStorage.removeItem('ecohoops_teams_v7')
+    localStorage.setItem('ecohoops_teams_v8', JSON.stringify(TEAMS))
     setSchedule([])
     setPayments([])
     setMessages([])
