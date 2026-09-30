@@ -86,7 +86,6 @@ export const TEAMS: Team[] = [
     record: '0-0',
     roster: [
       // Oldest to youngest
-      createPlayer('b-ronit', 1, 'Ronit Bhamra', 'March 21, 2011', 'G'),
       createPlayer('b-rayan', 20, 'Rayan Khalaf', 'March 23, 2011', 'G'),
       createPlayer('b-savelii', 21, 'Savelii Donets', 'May 8, 2011', 'SF', '/images/Player Profile Pics/Savva.png'),
       createPlayer('b7-ss', 7, 'Jacob Sagat', 'July 7, 2011', 'PF', '/images/Player Profile Pics/Jacob.png'),
