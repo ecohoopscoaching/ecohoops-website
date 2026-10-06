@@ -29,7 +29,11 @@ export default async function handler(req: any, res: any) {
     const cleanDays = daysAvailable.trim()
     const cleanNeighbourhood = neighbourhood.trim() || 'Not specified'
 
-    const emailSubject = `We received your waitlist form — EcoHoops Jr. NBA / Jr. WNBA`
+    const isAge5To6 = cleanAgeGroup === 'Ages 5–6' || cleanAgeGroup === 'Ages 5-6'
+
+    const emailSubject = isAge5To6
+      ? `Registration is OPEN — Jr. NBA / Jr. WNBA Ages 5-6`
+      : `We received your waitlist form — EcoHoops Jr. NBA / Jr. WNBA`
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -178,6 +182,18 @@ export default async function handler(req: any, res: any) {
       color: #97B3D2;
       text-decoration: none;
     }
+    .btn-claim {
+      display: inline-block;
+      background: #003366;
+      color: #FFFFFF !important;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 10px;
+      border: 1px solid #97B3D2;
+      box-shadow: 0 4px 14px rgba(0, 51, 102, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -224,6 +240,17 @@ export default async function handler(req: any, res: any) {
         </div>
       </div>
 
+      ${isAge5To6 ? `
+      <div class="highlight-box">
+        <p class="text" style="margin: 0; color: #E2E8F0;">
+          registration is officially OPEN for Jr. NBA / Jr. WNBA Ages 5-6 — only 4 spots left, Fridays 6:15-7:15 PM at Floradale Public School, Mississauga, starts October 30, $249 for the season.
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfYDjCS_ItoAYJMAvn2nRV3q4pqhV3BsWolGFLxHkUf_eSQEQ/viewform" target="_blank" rel="noopener noreferrer" class="btn-claim" style="display: inline-block; background: #003366; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 10px; border: 1px solid #97B3D2; box-shadow: 0 4px 14px rgba(0, 51, 102, 0.5);">Claim your spot</a>
+      </div>
+      ` : `
       <div class="highlight-box">
         <strong>What happens next?</strong><br>
         We are targeting a mid-October 2026 start in Southwest Mississauga. We will contact you at this email address as soon as program dates, venue permits, and registration officially open so your family gets first priority.
@@ -236,6 +263,7 @@ export default async function handler(req: any, res: any) {
       <p class="text" style="font-weight: 600; color: #FFFFFF;">
         Keep an eye on your email for updates.
       </p>
+      `}
 
       <div class="signoff">
         <div class="motto">Kids First, Always.</div>
