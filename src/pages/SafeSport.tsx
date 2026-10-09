@@ -112,12 +112,12 @@ export default function SafeSport() {
               </div>
             </div>
             <a
-              href="https://www.abuse-free-sport.ca"
+              href="https://basketball.on.ca/safe-sport/"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-glow inline-flex items-center justify-center gap-2 w-full text-center text-eco-black font-bold"
             >
-              Visit Abuse-Free Sport Website <ExternalLink size={14} />
+              Visit Ontario Basketball Safe Sport <ExternalLink size={14} />
             </a>
           </motion.div>
 
