@@ -14,7 +14,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Imagine you buy your five-year-old child a brand-new video game. They press start, and instead of a fun first level, the game throws them into a massive boss battle against giant monsters. No instructions. No training. Just instant defeat over and over again while a crowd of adults stands behind them yelling instructions.</p>
 <p>They would throw the controller down and walk away, right? Of course they would. It is not fun. It makes no sense.</p>
 <p>Yet, this is exactly what we do to young kids in sports every single day. We put them on giant fields or courts. We make them play crazy games with ten different rules they do not understand. Then we wonder why they get bored, frustrated, and quit sports by the time they hit high school.</p>
-<p>We are tired of watching the old-school sports system burn kids out. That is why we built our brand-new 10-week EcoHoops Junior and Mini Movers programs. And to do it right, we stole the best blueprint on earth. It is a blueprint created by a soccer genius named Kris Van Der Haegen.</p>
+<p>We are tired of watching the old-school sports system burn kids out. That is why we built our brand-new 8-week EcoHoops Junior and Mini Movers programs. And to do it right, we stole the best blueprint on earth. It is a blueprint created by a soccer genius named Kris Van Der Haegen.</p>
 
 <figure id="figure-adult-glasses-cover" class="my-6">
   <img id="adult-glasses-cover" src="/images/adult_glasses.png" alt="Oversized adult glasses on kid bench" class="object-cover bg-gray-100 rounded-lg md:rounded-xl lg:rounded-2xl w-full" style="aspect-ratio: 16/9; object-position: center center;" />

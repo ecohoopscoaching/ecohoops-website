@@ -46,7 +46,6 @@ const FOOTER_LINKS = [
 const SOCIALS = [
   { icon: Instagram, href: 'https://instagram.com/ecohoopsbasketball', label: 'Instagram' },
   { icon: Twitter, href: 'https://twitter.com/eco_hoops', label: 'Twitter' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
   { icon: Mail, href: 'mailto:ecohoopscoaching@gmail.com', label: 'Email' },
 ]
 

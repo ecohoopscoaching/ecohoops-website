@@ -37,7 +37,7 @@ Our practices are built around real game situations, so what your child learns i
 
 🏆 PROOF: 98% of EcoHoops parents report noticeable improvement in their child's confidence and decision-making on the court within 6 weeks.
 
-📍 TRYOUTS: August 1 & August 8 in Mississauga
+📢 Rep Team Openings: U16 Boys team has 2 open spots available. Looking for a rep team? Message us at ecohoops.ca/contact
 🎒 AGE GROUPS: ${ageGroup}
 ⚡ Spots are strictly limited per roster.
 

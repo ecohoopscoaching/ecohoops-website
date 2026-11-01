@@ -4,6 +4,7 @@ import {
   Calendar, Clock, MapPin, Users, CheckCircle2, ChevronDown, 
   ArrowRight, ShieldCheck, Heart, Sparkles, Award, Lock, Quote, Star, Check
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export default function GirlsLandingPage() {
@@ -200,11 +201,11 @@ export default function GirlsLandingPage() {
               >
                 <span className="flex items-center gap-1.5">
                   <Calendar size={14} className="text-eco-blue" />
-                  <strong>Sunday, Aug 2, 2026</strong>
+                  <strong>Rep Team Openings</strong>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock size={14} className="text-eco-orange" />
-                  <strong>3:00 PM – 4:00 PM</strong>
+                  <strong>U16 Boys: 2 Open Spots</strong>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <MapPin size={14} className="text-eco-blue" />
@@ -232,171 +233,35 @@ export default function GirlsLandingPage() {
 
             </div>
 
-            {/* RIGHT COLUMN: REGISTRATION FORM DIRECTLY ABOVE THE FOLD */}
+            {/* RIGHT COLUMN: REP TEAM OPENINGS */}
             <div id="register-form" className="lg:col-span-5">
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="glow-card p-6 sm:p-8 bg-eco-surface/95 border border-eco-orange/40 rounded-3xl shadow-[0_0_40px_rgba(242,122,34,0.2)] relative"
+                className="glow-card p-6 sm:p-8 bg-eco-surface/95 border border-eco-orange/40 rounded-3xl shadow-[0_0_40px_rgba(242,122,34,0.2)] relative text-center space-y-6"
               >
-                <div className="mb-5 text-center">
-                  <span className="text-[10px] font-mono uppercase text-eco-orange bg-eco-orange/10 border border-eco-orange/30 px-2.5 py-0.5 rounded-full font-bold inline-block mb-1">
-                    Free Tryout Registration
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase text-eco-orange bg-eco-orange/10 border border-eco-orange/30 px-2.5 py-0.5 rounded-full font-bold inline-block">
+                    Rep Team Openings
                   </span>
                   <h2 className="font-display text-2xl uppercase text-white">
-                    RESERVE YOUR DAUGHTER'S SPOT
+                    U16 Boys Team Openings
                   </h2>
-                  <p className="text-xs text-eco-muted-light mt-0.5">
-                    Takes under 60 seconds • Spots are limited
+                  <p className="text-sm text-eco-muted-light">
+                    The U16 Boys team has 2 open spots available.
                   </p>
                 </div>
 
-                {submitted ? (
-                  <div className="text-center space-y-4 py-6">
-                    <div className="w-14 h-14 rounded-full bg-eco-blue/20 border border-eco-blue text-eco-blue flex items-center justify-center mx-auto">
-                      <CheckCircle2 size={30} />
-                    </div>
-                    <h3 className="font-display text-2xl uppercase text-white">Spot Saved!</h3>
-                    <p className="text-xs text-eco-muted-light leading-relaxed">
-                      Thank you <strong className="text-white">{formData.parentName}</strong>! Tryout details for <strong className="text-white">{formData.playerName}</strong> have been saved.
-                    </p>
-                    <div className="p-3.5 rounded-xl bg-eco-black/60 border border-white/10 text-[11px] text-eco-blue font-mono space-y-1 text-left">
-                      <p>📍 Location: Churchill Meadows Community Centre</p>
-                      <p>⏰ Time: Sunday, Aug 2 at 3:00 PM (Check-in 2:45 PM)</p>
-                      <p>📩 Instructions sent to <strong>{formData.parentEmail}</strong>.</p>
-                    </div>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    {errorMessage && (
-                      <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 font-mono text-center">
-                        {errorMessage}
-                      </div>
-                    )}
-                    
-                    <div>
-                      <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                        Parent / Guardian Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Sarah Jenkins"
-                        value={formData.parentName}
-                        onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                        className="w-full bg-eco-black border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Parent Email *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          placeholder="sarah@example.com"
-                          value={formData.parentEmail}
-                          onChange={(e) => setFormData({ ...formData, parentEmail: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Parent Phone *
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          placeholder="(905) 555-0199"
-                          value={formData.parentPhone}
-                          onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Player Name (Daughter) *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Maya Jenkins"
-                          value={formData.playerName}
-                          onChange={(e) => setFormData({ ...formData, playerName: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Player Birthday *
-                        </label>
-                        <input
-                          type="date"
-                          required
-                          value={formData.playerDob}
-                          onChange={(e) => setFormData({ ...formData, playerDob: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue font-heading font-semibold"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Entering Grade *
-                        </label>
-                        <select
-                          value={formData.grade}
-                          onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue font-heading font-semibold"
-                        >
-                          <option>Grade 5 (2016 Birth Year)</option>
-                          <option>Grade 6 (2015 Birth Year)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-heading font-bold uppercase tracking-wider text-eco-muted-light mb-1">
-                          Played Rep Before? *
-                        </label>
-                        <select
-                          value={formData.playedRep}
-                          onChange={(e) => setFormData({ ...formData, playedRep: e.target.value })}
-                          className="w-full bg-eco-black border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-eco-blue font-heading font-semibold"
-                        >
-                          <option>No — House League / First Time Rep</option>
-                          <option>No — Completely New to Organized Team Basketball</option>
-                          <option>Yes — Played Rep Basketball Before</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="btn-glow w-full py-3.5 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer !bg-eco-orange text-eco-black hover:!bg-eco-orange/90 shadow-[0_0_25px_rgba(242,122,34,0.35)]"
-                      >
-                        {loading ? 'Registering...' : 'Register for Tryouts'}
-                        <ArrowRight size={16} />
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-center gap-1.5 text-[10px] text-eco-muted font-mono">
-                      <Lock size={11} />
-                      <span>100% Free Registration • Instant Confirmation</span>
-                    </div>
-
-                  </form>
-                )}
+                <div className="pt-2">
+                  <Link
+                    to="/contact"
+                    className="btn-glow w-full py-3.5 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer !bg-eco-orange text-eco-black hover:!bg-eco-orange/90 shadow-[0_0_25px_rgba(242,122,34,0.35)]"
+                  >
+                    Looking for a rep team? Message us
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
               </motion.div>
             </div>
 

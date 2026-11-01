@@ -10,7 +10,7 @@ import {
 type Step = 1 | 2 | 3 | 4 | 5
 
 const PROGRAMS = [
-  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Ages 5–10 • 5–6 Co-Ed, 7–8 & 9–10)', price: 249, spots: 'Waitlist Open', billing: '10 weeks, gear kit included' },
+  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Ages 5–10 • 5–6 Co-Ed, 7–8 & 9–10)', price: 249, spots: 'Waitlist Open', billing: '8 weeks, gear kit included' },
   { id: 'rep-boys', name: 'Rep Team — U16 Boys (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
   { id: 'rep-girls', name: 'Rep Team — U15 Girls (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
   { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all', billing: '' },
@@ -170,7 +170,7 @@ export default function Register() {
                 : 'bg-eco-surface border border-eco-border text-eco-muted-light hover:text-white hover:border-eco-orange/30'
             }`}
           >
-            Recreational & Camps
+            Recreational
           </button>
         </motion.div>
 
@@ -433,24 +433,23 @@ export default function Register() {
                     </div>
                   </div>
 
-                  <div className="glow-card p-6">
-                    <h4 className="text-xs font-mono uppercase tracking-widest text-eco-orange mb-4 flex items-center gap-2">
-                      <CreditCard size={14} />
-                      Payment Method
+                  <div className="glow-card p-6 space-y-4 text-center">
+                    <h4 className="text-xs font-mono uppercase tracking-widest text-eco-orange flex items-center justify-center gap-2">
+                      <FileText size={14} />
+                      Complete Registration
                     </h4>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3 p-3 rounded-xl border border-eco-border hover:border-eco-orange/30 cursor-pointer transition-colors">
-                        <input type="radio" name="paymentMethod" value="Credit / Debit Card" checked={formData.paymentMethod === 'Credit / Debit Card'} onChange={handleInputChange} className="accent-eco-orange" />
-                        <CreditCard size={16} className="text-eco-muted" />
-                        <span className="text-sm text-white">Credit / Debit Card</span>
-                      </label>
-
-                      <label className="flex items-center gap-3 p-3 rounded-xl border border-eco-border hover:border-eco-orange/30 cursor-pointer transition-colors">
-                        <input type="radio" name="paymentMethod" value="E-Transfer" checked={formData.paymentMethod === 'E-Transfer'} onChange={handleInputChange} className="accent-eco-orange" />
-                        <FileText size={16} className="text-eco-muted" />
-                        <span className="text-sm text-white">E-Transfer</span>
-                      </label>
-                    </div>
+                    <p className="text-sm text-eco-muted-light">
+                      Please register directly through our official registration form below to secure your child's spot:
+                    </p>
+                    <a
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSfYDjCS_ItoAYJMAvn2nRV3q4pqhV3BsWolGFLxHkUf_eSQEQ/viewform"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-glow w-full py-4 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 !bg-eco-orange text-white hover:!bg-eco-orange/90 shadow-[0_0_25px_rgba(242,122,34,0.35)]"
+                    >
+                      Register via Google Form
+                      <ChevronRight size={16} />
+                    </a>
                   </div>
 
                   <div className="flex gap-3">
@@ -469,7 +468,7 @@ export default function Register() {
                   </div>
                   <h3 className="font-display text-3xl md:text-4xl text-white uppercase gradient-text">Registration Complete!</h3>
                   <p className="text-eco-muted-light text-lg max-w-md mx-auto">
-                    Thank you for applying to EcoHoops! We've successfully received your information. A confirmation email has been sent, and we'll be in touch with next steps shortly.
+                    Please complete the Google Form and send the $249 fee by Interac to fees@ecohoops.ca to secure your child's spot (first-paid, first-served, 12 spots).
                   </p>
                   <button 
                     onClick={() => { 

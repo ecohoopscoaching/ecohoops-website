@@ -10,7 +10,7 @@ const FAQS = [
   },
   {
     question: 'What ages do you coach?',
-    answer: 'We offer youth basketball programs for boys and girls aged 6 to 16, ranging from developmental training groups (EcoHoops Jr.) to competitive rep teams.'
+    answer: 'We offer youth basketball programs for boys and girls aged 5 to 16, ranging from developmental training groups (EcoHoops Jr.) to competitive rep teams.'
   },
   {
     question: 'Do you offer rep teams?',
@@ -22,7 +22,7 @@ const FAQS = [
   },
   {
     question: 'Do you offer girls basketball programs?',
-    answer: 'Yes! We have a dedicated girls basketball in Mississauga designed to build confidence, skill, and leadership in a highly supportive, pressure-free environment.'
+    answer: 'Yes! We have a dedicated girls basketball program in Mississauga designed to build confidence, skill, and leadership in a highly supportive, pressure-free environment.'
   },
   {
     question: 'How do I sign up for Jr. NBA/Jr. WNBA programming?',

@@ -58,7 +58,7 @@ export const TEAMS: Team[] = [
         email: 'asapp@ecohoops.ca',
         phone: '289-233-8050',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
-        avatar: '/images/coach.png',
+        avatar: '/images/coach_adrian_new.jpg',
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
       },
       {
@@ -103,7 +103,7 @@ export const TEAMS: Team[] = [
         email: 'asapp@ecohoops.ca',
         phone: '289-233-8050',
         bio: 'Founder of EcoHoops. Over 15 years coaching youth rep basketball with a focus on player development, positive mentorship, and high-IQ execution.',
-        avatar: '/images/coach.png',
+        avatar: '/images/coach_adrian_new.jpg',
         certifications: ['Canada Basketball NCCP Level 2', 'Safe Sport Certified', 'First Aid / CPR-C', 'Jr. NBA Certified']
       },
       {

@@ -281,7 +281,7 @@ export default function Rep() {
               <ul className="space-y-4 text-sm text-eco-muted-light">
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
-                  <span><strong>Weekly Practices:</strong> Two gym practices every week (90 minutes each) in local community gyms.</span>
+                  <span><strong>Weekly Practices:</strong> Two gym practices every week (2 hours each) in local community gyms.</span>
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>

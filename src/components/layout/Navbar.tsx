@@ -195,7 +195,15 @@ export default function Navbar() {
                         </>
                       );
                       return link.path === '#' ? (
-                        <button {...linkProps} onClick={(e) => e.preventDefault()}>
+                        <button
+                          {...linkProps}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (link.isMega || link.dropdown) {
+                              setHoveredDropdownLabel(prev => prev === link.label ? null : link.label);
+                            }
+                          }}
+                        >
                           {children}
                         </button>
                       ) : isStatic ? (

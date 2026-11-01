@@ -839,7 +839,7 @@ export default function TeamPortal() {
                 <span className="px-3 py-1 rounded-xl bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-black uppercase tracking-wider">
                   FRIDAYS
                 </span>
-                <span className="text-xs font-mono text-cyan-300 font-bold">Open Gym Session</span>
+                <span className="text-xs font-mono text-cyan-300 font-bold">Free Open Gym • Open to All</span>
               </div>
 
               <div>
@@ -855,19 +855,19 @@ export default function TeamPortal() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
                   <div className="text-[11px] font-black uppercase tracking-wider text-[#97B3D2]">
-                    Phase 1 (Sept 25 – Nov 6)
+                    Phase 1 (Sept 25 - Nov 6)
                   </div>
                   <p className="text-xs text-white/80">
-                    Mandatory technical prep before games begin.
+                    Joint team practice for boys and girls before games begin.
                   </p>
                 </div>
 
                 <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1">
                   <div className="text-[11px] font-black uppercase tracking-wider text-amber-300">
-                    Phase 2 (Nov 13 – Apr 30)
+                    Phase 2 (Nov 13 - Apr 30)
                   </div>
                   <p className="text-xs text-white/80">
-                    Optional shooting, open court reps, and scrimmaging.
+                    Free open gym session open to everyone for shooting, reps, and scrimmaging.
                   </p>
                 </div>
               </div>

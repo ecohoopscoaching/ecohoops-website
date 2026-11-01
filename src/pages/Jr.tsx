@@ -847,7 +847,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
 
             <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between text-[11px] font-mono text-gray-500 uppercase tracking-wider">
               <span>Sanctioned by Canada Basketball</span>
-              <span className="font-bold text-[#003366]">October 2026</span>
+              <span className="font-bold text-[#003366]">Winter 2027</span>
             </div>
           </div>
 

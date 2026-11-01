@@ -23,9 +23,9 @@ import { dispatchWaitlistConfirmationEmail } from '../../lib/email-service'
 declare const fbq: any
 
 const BENEFITS = [
-  'Targeting a mid-October 2026 start in Southwest Mississauga',
+  'Targeting a Winter 2027 start in Southwest Mississauga',
   'Weekly session day and venue to be confirmed (Friday or Saturday options pending permit)',
-  '10 weekly sessions, 60 minutes each (max 12 children per group)',
+  '8 weekly sessions, 60 minutes each (max 12 children per group)',
   'Ages 5–6 (co-ed), Ages 7–8 & 9–10 (separate girls’ and boys’ groups)',
   'Groups will run based on registration numbers',
   'Confirmed price: $249 per player',
@@ -865,7 +865,7 @@ export default function JrNbaAnnouncement() {
             {/* Body */}
             <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
               <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a mid-October 2026 start across three age divisions: <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, <strong className="text-white font-semibold">Ages 7–8 (separate girls’ and boys’ groups)</strong>, and <strong className="text-white font-semibold">Ages 9–10 (separate girls’ and boys’ groups)</strong>.
+                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a January 23, 2027 start for <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, and early 2027 for <strong className="text-white font-semibold">Ages 7–8 (separate girls’ and boys’ groups)</strong> and <strong className="text-white font-semibold">Ages 9–10 (separate girls’ and boys’ groups)</strong>.
               </p>
               <p>
                 Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first. Groups will run based on registration numbers.

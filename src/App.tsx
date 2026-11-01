@@ -18,7 +18,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 const Login = lazy(() => import('./pages/Login'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
-const Schedule = lazy(() => import('./pages/Schedule'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 const Blog = lazy(() => import('./pages/Blog'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
 const AdminBlog = lazy(() => import('./pages/AdminBlog'))
@@ -102,6 +102,7 @@ export default function App() {
               <Route path="terms" element={<TermsOfService />} />
               <Route path="refund-policy" element={<RefundPolicy />} />
               <Route path="waiver" element={<Waiver />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Suspense>

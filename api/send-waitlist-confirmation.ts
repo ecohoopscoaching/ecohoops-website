@@ -243,7 +243,7 @@ export default async function handler(req: any, res: any) {
       ${isAge5To6 ? `
       <div class="highlight-box">
         <p class="text" style="margin: 0; color: #E2E8F0;">
-          registration is officially OPEN for Jr. NBA / Jr. WNBA Ages 5-6 — only 4 spots left, Fridays 6:15-7:15 PM at Floradale Public School, Mississauga, starts October 30, $249 for the season.
+          registration is officially OPEN for Jr. NBA / Jr. WNBA Ages 5-6 — only 4 spots left, Saturday mornings (exact time and location to be confirmed), Mississauga, starts January 23, 2027, ends March 13, 2027, $249 for the season.
         </p>
       </div>
 
@@ -253,7 +253,7 @@ export default async function handler(req: any, res: any) {
       ` : `
       <div class="highlight-box">
         <strong>What happens next?</strong><br>
-        We are targeting a mid-October 2026 start in Southwest Mississauga. We will contact you at this email address as soon as program dates, venue permits, and registration officially open so your family gets first priority.
+        We are targeting an early 2027 start in Southwest Mississauga. We will contact you at this email address as soon as program dates, venue permits, and registration officially open so your family gets first priority.
       </div>
 
       <p class="text">

@@ -117,7 +117,7 @@ export const FRIDAY_CONFIG = {
     isOptional: true,
     label: 'OPTIONAL EXTRA GYM TIME',
     tagline: 'The gym is open. Come play. Come work. Get better at what YOU want to work on.',
-    description: 'Relaxed, player-driven extra gym time. NOT a third mandatory weekly team practice. Players can get extra reps, shoot, play, work on individual goals, ask coaches for help, or bring a friend.'
+    description: 'Free open gym session open to everyone. Players can get extra reps, shoot, play, work on individual goals, ask coaches for help, or bring a friend.'
   }
 }
 
@@ -210,15 +210,6 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
     gamesCount: '3 Games'
   },
   {
-    id: 'b-obl-1',
-    teamId: 'u16-boys',
-    dateRange: 'November 21–22, 2026',
-    startDate: '2026-11-21',
-    endDate: '2026-11-22',
-    league: 'OBL',
-    sessionType: 'League Session'
-  },
-  {
     id: 'b-coalition-2',
     teamId: 'u16-boys',
     dateRange: 'December 5–6, 2026',
@@ -246,30 +237,12 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
     sessionType: 'League Session'
   },
   {
-    id: 'b-obl-2',
-    teamId: 'u16-boys',
-    dateRange: 'February 6–7, 2027',
-    startDate: '2027-02-06',
-    endDate: '2027-02-07',
-    league: 'OBL',
-    sessionType: 'League Session'
-  },
-  {
     id: 'b-coalition-5',
     teamId: 'u16-boys',
     dateRange: 'February 13–14, 2027',
     startDate: '2027-02-13',
     endDate: '2027-02-14',
     league: 'Coalition',
-    sessionType: 'League Session'
-  },
-  {
-    id: 'b-obl-3',
-    teamId: 'u16-boys',
-    dateRange: 'February 20–21, 2027',
-    startDate: '2027-02-20',
-    endDate: '2027-02-21',
-    league: 'OBL',
     sessionType: 'League Session'
   },
   {
@@ -291,25 +264,6 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
     league: 'Coalition',
     sessionType: 'All-Star Weekend',
     isAllStar: true
-  },
-  {
-    id: 'b-obl-4game',
-    teamId: 'u16-boys',
-    dateRange: 'April 10–11, 2027',
-    startDate: '2027-04-10',
-    endDate: '2027-04-11',
-    league: 'OBL',
-    sessionType: '4-Game Weekend',
-    gamesCount: '4 Games'
-  },
-  {
-    id: 'b-obl-final',
-    teamId: 'u16-boys',
-    dateRange: 'April 17–18, 2027',
-    startDate: '2027-04-17',
-    endDate: '2027-04-18',
-    league: 'OBL',
-    sessionType: 'League Session'
   }
 ]
 

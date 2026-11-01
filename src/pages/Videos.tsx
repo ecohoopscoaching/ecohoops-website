@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
-import { Play, Clock, Eye, Filter, ExternalLink, Youtube, Film, ChevronRight } from 'lucide-react'
+import { Play, Clock, Eye, Filter, ExternalLink, Youtube, Film, ChevronRight, X } from 'lucide-react'
 import { useLocation, Link } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
@@ -173,6 +173,7 @@ export default function Videos() {
 
   const filtered = filter === 'all' ? VIDEOS : VIDEOS.filter((v) => v.category === filter)
   const featured = VIDEOS.filter((v) => v.featured)
+  const activeVideo = VIDEOS.find((v) => v.id === playingId)
 
   return (
     <section ref={ref} className="pt-28 pb-20 min-h-screen">
@@ -349,6 +350,86 @@ export default function Videos() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Video Player Modal */}
+      <AnimatePresence>
+        {activeVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setPlayingId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-4xl bg-eco-surface border border-eco-border rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-4 border-b border-eco-border bg-eco-dark/90">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="px-2.5 py-0.5 rounded text-xs font-mono uppercase tracking-wider font-bold"
+                    style={{
+                      color: CATEGORY_COLORS[activeVideo.category],
+                      backgroundColor: `${CATEGORY_COLORS[activeVideo.category]}20`,
+                    }}
+                  >
+                    {activeVideo.category}
+                  </span>
+                  <h3 className="font-heading font-bold text-base text-white truncate max-w-md sm:max-w-xl">
+                    {activeVideo.title}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setPlayingId(null)}
+                  className="p-1.5 rounded-lg text-eco-muted hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Close video"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="relative w-full bg-black" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/videoseries?list=${YOUTUBE_PLAYLIST_ID}&autoplay=1`}
+                  title={activeVideo.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ border: 'none' }}
+                />
+              </div>
+
+              <div className="p-4 sm:p-6 bg-eco-dark/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm text-eco-muted-light">{activeVideo.description}</p>
+                  <div className="flex items-center gap-3 text-xs text-eco-muted">
+                    <span>{activeVideo.date}</span>
+                    <span>•</span>
+                    <span>{activeVideo.duration}</span>
+                    <span>•</span>
+                    <span>{activeVideo.views} views</span>
+                  </div>
+                </div>
+                <a
+                  href={YOUTUBE_CHANNEL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost text-xs flex items-center gap-1.5 flex-shrink-0"
+                >
+                  <Youtube size={14} className="text-[#FF0000]" />
+                  Watch on YouTube
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }

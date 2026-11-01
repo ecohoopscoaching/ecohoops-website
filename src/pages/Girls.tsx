@@ -589,7 +589,7 @@ export default function Girls() {
               <ul className="space-y-4 text-sm text-eco-muted-light">
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-eco-blue/10 flex items-center justify-center text-eco-blue font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
-                  <span><strong>Weekly Practices:</strong> Two gym practices every week (90 minutes each) in community center gyms.</span>
+                  <span><strong>Weekly Practices:</strong> Two gym practices every week (2 hours each) in community center gyms.</span>
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-eco-blue/10 flex items-center justify-center text-eco-blue font-bold text-xs flex-shrink-0 mt-0.5">✓</div>

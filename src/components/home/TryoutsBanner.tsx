@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Calendar, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 
 interface TryoutsBannerProps {
@@ -39,7 +40,7 @@ export default function TryoutsBanner({ onRegisterClick }: TryoutsBannerProps) {
             <div className="flex-1 text-center lg:text-left space-y-4">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-heading font-bold bg-eco-orange/10 text-eco-orange border border-eco-orange/30 uppercase tracking-widest">
                 <Calendar size={13} className="animate-pulse" />
-                Upcoming August Rep Tryouts • Mississauga
+                Rep Team Openings • Mississauga
               </div>
               
               {/* Hook */}
@@ -55,10 +56,7 @@ export default function TryoutsBanner({ onRegisterClick }: TryoutsBannerProps) {
               {/* Proof + Details */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2 text-xs font-mono text-eco-blue">
                 <span className="bg-eco-surface/80 border border-eco-blue/20 px-3 py-1.5 rounded-lg text-white font-heading font-semibold">
-                  📅 August 1 & August 8
-                </span>
-                <span className="bg-eco-surface/80 border border-eco-blue/20 px-3 py-1.5 rounded-lg text-white font-heading font-semibold">
-                  🏀 Grades 5/6, 7/8, 9/10
+                  🏀 U16 Boys: 2 Open Spots Available
                 </span>
                 <span className="bg-eco-surface/80 border border-eco-blue/20 px-3 py-1.5 rounded-lg text-eco-muted-light font-heading">
                   📍 Mississauga, ON
@@ -67,14 +65,14 @@ export default function TryoutsBanner({ onRegisterClick }: TryoutsBannerProps) {
             </div>
 
             <div className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center lg:items-end gap-2">
-              <button
-                onClick={onRegisterClick}
+              <Link
+                to="/contact"
                 className="btn-glow !px-8 !py-4 text-sm flex items-center gap-2 cursor-pointer font-bold uppercase tracking-widest text-eco-black shadow-[0_0_20px_rgba(242,122,34,0.3)] !bg-eco-orange hover:!bg-eco-orange/90 w-full sm:w-auto justify-center"
               >
-                Register for Tryouts
+                Looking for a rep team? Message us
                 <ArrowRight size={16} />
-              </button>
-              <span className="text-[11px] text-eco-muted-light font-mono">Limited spots per age group</span>
+              </Link>
+              <span className="text-[11px] text-eco-muted-light font-mono">Limited spots available</span>
             </div>
           </div>
         </motion.div>
