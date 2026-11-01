@@ -21,8 +21,7 @@ import {
   BOYS_NO_PRACTICE_DATES,
   GIRLS_NO_PRACTICE_DATES,
   FRIDAY_NO_GYM_DATES,
-  FRIDAY_CONFIG,
-  OBA_ONTARIO_CUP_STATUS
+  FRIDAY_CONFIG
 } from '../data/schedule'
 
 type HubView = 'games' | 'practices' | 'events' | 'roster'
@@ -658,28 +657,6 @@ export default function TeamPortal() {
                 </div>
               ))}
             </div>
-
-            {/* OBA Ontario Cup Status Card */}
-            <div className="p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-950/40 via-[#0B131E] to-[#0B131E] border-2 border-sky-500/30 mt-4 space-y-2">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/images/branding/obl-logo.jpg"
-                    alt="OBA"
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
-                  <h3 className="font-heading font-black text-base sm:text-lg uppercase text-white">
-                    {OBA_ONTARIO_CUP_STATUS.title}
-                  </h3>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-xs font-mono font-bold">
-                  {OBA_ONTARIO_CUP_STATUS.dateLabel}
-                </span>
-              </div>
-              <p className="text-xs text-white/70 leading-relaxed">
-                {OBA_ONTARIO_CUP_STATUS.details}
-              </p>
-            </div>
           </div>
         )}
 
@@ -934,28 +911,6 @@ export default function TeamPortal() {
               <span className="text-xs font-mono text-[#97B3D2]">
                 {teamEvents.length} Scheduled
               </span>
-            </div>
-
-            {/* OBA Ontario Cup Status Banner */}
-            <div className="p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-sky-950/40 via-[#0B131E] to-[#0B131E] border-2 border-sky-500/30 space-y-2 shadow-lg">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/images/branding/obl-logo.jpg"
-                    alt="OBA"
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
-                  <h3 className="font-heading font-black text-base sm:text-lg uppercase text-white">
-                    {OBA_ONTARIO_CUP_STATUS.title}
-                  </h3>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-xs font-mono font-bold">
-                  {OBA_ONTARIO_CUP_STATUS.dateLabel}
-                </span>
-              </div>
-              <p className="text-xs text-white/70 leading-relaxed">
-                {OBA_ONTARIO_CUP_STATUS.details}
-              </p>
             </div>
 
             {/* Event List */}

@@ -177,21 +177,12 @@ export const APPROVED_PA_DAYS: ApprovedSpecialNotice[] = [
 ]
 
 // ==========================================
-// 3. OBA ONTARIO CUP & SCHEDULE NOTICES
+// 3. SCHEDULE NOTICES
 // ==========================================
-
-export const OBA_ONTARIO_CUP_STATUS = {
-  title: 'OBA ONTARIO CUP',
-  status: 'AWAITING OFFICIAL OBA DATE',
-  dateLabel: 'DATE: TBD',
-  details: 'Ontario Basketball has not yet released the official 2027 Ontario Cup date for this age group.',
-  notice: 'OBA Ontario Cup dates for the 2026-27 season have not yet been released. The Hub will be updated when Ontario Basketball announces the official dates.'
-}
 
 export const SCHEDULE_NOTICES = {
   practice: 'Practice dates follow our approved school gym permits. School holidays, breaks, facility closures and school events may affect individual dates. Always check the Team Hub for the current schedule.',
-  game: 'Session dates are confirmed league competition weekends. Exact game times, opponents and game venues will be added as they are released.',
-  ontarioCup: 'OBA Ontario Cup dates for the 2026-27 season have not yet been released. The Hub will be updated when Ontario Basketball announces the official dates.'
+  game: 'Session dates are confirmed league competition weekends. Exact game times, opponents and game venues will be added as they are released.'
 }
 
 // ==========================================
