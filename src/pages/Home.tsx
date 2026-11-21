@@ -95,7 +95,7 @@ export default function Home() {
       {/* 11. FINAL CTA */}
       <CTA />
 
-      {/* Floating Action Button (Jr. NBA / Jr. WNBA Waitlist) */}
+      {/* Floating Action Button (Jr. NBA / Jr. WNBA Registration & Updates) */}
       <motion.a
         href="#jr-nba-waitlist"
         initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -111,7 +111,7 @@ export default function Home() {
         }}
       >
         <Sparkles size={13} className="animate-pulse text-eco-blue" />
-        <span>Join the Waitlist</span>
+        <span>Jr. NBA / Jr. WNBA</span>
         <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#00D26A]" />
       </motion.a>
     </>

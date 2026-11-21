@@ -1,11 +1,19 @@
+export type JrGroupOption =
+  | 'Grades 1-2'
+  | 'Grades 3-4'
+  | 'Grades 5-6'
+  | 'Ages 5–6'
+  | 'Ages 7–8'
+  | 'Ages 9–10'
+
 export interface WaitlistEntry {
   id: string
   parentName: string
   email: string
   phone: string // "Not provided" or formatted string
-  ageGroup: 'Ages 5–6' | 'Ages 7–8' | 'Ages 9–10'
-  groupPreference: 'Boys’ group' | 'Girls’ group' | 'Co-ed' | 'Not provided'
-  daysAvailable: 'Friday' | 'Saturday' | 'Either' | 'Not provided'
+  ageGroup: JrGroupOption
+  groupPreference: 'Girls group' | 'Boys group' | 'Boys’ group' | 'Girls’ group' | 'Co-ed' | 'Not provided'
+  daysAvailable: 'Saturdays' | 'Friday' | 'Saturday' | 'Either' | 'Not provided'
   neighbourhood: string // Optional string or "Not provided"
   childCount: '1' | '2' | '3' | '4+'
   programInterest?: string
@@ -33,9 +41,9 @@ export interface WaitlistMetrics {
   paidRegistrations: number
   testSubmissions: number
   divisionBreakdown: {
-    'Ages 5–6': number
-    'Ages 7–8': number
-    'Ages 9–10': number
+    'Grades 1-2': number
+    'Grades 3-4': number
+    'Grades 5-6': number
   }
 }
 
@@ -118,9 +126,9 @@ export function normalizeWaitlistEntry(raw: any, index = 0): WaitlistEntry {
   const parentName = raw['Parent / Guardian Name'] || raw.parentName || 'Anonymous'
   const email = (raw['Email Address'] || raw.email || '').toLowerCase().trim()
   const phone = raw['Phone Number'] || raw.phone || 'Not provided'
-  const ageGroup = raw['Child Age Group'] || raw.ageGroup || 'Ages 5–6'
-  const groupPreference = raw['Group Preference'] || raw.groupPreference || (ageGroup === 'Ages 5–6' ? 'Co-ed' : 'Not provided')
-  const daysAvailable = raw['Days That Could Work'] || raw.daysAvailable || 'Not provided'
+  const ageGroup = raw['Child Grade Group'] || raw['Child Age Group'] || raw.ageGroup || 'Grades 1-2'
+  const groupPreference = raw['Group Preference'] || raw.groupPreference || (ageGroup === 'Grades 1-2' || ageGroup === 'Ages 5–6' ? 'Co-ed' : 'Not provided')
+  const daysAvailable = raw['Days That Could Work'] || raw.daysAvailable || 'Saturdays'
   const neighbourhood = raw['Neighbourhood / Postal Area'] || raw.neighbourhood || 'Not provided'
   const childCount = raw['Number of Children Interested'] || raw['Number of Children'] || raw.childCount || '1'
   const isTest = Boolean(
@@ -190,9 +198,9 @@ export function calculateWaitlistMetrics(entries: WaitlistEntry[]): WaitlistMetr
   }, 0)
 
   const divisionBreakdown = {
-    'Ages 5–6': realEntries.filter((e) => e.ageGroup === 'Ages 5–6').length,
-    'Ages 7–8': realEntries.filter((e) => e.ageGroup === 'Ages 7–8').length,
-    'Ages 9–10': realEntries.filter((e) => e.ageGroup === 'Ages 9–10').length,
+    'Grades 1-2': realEntries.filter((e) => e.ageGroup === 'Grades 1-2' || e.ageGroup === 'Ages 5–6').length,
+    'Grades 3-4': realEntries.filter((e) => e.ageGroup === 'Grades 3-4' || e.ageGroup === 'Ages 7–8').length,
+    'Grades 5-6': realEntries.filter((e) => e.ageGroup === 'Grades 5-6' || e.ageGroup === 'Ages 9–10').length,
   }
 
   return {

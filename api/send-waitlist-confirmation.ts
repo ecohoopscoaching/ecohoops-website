@@ -1,5 +1,8 @@
 // Vercel Serverless Function: /api/send-waitlist-confirmation
-// Dispatches automated confirmation HTML email to the parent upon waitlist submission
+// Dispatches automated confirmation HTML email to the parent upon Jr. NBA / Jr. WNBA updates signup
+
+const REGISTER_FORM_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSclCKn0JE0P2NB3Ts0YvxR4gZXmKNei2TMldZCueSZ4PsmS2A/viewform'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -10,10 +13,8 @@ export default async function handler(req: any, res: any) {
     const {
       parentName = 'Parent / Guardian',
       email,
-      phone = 'Not provided',
-      ageGroup = 'Ages 5–6',
+      ageGroup = 'Grades 1-2',
       groupPreference = 'Co-ed',
-      daysAvailable = 'Flexible',
       neighbourhood = 'Not provided',
       childCount = '1',
     } = req.body || {}
@@ -24,16 +25,11 @@ export default async function handler(req: any, res: any) {
 
     const cleanEmail = email.trim().toLowerCase()
     const cleanParentName = parentName.trim() || 'Parent / Guardian'
-    const cleanAgeGroup = ageGroup.trim()
+    const cleanGradeGroup = ageGroup.trim()
     const cleanGroupPref = groupPreference.trim()
-    const cleanDays = daysAvailable.trim()
     const cleanNeighbourhood = neighbourhood.trim() || 'Not specified'
 
-    const isAge5To6 = cleanAgeGroup === 'Ages 5–6' || cleanAgeGroup === 'Ages 5-6'
-
-    const emailSubject = isAge5To6
-      ? `Registration is OPEN — Jr. NBA / Jr. WNBA Ages 5-6`
-      : `We received your waitlist form — EcoHoops Jr. NBA / Jr. WNBA`
+    const emailSubject = `EcoHoops Jr. NBA / Jr. WNBA - Program Updates Signup Confirmed`
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -199,35 +195,31 @@ export default async function handler(req: any, res: any) {
 <body>
   <div class="container">
     <div class="header">
-      <div class="badge">🏀 EcoHoops Jr. • Jr. NBA & Jr. WNBA</div>
-      <h1 class="title">You're On The Waitlist!</h1>
-      <p class="subtitle">Confirmation of Waitlist Submission</p>
+      <div class="badge">EcoHoops Jr. - Jr. NBA &amp; Jr. WNBA</div>
+      <h1 class="title">You're Signed Up for Updates</h1>
+      <p class="subtitle">Jr. NBA and Jr. WNBA for Girls and Boys in Grades 1 to 6</p>
     </div>
 
     <div class="content">
       <div class="greeting">Hi ${cleanParentName},</div>
       
       <p class="text">
-        Thanks! We received your submission for the <strong>EcoHoops Jr. NBA / Jr. WNBA</strong> program in Southwest Mississauga.
+        Thanks for signing up for updates on <strong>EcoHoops Jr. NBA and Jr. WNBA</strong> for girls and boys in Grades 1 to 6. Officially partnered with Canada Basketball and NBA Canada.
       </p>
 
       <div class="recap-card">
-        <div class="recap-title">Your Submission Details</div>
+        <div class="recap-title">Your Details</div>
         <div class="row">
           <span class="label">Parent / Guardian:</span>
           <span class="value">${cleanParentName}</span>
         </div>
         <div class="row">
-          <span class="label">Player Age Group:</span>
-          <span class="value">${cleanAgeGroup}</span>
+          <span class="label">Grade Group:</span>
+          <span class="value">${cleanGradeGroup}</span>
         </div>
         <div class="row">
-          <span class="label">Group Preference:</span>
+          <span class="label">Group:</span>
           <span class="value">${cleanGroupPref}</span>
-        </div>
-        <div class="row">
-          <span class="label">Days That Could Work:</span>
-          <span class="value">${cleanDays}</span>
         </div>
         ${cleanNeighbourhood !== 'Not specified' ? `
         <div class="row">
@@ -240,43 +232,34 @@ export default async function handler(req: any, res: any) {
         </div>
       </div>
 
-      ${isAge5To6 ? `
       <div class="highlight-box">
-        <p class="text" style="margin: 0; color: #E2E8F0;">
-          registration is officially OPEN for Jr. NBA / Jr. WNBA Ages 5-6 — only 4 spots left, Saturday mornings (exact time and location to be confirmed), Mississauga, starts January 23, 2027, ends March 13, 2027, $249 for the season.
-        </p>
+        <strong>Program Details (Being Planned - Registration Open)</strong><br>
+        Saturdays, January 23 to March 13, 2027. 8 sessions at St. Francis of Assisi School gym, 2480 Thornlodge Dr, Mississauga.<br><br>
+        Five groups total: kids in Grades 1 and 2 play in one co-ed group. Kids in Grades 3 and 4 have a girls group and a boys group. Kids in Grades 5 and 6 have a girls group and a boys group. Girls groups play 10:00 to 11:00 AM. Boys groups play 11:00 AM to 12:00 PM.<br><br>
+        Price is $249 for all 8 sessions. Every player gets a reversible Jr. NBA or Jr. WNBA uniform and a basketball, included in the price. Maximum 15 players per group. First paid, first served. No tryouts. No cuts.<br><br>
+        Only the first two groups that fill will run. If your child's group does not fill, you choose a full refund or holding the spot for a later start.
       </div>
 
       <div style="text-align: center; margin: 28px 0;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfYDjCS_ItoAYJMAvn2nRV3q4pqhV3BsWolGFLxHkUf_eSQEQ/viewform" target="_blank" rel="noopener noreferrer" class="btn-claim" style="display: inline-block; background: #003366; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 10px; border: 1px solid #97B3D2; box-shadow: 0 4px 14px rgba(0, 51, 102, 0.5);">Claim your spot</a>
+        <a href="${REGISTER_FORM_URL}" target="_blank" rel="noopener noreferrer" class="btn-claim" style="display: inline-block; background: #003366; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 10px; border: 1px solid #97B3D2; box-shadow: 0 4px 14px rgba(0, 51, 102, 0.5);">Register Now</a>
       </div>
-      ` : `
-      <div class="highlight-box">
-        <strong>What happens next?</strong><br>
-        We are targeting an early 2027 start in Southwest Mississauga. We will contact you at this email address as soon as program dates, venue permits, and registration officially open so your family gets first priority.
-      </div>
-
-      <p class="text">
-        Every registered player will receive an official Jr. NBA reversible uniform, Wilson basketball, and full insurance/membership through Canada Basketball and Ontario Basketball.
-      </p>
 
       <p class="text" style="font-weight: 600; color: #FFFFFF;">
-        Keep an eye on your email for updates.
+        We will keep you updated by email as groups fill.
       </p>
-      `}
 
       <div class="signoff">
         <div class="motto">Kids First, Always.</div>
         <div class="team">
-          Coach Adrian & The EcoHoops Coaching Team<br>
+          Coach Adrian &amp; The EcoHoops Coaching Team<br>
           <a href="mailto:ecohoopscoaching@gmail.com" style="color: #97B3D2;">ecohoopscoaching@gmail.com</a> &middot; <a href="https://ecohoops.ca" style="color: #97B3D2;">ecohoops.ca</a>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <p style="margin: 0 0 6px 0;">EcoHoops Basketball Club &middot; Southwest Mississauga, ON</p>
-      <p style="margin: 0;">Joining the waitlist provides priority registration updates and does not reserve a confirmed spot until registration completes.</p>
+      <p style="margin: 0 0 6px 0;">EcoHoops Basketball Club &middot; Mississauga, ON</p>
+      <p style="margin: 0;">You received this email because you asked for Jr. NBA and Jr. WNBA program updates at ecohoops.ca.</p>
     </div>
   </div>
 </body>

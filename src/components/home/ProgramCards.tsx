@@ -15,8 +15,8 @@ const PROGRAMS = [
   },
   {
     title: 'EcoHoops Jr. (Jr. NBA/WNBA)',
-    description: 'Jr. NBA & Jr. WNBA programming and fun, play-based training designed to introduce fundamentals, build coordination, and spark a lifelong love for the game.',
-    target: 'Three divisions: Ages 5–6 (co-ed), Ages 7–8 & 9–10 (separate girls’ and boys’ groups).',
+    description: 'Jr. NBA and Jr. WNBA for girls and boys in Grades 1 to 6. Saturdays, January 23 to March 13, 2027 (8 sessions) at St. Francis of Assisi School gym. No tryouts. No cuts.',
+    target: 'Five groups: kids in Grades 1 and 2 (co-ed), plus girls and boys groups for kids in Grades 3 and 4 and Grades 5 and 6.',
     path: '/jr',
     icon: Sparkles,
     color: '#6A9BC7',

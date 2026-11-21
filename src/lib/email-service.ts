@@ -406,7 +406,7 @@ export interface WaitlistEmailPayload {
 }
 
 /**
- * Dispatches automated "We received your waitlist form" confirmation email to the parent
+ * Dispatches automated confirmation email to the parent for Jr. NBA / Jr. WNBA program updates
  */
 export async function dispatchWaitlistConfirmationEmail(
   payload: WaitlistEmailPayload
@@ -423,14 +423,14 @@ export async function dispatchWaitlistConfirmationEmail(
     const auditRecord: EmailNotification = {
       id: 'email-waitlist-' + Date.now(),
       teamId: 'ecohoops-jr-waitlist',
-      teamName: 'EcoHoops Jr. (Jr. NBA / WNBA)',
+      teamName: 'EcoHoops Jr. (Jr. NBA / Jr. WNBA)',
       recipientCount: 1,
       recipientEmails: [payload.email],
-      subject: 'We received your waitlist form — EcoHoops Jr. NBA / Jr. WNBA',
+      subject: 'EcoHoops Jr. NBA / Jr. WNBA - Updates Signup Confirmed',
       body: `Automated confirmation sent to ${payload.parentName} (${payload.email}) for ${payload.ageGroup}.`,
       sentAt: new Date().toISOString(),
       eventType: 'coach_announcement',
-      eventTitle: `Waitlist Form Received: ${payload.parentName}`,
+      eventTitle: `Updates Signup Received: ${payload.parentName}`,
       status: response.ok ? 'sent' : 'simulated',
     }
     recordNotification(auditRecord)
@@ -441,14 +441,14 @@ export async function dispatchWaitlistConfirmationEmail(
     const auditRecord: EmailNotification = {
       id: 'email-waitlist-' + Date.now(),
       teamId: 'ecohoops-jr-waitlist',
-      teamName: 'EcoHoops Jr. (Jr. NBA / WNBA)',
+      teamName: 'EcoHoops Jr. (Jr. NBA / Jr. WNBA)',
       recipientCount: 1,
       recipientEmails: [payload.email],
-      subject: 'We received your waitlist form — EcoHoops Jr. NBA / Jr. WNBA',
+      subject: 'EcoHoops Jr. NBA / Jr. WNBA - Updates Signup Confirmed',
       body: `Automated confirmation queued for ${payload.parentName} (${payload.email}) for ${payload.ageGroup}.`,
       sentAt: new Date().toISOString(),
       eventType: 'coach_announcement',
-      eventTitle: `Waitlist Form Received: ${payload.parentName}`,
+      eventTitle: `Updates Signup Received: ${payload.parentName}`,
       status: 'simulated',
     }
     recordNotification(auditRecord)

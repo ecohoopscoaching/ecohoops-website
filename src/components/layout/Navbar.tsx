@@ -44,7 +44,7 @@ export default function Navbar() {
             title: 'Youth Programs',
             links: [
               { label: 'EcoHoops for Kids Canada', path: '/nonprofit', description: 'Our community programs & subsidies' },
-              { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA & Jr. WNBA for Ages 5–6 Co-Ed, 7–8 & 9–10' },
+              { label: 'EcoHoops Jr. (Jr. NBA/WNBA)', path: '/jr', description: 'Jr. NBA and Jr. WNBA for girls and boys in Grades 1 to 6' },
               { label: 'All Girls Program', path: '/girls', description: 'Empowering spaces & female leadership' }
             ]
           },

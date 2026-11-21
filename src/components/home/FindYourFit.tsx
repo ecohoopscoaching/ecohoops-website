@@ -8,7 +8,7 @@ const CARDS = [
     category: 'Recreational & Development',
     title: 'Youth Programs',
     description: 'Perfect for kids learning the game, building confidence, or looking for subsidized community sessions. High-energy, low-pressure training.',
-    tags: ['Ages 5–10', 'Beginner Friendly', 'Subsidized'],
+    tags: ['Grades 1 to 6', 'Beginner Friendly', 'No Tryouts'],
     buttonText: 'Explore Youth & Jr. Programs',
     path: '/jr',
     color: 'from-[#4A7FB5]/20 to-[#6A9BC7]/10',

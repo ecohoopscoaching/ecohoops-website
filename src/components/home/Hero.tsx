@@ -131,7 +131,7 @@ export default function Hero({ onRegisterClick }: HeroProps) {
             }}
             className="btn-glow flex items-center gap-2 text-base cursor-pointer"
           >
-            Join the Waitlist
+            Jr. NBA / Jr. WNBA Registration
             <ArrowRight size={18} />
           </a>
           <a

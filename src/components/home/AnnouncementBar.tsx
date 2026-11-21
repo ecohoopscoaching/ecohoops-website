@@ -14,7 +14,7 @@ export default function AnnouncementBar() {
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-xs sm:text-sm font-heading">
         <div className="flex items-center gap-2 font-semibold tracking-wide">
           <Sparkles size={14} className="text-[#97B3D2] animate-pulse flex-shrink-0" />
-          <span>Jr. NBA/Jr. WNBA is coming to EcoHoops Jr. (Ages 5–6 Co-Ed, 7–8 & 9–10)</span>
+          <span>Jr. NBA and Jr. WNBA for girls and boys in Grades 1 to 6. Registration is open.</span>
         </div>
 
         <button
@@ -22,7 +22,7 @@ export default function AnnouncementBar() {
           onClick={handleScrollToWaitlist}
           className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#97B3D2] text-[#060A10] font-heading font-bold text-[11px] sm:text-xs uppercase tracking-wider hover:bg-white hover:shadow-[0_0_15px_rgba(151,179,210,0.6)] transition-all cursor-pointer flex-shrink-0"
         >
-          <span>Join the Waitlist</span>
+          <span>Register or Get Updates</span>
           <ArrowRight size={12} />
         </button>
       </div>

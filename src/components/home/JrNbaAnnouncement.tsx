@@ -9,12 +9,16 @@ import {
   Mail,
   Phone,
   Users,
-  HeartHandshake,
   ArrowRight,
   Loader2,
   AlertCircle,
   MapPin,
   CalendarDays,
+  Clock,
+  DollarSign,
+  ShieldCheck,
+  ExternalLink,
+  Bell,
 } from 'lucide-react'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { getTrackingParams, saveWaitlistEntry, WaitlistEntry } from '../../data/waitlist'
@@ -22,44 +26,34 @@ import { dispatchWaitlistConfirmationEmail } from '../../lib/email-service'
 
 declare const fbq: any
 
-const BENEFITS = [
-  'Targeting a Winter 2027 start in Southwest Mississauga',
-  'Weekly session day and venue to be confirmed (Friday or Saturday options pending permit)',
-  '8 weekly sessions, 60 minutes each (max 12 children per group)',
-  'Ages 5–6 (co-ed), Ages 7–8 & 9–10 (separate girls’ and boys’ groups)',
-  'Groups will run based on registration numbers',
-  'Confirmed price: $249 per player',
-  'Official gear: Jr. NBA reversible jersey, shorts, Wilson basketball included',
-  'Includes Canada Basketball & Ontario Basketball membership/insurance',
-]
+export const JR_NBA_REGISTER_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSclCKn0JE0P2NB3Ts0YvxR4gZXmKNei2TMldZCueSZ4PsmS2A/viewform'
 
-interface FormState {
+interface UpdatesFormState {
   parentName: string
   email: string
   phone: string
-  ageGroup: 'Ages 5–6' | 'Ages 7–8' | 'Ages 9–10'
-  groupPreference: 'Boys’ group' | 'Girls’ group' | ''
-  daysAvailable: 'Friday' | 'Saturday' | 'Either' | ''
+  gradeGroup: 'Grades 1-2' | 'Grades 3-4' | 'Grades 5-6'
+  groupPreference: 'Girls group' | 'Boys group' | ''
   neighbourhood: string
   childCount: string
   consent: boolean
 }
 
-const INITIAL_FORM_STATE: FormState = {
+const INITIAL_FORM_STATE: UpdatesFormState = {
   parentName: '',
   email: '',
   phone: '',
-  ageGroup: 'Ages 5–6',
+  gradeGroup: 'Grades 1-2',
   groupPreference: '',
-  daysAvailable: '', // Do not preselect an answer
   neighbourhood: '',
   childCount: '1',
   consent: false,
 }
 
-// Isolated form component to ensure sub-10ms INP response
-const WaitlistForm = memo(function WaitlistForm() {
-  const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE)
+// Isolated email updates form component to ensure fast INP response
+const UpdatesSignupForm = memo(function UpdatesSignupForm() {
+  const [formData, setFormData] = useState<UpdatesFormState>(INITIAL_FORM_STATE)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({})
@@ -77,12 +71,11 @@ const WaitlistForm = memo(function WaitlistForm() {
         setFieldErrors((prev) => ({ ...prev, [name]: '' }))
       }
     } else if (type === 'radio') {
-      // INP optimization: use startTransition for non-blocking UI updates
       React.startTransition(() => {
         setFormData((prev) => ({
           ...prev,
           [name]: value,
-          ...(name === 'ageGroup' && value === 'Ages 5–6' ? { groupPreference: '' } : {})
+          ...(name === 'gradeGroup' && value === 'Grades 1-2' ? { groupPreference: '' } : {}),
         }))
         if (fieldErrors[name]) {
           setFieldErrors((prev) => ({ ...prev, [name]: '' }))
@@ -109,7 +102,6 @@ const WaitlistForm = memo(function WaitlistForm() {
       errors.email = 'Please enter a valid email address.'
     }
 
-    // Phone validation: optional, but if supplied validate format
     if (formData.phone.trim()) {
       const digits = formData.phone.replace(/\D/g, '')
       if (digits.length < 10) {
@@ -117,22 +109,16 @@ const WaitlistForm = memo(function WaitlistForm() {
       }
     }
 
-    if (!formData.ageGroup) {
-      errors.ageGroup = 'Please select an age group.'
+    if (!formData.gradeGroup) {
+      errors.gradeGroup = 'Please select a grade group.'
     }
 
-    // For Ages 7–8 and 9–10, require group preference
-    if (formData.ageGroup !== 'Ages 5–6' && !formData.groupPreference) {
-      errors.groupPreference = 'Please select which group you are interested in.'
-    }
-
-    // "Which days could work?" - do not preselect, require a selection
-    if (!formData.daysAvailable) {
-      errors.daysAvailable = 'Please select which days could work.'
+    if (formData.gradeGroup !== 'Grades 1-2' && !formData.groupPreference) {
+      errors.groupPreference = 'Please select the girls group or the boys group.'
     }
 
     if (!formData.consent) {
-      errors.consent = 'Please agree to receive updates to join the waitlist.'
+      errors.consent = 'Please agree to receive program updates.'
     }
 
     setFieldErrors(errors)
@@ -153,25 +139,26 @@ const WaitlistForm = memo(function WaitlistForm() {
     const trackingParams = getTrackingParams()
     const isTest = Boolean(
       formData.parentName.trim().toLowerCase() === 'dre' ||
-      formData.parentName.trim().toLowerCase().includes('test') ||
-      formData.email.toLowerCase().includes('test@') ||
-      formData.parentName.trim().toLowerCase() === 'adrian test'
+        formData.parentName.trim().toLowerCase().includes('test') ||
+        formData.email.toLowerCase().includes('test@') ||
+        formData.parentName.trim().toLowerCase() === 'adrian test'
     )
 
-    const resolvedGroupPref = formData.ageGroup === 'Ages 5–6' 
-      ? 'Co-ed' 
-      : (formData.groupPreference || 'Not provided')
+    const resolvedGroupPref =
+      formData.gradeGroup === 'Grades 1-2'
+        ? 'Co-ed'
+        : formData.groupPreference || 'Not provided'
 
     const newEntry: WaitlistEntry = {
       id: `entry-${Date.now()}`,
       parentName: formData.parentName.trim(),
       email: formData.email.trim().toLowerCase(),
       phone: formData.phone.trim() || 'Not provided',
-      ageGroup: formData.ageGroup,
-      groupPreference: resolvedGroupPref as any,
-      daysAvailable: (formData.daysAvailable || 'Not provided') as any,
+      ageGroup: formData.gradeGroup,
+      groupPreference: resolvedGroupPref as WaitlistEntry['groupPreference'],
+      daysAvailable: 'Saturdays',
       neighbourhood: formData.neighbourhood.trim() || 'Not provided',
-      childCount: (formData.childCount || '1') as any,
+      childCount: (formData.childCount || '1') as WaitlistEntry['childCount'],
       consent: formData.consent,
       submissionTime: new Date().toLocaleString('en-US', { timeZone: 'America/Toronto' }),
       source: trackingParams.utm_source ? `Meta / ${trackingParams.utm_source}` : 'Website direct',
@@ -179,15 +166,15 @@ const WaitlistForm = memo(function WaitlistForm() {
       isTest,
     }
 
-    // 1. Immediately store in localStorage so no lead is EVER lost
+    // 1. Store in localStorage so no lead is lost
     saveWaitlistEntry(newEntry)
     setSubmittedEntry(newEntry)
 
-    // 2. Immediately switch to the full confirmation state (Zero silence!)
+    // 2. Switch immediately to confirmation state
     setStatus('success')
     setFormData(INITIAL_FORM_STATE)
 
-    // Fire Meta Pixel Lead event immediately where confirmation message shows
+    // Fire Meta Pixel Lead event
     try {
       if (typeof fbq === 'function') {
         fbq('track', 'Lead')
@@ -198,7 +185,7 @@ const WaitlistForm = memo(function WaitlistForm() {
       // Ignore tracking errors if blocked by privacy extensions
     }
 
-    // Fire Google Ads waitlist conversion event (guarded, fires once per successful submit)
+    // Fire Google Ads conversion event
     try {
       if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
         (window as any).gtag('event', 'conversion', {
@@ -209,12 +196,11 @@ const WaitlistForm = memo(function WaitlistForm() {
       // Ignore tracking errors if blocked by privacy extensions
     }
 
-    // Smoothly ensure user sees the confirmation
     setTimeout(() => {
       containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }, 40)
 
-    // 3. Asynchronously trigger automated confirmation email to the parent
+    // 3. Trigger automated confirmation email to the parent
     dispatchWaitlistConfirmationEmail({
       parentName: newEntry.parentName,
       email: newEntry.email,
@@ -225,23 +211,22 @@ const WaitlistForm = memo(function WaitlistForm() {
       neighbourhood: newEntry.neighbourhood,
       childCount: newEntry.childCount,
     }).catch((err) => {
-      console.warn('Waitlist confirmation email dispatch error:', err)
+      console.warn('Updates confirmation email dispatch error:', err)
     })
 
-    // 4. Background redundant Web3Forms dispatch for Coach Adrian's inbox
+    // 4. Redundant Web3Forms dispatch for Coach Adrian's inbox
     const web3Payload = {
       access_key: '933bf5e4-2815-45e1-853f-a58c9fb77a2f',
-      subject: `New EcoHoops Jr. Waitlist - ${newEntry.parentName} (${newEntry.ageGroup})`,
-      from_name: 'EcoHoops Jr. Waitlist',
+      subject: `EcoHoops Jr. Program Updates - ${newEntry.parentName} (${newEntry.ageGroup})`,
+      from_name: 'EcoHoops Jr. Program Updates',
       to: 'ecohoopscoaching@gmail.com',
       replyto: newEntry.email,
       email: newEntry.email,
       'Parent / Guardian Name': newEntry.parentName,
       'Email Address': newEntry.email,
       'Phone Number': newEntry.phone,
-      'Child Age Group': newEntry.ageGroup,
+      'Child Grade Group': newEntry.ageGroup,
       'Group Preference': newEntry.groupPreference,
-      'Days That Could Work': newEntry.daysAvailable,
       'Neighbourhood / Postal Area': newEntry.neighbourhood,
       'Number of Children': newEntry.childCount,
       'Consent to Updates': newEntry.consent ? 'Yes' : 'No',
@@ -264,347 +249,208 @@ const WaitlistForm = memo(function WaitlistForm() {
       })
       clearTimeout(timer)
     } catch {
-      // Intentionally absorbed: data is safely secured locally and queued for email dispatch
+      // Data is already stored locally and queued for email dispatch
     }
   }
 
   if (status === 'success') {
     return (
-      <div ref={containerRef} className="py-2 space-y-6">
-        {/* Animated Confirmation Badge & Icon */}
+      <div ref={containerRef} className="py-2 space-y-5">
         <motion.div
-          initial={{ scale: 0.85, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="text-center space-y-4"
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="text-center space-y-3"
         >
           <div className="relative inline-flex items-center justify-center">
-            {/* Ambient pulse glow */}
-            <div className="absolute inset-0 rounded-full bg-eco-blue/30 blur-2xl animate-pulse" />
-            
-            {/* Basketball badge container */}
-            <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[#003366] via-[#0A1830] to-[#001C40] border-2 border-eco-blue/50 flex items-center justify-center shadow-[0_0_35px_rgba(0,102,204,0.45)]">
-              <span className="text-4xl select-none" role="img" aria-label="Basketball">🏀</span>
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-[#0A1830] flex items-center justify-center text-white shadow-lg">
-                <CheckCircle2 size={16} />
-              </div>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#003366] via-[#0A1830] to-[#001C40] border-2 border-eco-blue/50 flex items-center justify-center shadow-[0_0_25px_rgba(0,102,204,0.35)]">
+              <CheckCircle2 size={28} className="text-emerald-400" />
             </div>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider">
-              Waitlist Entry Confirmed
+              Updates Signup Confirmed
             </span>
-            <h3 className="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
-              YOU’RE ON THE WAITLIST!
+            <h3 className="font-display text-2xl font-bold text-white uppercase tracking-tight">
+              You're Signed Up for Updates
             </h3>
-            <p className="text-base sm:text-lg font-heading font-semibold text-eco-blue-light">
-              Thanks! We received your submission.
+            <p className="text-sm sm:text-base font-heading font-medium text-eco-blue-light">
+              We will email you updates as groups fill.
             </p>
           </div>
         </motion.div>
 
-        {/* Message body */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.4 }}
-          className="space-y-4"
-        >
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#060A10]/90 border border-white/10 text-eco-muted-light text-sm sm:text-base leading-relaxed space-y-3">
-            <p className="text-white font-medium">
-              We’ll contact you when registration opens for <strong>EcoHoops Jr. NBA / Jr. WNBA</strong> in Southwest Mississauga.
-            </p>
-            <div className="flex items-center gap-2.5 pt-1 text-xs text-eco-blue-light bg-[#003366]/25 border border-eco-blue/30 rounded-xl p-3">
-              <Mail size={16} className="text-eco-blue flex-shrink-0" />
-              <span>
-                A confirmation email has been sent to{' '}
-                <strong className="text-white underline">{submittedEntry?.email || 'your email'}</strong>.
-              </span>
-            </div>
+        <div className="p-4 rounded-2xl bg-[#060A10]/90 border border-white/10 text-eco-muted-light text-sm leading-relaxed space-y-3">
+          <div className="flex items-center gap-2.5 text-xs text-eco-blue-light bg-[#003366]/25 border border-eco-blue/30 rounded-xl p-3">
+            <Mail size={16} className="text-eco-blue flex-shrink-0" />
+            <span>
+              We sent a confirmation email to{' '}
+              <strong className="text-white underline">{submittedEntry?.email || 'your email'}</strong>.
+            </span>
           </div>
-
-          {/* Submission details recap */}
           {submittedEntry && (
-            <div className="p-4 rounded-2xl bg-[#0A1424]/80 border border-eco-border/80 space-y-2.5 text-xs">
-              <div className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold border-b border-white/5 pb-1.5 flex items-center justify-between">
-                <span>Summary of Recorded Info</span>
-                <span className="text-emerald-400 font-bold">● Priority Queue</span>
+            <div className="grid grid-cols-2 gap-2.5 text-xs pt-1">
+              <div>
+                <span className="text-eco-muted block text-[10px] uppercase font-mono">Parent / Guardian</span>
+                <span className="text-white font-medium">{submittedEntry.parentName}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2.5 text-eco-muted-light pt-1">
-                <div>
-                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Parent / Guardian</span>
-                  <span className="text-white font-medium">{submittedEntry.parentName}</span>
-                </div>
-                <div>
-                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Age Division</span>
-                  <span className="text-white font-medium">
-                    {submittedEntry.ageGroup}
-                    {submittedEntry.groupPreference && submittedEntry.groupPreference !== 'Not provided' && submittedEntry.groupPreference !== 'Co-ed' ? ` • ${submittedEntry.groupPreference}` : ''}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Preferred Days</span>
-                  <span className="text-white font-medium">{submittedEntry.daysAvailable}</span>
-                </div>
-                <div>
-                  <span className="text-eco-muted block text-[10px] uppercase font-mono">Number of Kids</span>
-                  <span className="text-white font-medium">{submittedEntry.childCount} Child{submittedEntry.childCount !== '1' ? 'ren' : ''}</span>
-                </div>
+              <div>
+                <span className="text-eco-muted block text-[10px] uppercase font-mono">Group</span>
+                <span className="text-white font-medium">
+                  {submittedEntry.ageGroup} ({submittedEntry.groupPreference})
+                </span>
               </div>
             </div>
           )}
+        </div>
 
-          {/* Email reminder callout */}
-          <div className="text-center py-1">
-            <p className="text-white font-heading font-semibold text-sm sm:text-base">
-              Keep an eye on your email for updates.
-            </p>
-          </div>
-
-          {/* Brand Motto Lockup */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#001c52]/60 via-[#003366]/40 to-[#001c52]/60 border border-eco-blue/30 text-center space-y-1">
-            <div className="font-display text-xl sm:text-2xl text-white tracking-wide uppercase font-bold">
-              Kids First, Always.
-            </div>
-            <p className="text-[11px] font-mono text-eco-blue-light uppercase tracking-wider">
-              Coach Adrian & The EcoHoops Coaching Team
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="pt-2 flex flex-col sm:flex-row gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setStatus('idle')
-                setSubmittedEntry(null)
-              }}
-              className="flex-1 btn-ghost !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold cursor-pointer text-center flex items-center justify-center gap-2"
-            >
-              <span>Add Another Child / Sibling</span>
-            </button>
-            <Link
-              to="/jr"
-              className="flex-1 btn-glow !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold text-center flex items-center justify-center gap-2"
-            >
-              <span>Explore EcoHoops Jr.</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-        </motion.div>
+        <div className="pt-1 flex flex-col sm:flex-row gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setStatus('idle')
+              setSubmittedEntry(null)
+            }}
+            className="flex-1 btn-ghost !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold cursor-pointer text-center flex items-center justify-center gap-2"
+          >
+            <span>Sign Up Another Email</span>
+          </button>
+          <Link
+            to="/jr"
+            className="flex-1 btn-ghost !py-3 !px-4 text-xs uppercase tracking-wider font-heading font-bold text-center flex items-center justify-center gap-2"
+          >
+            <span>Explore EcoHoops Jr.</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
     <div ref={containerRef}>
-      {/* Card top accent */}
-      <div className="flex items-center justify-between pb-5 mb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <img
-              src="/images/branding/jr-nba-wnba-dark.png"
-              alt="Jr. NBA & Jr. WNBA"
-              className="h-6 w-auto object-contain"
-            />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
-              Priority Notification
-            </span>
-          </div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold block mb-1">
+            Not Ready to Register Yet?
+          </span>
           <h3 className="font-display text-xl sm:text-2xl text-white uppercase font-bold">
-            Join the Waitlist
+            Get Program Updates
           </h3>
+          <p className="text-xs sm:text-sm text-eco-muted-light mt-1">
+            Leave your email and we will send updates as groups fill.
+          </p>
         </div>
         <div className="w-10 h-10 rounded-2xl bg-[#003366] border border-eco-blue/30 flex items-center justify-center text-eco-blue flex-shrink-0">
-          <HeartHandshake size={20} />
+          <Bell size={19} />
         </div>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      {/* ERROR ALERT */}
-      {status === 'error' && (
-        <div
-          role="alert"
-          className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs sm:text-sm flex items-start gap-3"
-        >
-          <AlertCircle size={18} className="text-red-400 mt-0.5 flex-shrink-0" />
+        {status === 'error' && (
+          <div
+            role="alert"
+            className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs sm:text-sm flex items-start gap-3"
+          >
+            <AlertCircle size={18} className="text-red-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-bold">Could not save your email</p>
+              <p className="mt-0.5">
+                {errorMessage || 'Please try again or email ecohoopscoaching@gmail.com.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Parent / Guardian Name */}
           <div>
-            <p className="font-bold">Submission failed</p>
-            <p className="mt-0.5">
-              {errorMessage ||
-                "We couldn’t add you to the waitlist. Please try again or contact EcoHoops directly."}
-            </p>
+            <label
+              htmlFor="parentName"
+              className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium"
+            >
+              Parent or Guardian Name <span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <User
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+              />
+              <input
+                id="parentName"
+                name="parentName"
+                type="text"
+                required
+                value={formData.parentName}
+                onChange={handleInputChange}
+                placeholder="e.g. Sarah Jenkins"
+                aria-invalid={!!fieldErrors.parentName}
+                aria-describedby={fieldErrors.parentName ? 'parentName-error' : undefined}
+                className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
+                  fieldErrors.parentName
+                    ? 'border-red-500/80 focus:ring-red-500/30'
+                    : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
+                }`}
+              />
+            </div>
+            {fieldErrors.parentName && (
+              <p id="parentName-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+                <AlertCircle size={12} /> {fieldErrors.parentName}
+              </p>
+            )}
+          </div>
+
+          {/* Email Address */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium"
+            >
+              Email Address <span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <Mail
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+              />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="parent@example.com"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+                className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
+                  fieldErrors.email
+                    ? 'border-red-500/80 focus:ring-red-500/30'
+                    : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
+                }`}
+              />
+            </div>
+            {fieldErrors.email && (
+              <p id="email-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+                <AlertCircle size={12} /> {fieldErrors.email}
+              </p>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Parent / Guardian Name */}
-      <div>
-        <label
-          htmlFor="parentName"
-          className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium"
-        >
-          Parent or Guardian Name <span className="text-red-400">*</span>
-        </label>
-        <div className="relative">
-          <User
-            size={16}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
-          />
-          <input
-            id="parentName"
-            name="parentName"
-            type="text"
-            required
-            value={formData.parentName}
-            onChange={handleInputChange}
-            placeholder="e.g. Sarah Jenkins"
-            aria-invalid={!!fieldErrors.parentName}
-            aria-describedby={fieldErrors.parentName ? 'parentName-error' : undefined}
-            className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
-              fieldErrors.parentName
-                ? 'border-red-500/80 focus:ring-red-500/30'
-                : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
-            }`}
-          />
-        </div>
-        {fieldErrors.parentName && (
-          <p id="parentName-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.parentName}
-          </p>
-        )}
-      </div>
-
-      {/* Email Address */}
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium"
-        >
-          Email Address <span className="text-red-400">*</span>
-        </label>
-        <div className="relative">
-          <Mail
-            size={16}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
-          />
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="parent@example.com"
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-            className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
-              fieldErrors.email
-                ? 'border-red-500/80 focus:ring-red-500/30'
-                : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
-            }`}
-          />
-        </div>
-        {fieldErrors.email && (
-          <p id="email-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.email}
-          </p>
-        )}
-      </div>
-
-      {/* Phone Number */}
-      <div>
-        <label
-          htmlFor="phone"
-          className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between"
-        >
-          <span>Phone Number</span>
-          <span className="text-[10px] text-eco-muted uppercase">Optional</span>
-        </label>
-        <div className="relative">
-          <Phone
-            size={16}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
-          />
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={handleInputChange}
-            placeholder="(416) 555-0199"
-            aria-invalid={!!fieldErrors.phone}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
-            className={`w-full bg-[#060A10]/80 border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
-              fieldErrors.phone
-                ? 'border-red-500/80 focus:ring-red-500/30'
-                : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
-            }`}
-          />
-        </div>
-        {fieldErrors.phone && (
-          <p id="phone-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.phone}
-          </p>
-        )}
-      </div>
-
-      {/* Child's Age Group */}
-      <div>
-        <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
-          <span>Child's Age Group <span className="text-red-400">*</span></span>
-        </label>
-        <div role="radiogroup" aria-label="Child's Age Group" className="grid grid-cols-3 gap-1.5">
-          {(['Ages 5–6', 'Ages 7–8', 'Ages 9–10'] as const).map((group) => {
-            const isSelected = formData.ageGroup === group
-            return (
-              <label
-                key={group}
-                className={`py-2.5 px-1 rounded-xl font-heading text-[11px] sm:text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
-                    : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="ageGroup"
-                  value={group}
-                  checked={isSelected}
-                  onChange={handleInputChange}
-                  className="sr-only"
-                />
-                <span>{group}</span>
-              </label>
-            )
-          })}
-        </div>
-        {fieldErrors.ageGroup && (
-          <p id="ageGroup-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.ageGroup}
-          </p>
-        )}
-      </div>
-
-      {/* Conditional Group Preference */}
-      {formData.ageGroup === 'Ages 5–6' ? (
-        <div className="p-2.5 rounded-xl bg-[#003366]/20 border border-eco-blue/30 flex items-center gap-2 text-xs text-eco-blue-light">
-          <span className="w-2 h-2 rounded-full bg-eco-blue flex-shrink-0" />
-          <span><strong>Co-ed group:</strong> Boys and girls play and learn together in Ages 5–6.</span>
-        </div>
-      ) : (
+        {/* Child's Grade Group */}
         <div>
           <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium">
-            Which group are you interested in? <span className="text-red-400">*</span>
+            Child's Grade <span className="text-red-400">*</span>
           </label>
-          <div role="radiogroup" aria-label="Which group are you interested in?" className="grid grid-cols-2 gap-2">
-            {(['Boys’ group', 'Girls’ group'] as const).map((opt) => {
-              const isSelected = formData.groupPreference === opt
+          <div role="radiogroup" aria-label="Child's Grade" className="grid grid-cols-3 gap-2">
+            {(['Grades 1-2', 'Grades 3-4', 'Grades 5-6'] as const).map((group) => {
+              const isSelected = formData.gradeGroup === group
               return (
                 <label
-                  key={opt}
-                  className={`py-2.5 px-3 rounded-xl font-heading text-xs sm:text-sm font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                  key={group}
+                  className={`py-2.5 px-2 rounded-xl font-heading text-xs uppercase font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
                     isSelected
                       ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
                       : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
@@ -612,194 +458,223 @@ const WaitlistForm = memo(function WaitlistForm() {
                 >
                   <input
                     type="radio"
-                    name="groupPreference"
-                    value={opt}
+                    name="gradeGroup"
+                    value={group}
                     checked={isSelected}
                     onChange={handleInputChange}
                     className="sr-only"
                   />
-                  <span>{opt}</span>
+                  <span>{group}</span>
                 </label>
               )
             })}
           </div>
-          {fieldErrors.groupPreference && (
+          {fieldErrors.gradeGroup && (
             <p className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-              <AlertCircle size={12} /> {fieldErrors.groupPreference}
+              <AlertCircle size={12} /> {fieldErrors.gradeGroup}
             </p>
           )}
         </div>
-      )}
 
-      {/* Which days could work? */}
-      <div>
-        <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <CalendarDays size={14} className="text-eco-blue" />
-            <span>Which days could work? <span className="text-red-400">*</span></span>
-          </span>
-          <span className="text-[10px] text-eco-muted">Permit pending</span>
-        </label>
-        <div role="radiogroup" aria-label="Which days could work?" className="grid grid-cols-3 gap-1.5">
-          {(['Friday', 'Saturday', 'Either'] as const).map((day) => {
-            const isSelected = formData.daysAvailable === day
-            return (
-              <label
-                key={day}
-                className={`py-2.5 px-2 rounded-xl font-heading text-[11px] sm:text-xs font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
-                    : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="daysAvailable"
-                  value={day}
-                  checked={isSelected}
-                  onChange={handleInputChange}
-                  className="sr-only"
-                />
-                <span>{day}</span>
-              </label>
-            )
-          })}
-        </div>
-        {fieldErrors.daysAvailable && (
-          <p className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.daysAvailable}
-          </p>
-        )}
-      </div>
-
-      {/* Neighbourhood & Number of Children */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {/* Your Neighbourhood */}
-        <div>
-          <label
-            htmlFor="neighbourhood"
-            className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium flex items-center justify-between"
-          >
-            <span>Your Neighbourhood</span>
-            <span className="text-[10px] text-eco-muted uppercase">Optional</span>
-          </label>
-          <div className="relative">
-            <MapPin
-              size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
-            />
-            <input
-              id="neighbourhood"
-              name="neighbourhood"
-              type="text"
-              value={formData.neighbourhood}
-              onChange={handleInputChange}
-              placeholder="e.g. Churchill Meadows or L5M"
-              className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all placeholder:text-eco-muted/60"
-            />
+        {/* Conditional Group Preference */}
+        {formData.gradeGroup === 'Grades 1-2' ? (
+          <div className="p-2.5 rounded-xl bg-[#003366]/20 border border-eco-blue/30 flex items-center gap-2 text-xs text-eco-blue-light">
+            <span className="w-2 h-2 rounded-full bg-eco-blue flex-shrink-0" />
+            <span>
+              <strong>Co-ed group:</strong> Girls and boys in Grades 1 and 2 play together in one co-ed group.
+            </span>
           </div>
-          <p className="text-[10px] text-eco-muted mt-1 leading-tight">
-            Or enter the first three characters of your postal code.
-          </p>
-        </div>
-
-        {/* Number of Kids */}
-        <div>
-          <label
-            htmlFor="childCount"
-            className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium flex items-center justify-between"
-          >
-            <span>Number of Kids</span>
-            <span className="text-[10px] text-eco-muted uppercase">Optional</span>
-          </label>
-          <div className="relative">
-            <Users
-              size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
-            />
-            <select
-              id="childCount"
-              name="childCount"
-              value={formData.childCount}
-              onChange={handleInputChange}
-              className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all cursor-pointer"
-            >
-              <option value="1" className="bg-eco-surface text-white">1 Child</option>
-              <option value="2" className="bg-eco-surface text-white">2 Children</option>
-              <option value="3" className="bg-eco-surface text-white">3 Children</option>
-              <option value="4+" className="bg-eco-surface text-white">4+ Children</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Consent Checkbox */}
-      <div className="pt-2">
-        <label className="flex items-start gap-3 cursor-pointer select-none">
-          <input
-            id="consent"
-            name="consent"
-            type="checkbox"
-            required
-            checked={formData.consent}
-            onChange={handleInputChange}
-            aria-invalid={!!fieldErrors.consent}
-            aria-describedby={fieldErrors.consent ? 'consent-error' : undefined}
-            className="mt-1 w-4 h-4 rounded border-eco-border bg-[#060A10] accent-[#97B3D2] cursor-pointer flex-shrink-0"
-          />
-          <span className="text-xs text-eco-muted-light leading-relaxed">
-            I agree to receive EcoHoops Jr. program and registration updates.{' '}
-            <Link
-              to="/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#97B3D2] hover:text-white underline font-semibold transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </span>
-        </label>
-        {fieldErrors.consent && (
-          <p id="consent-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
-            <AlertCircle size={12} /> {fieldErrors.consent}
-          </p>
-        )}
-      </div>
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={status === 'submitting'}
-        className={`w-full btn-glow !py-4 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer mt-4 shadow-glow-md transition-all ${
-          status === 'submitting'
-            ? 'opacity-70 cursor-not-allowed'
-            : 'hover:scale-[1.01]'
-        }`}
-      >
-        {status === 'submitting' ? (
-          <>
-            <Loader2 className="animate-spin text-eco-blue" size={18} />
-            <span>Adding to Waitlist...</span>
-          </>
         ) : (
-          <>
-            <span>Join the Waitlist</span>
-            <ArrowRight size={16} />
-          </>
+          <div>
+            <label className="block text-xs font-mono uppercase tracking-wider text-eco-muted-light mb-1.5 font-medium">
+              Which group? <span className="text-red-400">*</span>
+            </label>
+            <div role="radiogroup" aria-label="Which group?" className="grid grid-cols-2 gap-2">
+              {(['Girls group', 'Boys group'] as const).map((opt) => {
+                const isSelected = formData.groupPreference === opt
+                return (
+                  <label
+                    key={opt}
+                    className={`py-2.5 px-3 rounded-xl font-heading text-xs sm:text-sm font-bold transition-colors duration-150 border cursor-pointer text-center flex items-center justify-center select-none ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-[#003366] to-eco-blue text-white border-eco-blue shadow-glow-sm'
+                        : 'bg-[#060A10]/80 border-eco-border text-eco-muted-light hover:border-eco-blue/40 hover:text-white'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="groupPreference"
+                      value={opt}
+                      checked={isSelected}
+                      onChange={handleInputChange}
+                      className="sr-only"
+                    />
+                    <span>{opt}</span>
+                  </label>
+                )
+              })}
+            </div>
+            {fieldErrors.groupPreference && (
+              <p className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+                <AlertCircle size={12} /> {fieldErrors.groupPreference}
+              </p>
+            )}
+          </div>
         )}
-      </button>
 
-      <p className="text-[11px] text-eco-muted text-center pt-1 font-mono">
-        Joining provides registration updates and does not reserve a place.
-      </p>
-    </form>
+        {/* Optional Details Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Phone */}
+          <div>
+            <label
+              htmlFor="phone"
+              className="block text-[11px] font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium"
+            >
+              Phone <span className="text-eco-muted">(Optional)</span>
+            </label>
+            <div className="relative">
+              <Phone
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+              />
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="(416) 555-0199"
+                aria-invalid={!!fieldErrors.phone}
+                aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+                className={`w-full bg-[#060A10]/80 border rounded-xl pl-9 pr-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 transition-all placeholder:text-eco-muted/60 ${
+                  fieldErrors.phone
+                    ? 'border-red-500/80 focus:ring-red-500/30'
+                    : 'border-eco-border focus:border-eco-blue focus:ring-eco-blue/20'
+                }`}
+              />
+            </div>
+            {fieldErrors.phone && (
+              <p id="phone-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+                <AlertCircle size={12} /> {fieldErrors.phone}
+              </p>
+            )}
+          </div>
+
+          {/* Neighbourhood */}
+          <div>
+            <label
+              htmlFor="neighbourhood"
+              className="block text-[11px] font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium"
+            >
+              Area <span className="text-eco-muted">(Optional)</span>
+            </label>
+            <div className="relative">
+              <MapPin
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+              />
+              <input
+                id="neighbourhood"
+                name="neighbourhood"
+                type="text"
+                value={formData.neighbourhood}
+                onChange={handleInputChange}
+                placeholder="e.g. L5K or Erin Mills"
+                className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-9 pr-3 py-2.5 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all placeholder:text-eco-muted/60"
+              />
+            </div>
+          </div>
+
+          {/* Number of Kids */}
+          <div>
+            <label
+              htmlFor="childCount"
+              className="block text-[11px] font-mono uppercase tracking-wider text-eco-muted-light mb-1 font-medium"
+            >
+              Kids <span className="text-eco-muted">(Optional)</span>
+            </label>
+            <div className="relative">
+              <Users
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-eco-muted pointer-events-none"
+              />
+              <select
+                id="childCount"
+                name="childCount"
+                value={formData.childCount}
+                onChange={handleInputChange}
+                className="w-full bg-[#060A10]/80 border border-eco-border rounded-xl pl-9 pr-3 py-2.5 text-white text-sm focus:outline-none focus:border-eco-blue focus:ring-2 focus:ring-eco-blue/20 transition-all cursor-pointer"
+              >
+                <option value="1" className="bg-eco-surface text-white">1 Child</option>
+                <option value="2" className="bg-eco-surface text-white">2 Children</option>
+                <option value="3" className="bg-eco-surface text-white">3 Children</option>
+                <option value="4+" className="bg-eco-surface text-white">4+ Children</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Consent Checkbox */}
+        <div className="pt-1">
+          <label className="flex items-start gap-3 cursor-pointer select-none">
+            <input
+              id="consent"
+              name="consent"
+              type="checkbox"
+              required
+              checked={formData.consent}
+              onChange={handleInputChange}
+              aria-invalid={!!fieldErrors.consent}
+              aria-describedby={fieldErrors.consent ? 'consent-error' : undefined}
+              className="mt-1 w-4 h-4 rounded border-eco-border bg-[#060A10] accent-[#97B3D2] cursor-pointer flex-shrink-0"
+            />
+            <span className="text-xs text-eco-muted-light leading-relaxed">
+              I agree to receive EcoHoops Jr. program updates by email.{' '}
+              <Link
+                to="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#97B3D2] hover:text-white underline font-semibold transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
+          {fieldErrors.consent && (
+            <p id="consent-error" className="text-xs text-red-400 mt-1 flex items-center gap-1 font-heading">
+              <AlertCircle size={12} /> {fieldErrors.consent}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={status === 'submitting'}
+          className={`w-full btn-ghost !py-3.5 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer border-eco-blue/40 hover:border-eco-blue text-white transition-all ${
+            status === 'submitting' ? 'opacity-70 cursor-not-allowed' : ''
+          }`}
+        >
+          {status === 'submitting' ? (
+            <>
+              <Loader2 className="animate-spin text-eco-blue" size={18} />
+              <span>Saving...</span>
+            </>
+          ) : (
+            <>
+              <span>Get Program Updates</span>
+              <ArrowRight size={16} />
+            </>
+          )}
+        </button>
+      </form>
     </div>
   )
 })
 
 export default function JrNbaAnnouncement() {
-  const { ref, isVisible } = useScrollReveal(0.05)
+  const { ref } = useScrollReveal(0.05)
 
   return (
     <section
@@ -811,145 +686,265 @@ export default function JrNbaAnnouncement() {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-[#003366]/20 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[300px] bg-eco-blue/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-start">
-          
-          {/* LEFT COLUMN: ANNOUNCEMENT COPY & BENEFITS */}
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 z-10 space-y-12">
+        {/* TOP ROW: PROGRAM DETAILS & GROUPS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          {/* LEFT COLUMN: OVERVIEW, PLANNING NOTICE, KEY DETAILS */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Official Branding Header Lockup Banner */}
+            {/* Official Partner Branding Banner */}
             <div className="bg-[#050B14]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
-              <img
-                src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
-                alt="Jr. NBA • WNBA • Canada Basketball"
-                className="h-9 sm:h-11 w-auto object-contain"
-              />
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4 flex-wrap">
                 <img
-                  src="/images/branding/canada-basketball-dark-vertical-tight.png"
-                  alt="Canada Basketball Official Crest"
-                  className="h-10 sm:h-12 w-auto object-contain"
+                  src="/images/branding/jr-nba-canada-basketball-dark-tight.png"
+                  alt="Jr. NBA and Jr. WNBA with Canada Basketball"
+                  className="h-9 sm:h-11 w-auto object-contain"
                 />
-                <div className="text-left hidden xs:block">
-                  <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#97B3D2]">
-                    Official Sanctioning
-                  </div>
-                  <div className="text-xs font-heading font-semibold text-white">
-                    Canada Basketball & OBA
-                  </div>
-                </div>
+                <p className="text-xs sm:text-sm font-heading font-semibold text-white">
+                  Officially partnered with Canada Basketball and NBA Canada.
+                </p>
               </div>
+              <img
+                src="/images/branding/canada-basketball-dark-vertical-tight.png"
+                alt="Canada Basketball Official Crest"
+                className="h-10 sm:h-12 w-auto object-contain"
+              />
             </div>
 
             {/* Eyebrow badges */}
             <div className="flex flex-wrap items-center gap-2.5">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
                 <Sparkles size={14} className="text-[#97B3D2]" />
-                NEW FROM ECOHOOPS JR.
+                ECOHOOPS JR.
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-eco-blue/15 border border-eco-blue/35 text-eco-blue-light text-xs font-mono font-bold uppercase tracking-wider">
-                Ages 5–6 (Co-Ed) • Ages 7–8 & 9–10 (Separate Groups)
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider">
+                Grades 1 to 6 - Registration Open
               </div>
             </div>
 
             {/* Headline */}
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold uppercase tracking-tight text-white leading-[1.08]">
-              Jr. NBA/Jr. WNBA Is Coming to{' '}
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight text-white leading-[1.08]">
+              Jr. NBA and Jr. WNBA at{' '}
               <span className="gradient-text">EcoHoops Jr.</span>
             </h2>
 
-            {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
-              A fun, welcoming place for kids to play, learn, and grow (Ages 5–6 Co-Ed, Ages 7–8 & 9–10 Separate Girls’ and Boys’ Groups).
-            </p>
-
-            {/* Body */}
-            <div className="space-y-4 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
-              <p>
-                EcoHoops Jr. is excited to bring Jr. NBA/Jr. WNBA programming to Southwest Mississauga, targeting a January 23, 2027 start for <strong className="text-white font-semibold">Ages 5–6 (co-ed)</strong>, and early 2027 for <strong className="text-white font-semibold">Ages 7–8 (separate girls’ and boys’ groups)</strong> and <strong className="text-white font-semibold">Ages 9–10 (separate girls’ and boys’ groups)</strong>.
+            {/* Subheadline & Intro */}
+            <div className="space-y-3 text-eco-muted-light text-base md:text-lg leading-relaxed font-body">
+              <p className="text-xl md:text-2xl text-white font-heading font-semibold leading-snug">
+                Basketball for girls and boys in Grades 1 to 6. No tryouts. No cuts.
               </p>
               <p>
-                Young players will have the opportunity to learn the game, make friends, build confidence, and develop teamwork in a positive environment that puts kids first. Groups will run based on registration numbers.
-              </p>
-              <p className="text-white font-medium">
-                Weekly session day and venue to be confirmed. (A school permit would most likely mean Friday; Saturday is another possibility under review. Churchill Meadows Community Centre is a possible venue, not a confirmed booking).
-              </p>
-              <p className="text-eco-muted-light text-sm">
-                Joining the waitlist provides registration updates and does not reserve a place.
+                This program is being planned, and registration is open. Every player gets a reversible Jr. NBA or Jr. WNBA uniform and a basketball, included in the price.
               </p>
             </div>
 
-            {/* Benefits List */}
-            <div className="pt-2 space-y-3">
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
-                Why Families Love EcoHoops Jr.
-              </h3>
-              <ul className="space-y-2.5">
-                {BENEFITS.map((benefit, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-3 text-white text-sm md:text-base font-heading font-medium"
-                  >
-                    <div className="mt-0.5 w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-400">
-                      <CheckCircle2 size={13} />
-                    </div>
-                    <span>{benefit}</span>
-                  </li>
-                ))}
+            {/* Honest Planning Notice */}
+            <div className="p-5 rounded-2xl bg-[#003366]/25 border border-eco-blue/40 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#97B3D2]">
+                <ShieldCheck size={16} className="text-eco-blue flex-shrink-0" />
+                <span>How Groups Will Run</span>
+              </div>
+              <p className="text-white text-sm sm:text-base font-medium leading-relaxed">
+                Only the first two groups that fill will run. Maximum 15 players per group. First paid, first served.
+              </p>
+              <p className="text-eco-muted-light text-sm leading-relaxed">
+                If your child's group does not fill, you choose a full refund or holding the spot for a later start.
+              </p>
+            </div>
+
+            {/* Key Program Facts Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-[#0B1322]/90 border border-white/10 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-semibold">
+                  <CalendarDays size={15} className="text-eco-blue" />
+                  <span>Dates</span>
+                </div>
+                <p className="text-white font-heading font-semibold text-sm sm:text-base">
+                  Saturdays, January 23 to March 13, 2027.
+                </p>
+                <p className="text-eco-muted-light text-xs sm:text-sm">8 sessions.</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#0B1322]/90 border border-white/10 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-semibold">
+                  <MapPin size={15} className="text-eco-blue" />
+                  <span>Location</span>
+                </div>
+                <p className="text-white font-heading font-semibold text-sm sm:text-base">
+                  St. Francis of Assisi School gym
+                </p>
+                <p className="text-eco-muted-light text-xs sm:text-sm">
+                  2480 Thornlodge Dr, Mississauga.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#0B1322]/90 border border-white/10 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-semibold">
+                  <DollarSign size={15} className="text-eco-blue" />
+                  <span>Price and Gear</span>
+                </div>
+                <p className="text-white font-heading font-semibold text-sm sm:text-base">
+                  $249 for all 8 sessions.
+                </p>
+                <p className="text-eco-muted-light text-xs sm:text-sm">
+                  Includes a reversible Jr. NBA or Jr. WNBA uniform and a basketball.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#0B1322]/90 border border-white/10 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-semibold">
+                  <Users size={15} className="text-eco-blue" />
+                  <span>Group Size</span>
+                </div>
+                <p className="text-white font-heading font-semibold text-sm sm:text-base">
+                  Maximum 15 players per group.
+                </p>
+                <p className="text-eco-muted-light text-xs sm:text-sm">
+                  First paid, first served. No tryouts. No cuts.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: FIVE GROUPS, SESSION TIMES, PARTNER SEAL, PHOTO */}
+          <div className="lg:col-span-5 space-y-6">
+            {/* Five Groups & Times Card */}
+            <div className="p-6 rounded-3xl bg-[#0F1628]/90 border border-eco-blue/25 shadow-xl space-y-5">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#97B3D2] font-semibold">
+                  Five Groups Total
+                </span>
+                <h3 className="font-display text-2xl text-white uppercase font-bold mt-1">
+                  Groups and Times
+                </h3>
+              </div>
+
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-white text-sm sm:text-base font-heading font-medium">
+                  <CheckCircle2 size={18} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <span>Kids in Grades 1 and 2 play in one co-ed group.</span>
+                </li>
+                <li className="flex items-start gap-3 text-white text-sm sm:text-base font-heading font-medium">
+                  <CheckCircle2 size={18} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <span>Kids in Grades 3 and 4 have a girls group and a boys group.</span>
+                </li>
+                <li className="flex items-start gap-3 text-white text-sm sm:text-base font-heading font-medium">
+                  <CheckCircle2 size={18} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <span>Kids in Grades 5 and 6 have a girls group and a boys group.</span>
+                </li>
               </ul>
+
+              <div className="pt-4 border-t border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-semibold">
+                  <Clock size={14} className="text-eco-blue" />
+                  <span>Saturday Session Times</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-sm">
+                  <div className="p-3 rounded-xl bg-[#060A10]/80 border border-white/10">
+                    <div className="text-xs font-mono uppercase text-[#97B3D2]">Girls Groups</div>
+                    <div className="text-white font-heading font-bold mt-0.5">10:00 to 11:00 AM</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#060A10]/80 border border-white/10">
+                    <div className="text-xs font-mono uppercase text-[#97B3D2]">Boys Groups</div>
+                    <div className="text-white font-heading font-bold mt-0.5">11:00 AM to 12:00 PM</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Official Gear & Sanctioning Seal */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#003366]/40 via-eco-surface to-[#003366]/20 border border-white/10 flex flex-col sm:flex-row items-center gap-4 shadow-lg">
+            {/* Official Gear & Partner Seal */}
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-[#003366]/40 via-eco-surface to-[#003366]/20 border border-white/10 flex items-center gap-4 shadow-lg">
               <img
                 src="/images/branding/canada-basketball-vertical-red.png"
                 alt="Canada Basketball Official Partner"
                 className="h-16 w-auto object-contain flex-shrink-0"
               />
-              <div className="space-y-1 text-center sm:text-left">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono font-bold uppercase tracking-wider">
-                  Official Sanctioned Youth Program
-                </div>
+              <div className="space-y-1">
                 <h4 className="text-white font-heading font-bold text-sm">
-                  Official Jr. NBA Reversible Kit & Canada Basketball Membership
+                  Officially partnered with Canada Basketball and NBA Canada.
                 </h4>
                 <p className="text-eco-muted-light text-xs leading-relaxed">
-                  Every registered player receives an official Jr. NBA reversible uniform, Wilson basketball, and full player insurance coverage through Canada Basketball & Ontario Basketball.
+                  Every player gets a reversible Jr. NBA or Jr. WNBA uniform and a basketball, included in the $249 price.
                 </p>
               </div>
             </div>
 
             {/* Authentic photo card */}
-            <div className="pt-2">
-              <div className="relative rounded-2xl overflow-hidden border border-eco-border/60 shadow-xl group">
-                <img
-                  src="/images/13.png"
-                  alt="Young children smiling and having fun playing basketball together in EcoHoops Jr."
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-56 sm:h-64 object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-eco-black/85 via-eco-black/30 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 text-white text-xs sm:text-sm font-heading font-medium flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Smile size={16} className="text-eco-blue" />
-                    Joyful, pressure-free youth basketball
-                  </span>
-                  <span className="text-[11px] font-mono text-eco-muted uppercase tracking-wider">
-                    EcoHoops Jr.
-                  </span>
-                </div>
+            <div className="relative rounded-2xl overflow-hidden border border-eco-border/60 shadow-xl group">
+              <img
+                src="/images/13.png"
+                alt="Young girls and boys smiling and playing basketball together in EcoHoops Jr."
+                loading="lazy"
+                decoding="async"
+                className="w-full h-52 sm:h-56 object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-eco-black/85 via-eco-black/30 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 text-white text-xs sm:text-sm font-heading font-medium flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Smile size={16} className="text-eco-blue" />
+                  Fun, pressure-free basketball for girls and boys
+                </span>
+                <span className="text-[11px] font-mono text-eco-muted uppercase tracking-wider">
+                  EcoHoops Jr.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM ACTION ROW: BIG REGISTER BUTTON ALONGSIDE GET UPDATES EMAIL SIGNUP */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* PRIMARY ACTION: ONE BIG CLEAR REGISTER BUTTON */}
+          <div className="lg:col-span-5">
+            <div className="h-full glow-card p-7 sm:p-8 bg-gradient-to-br from-[#002855] via-[#0F1B33] to-[#0A1324] border-2 border-eco-blue/50 rounded-3xl shadow-2xl flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider">
+                  Registration Open
+                </span>
+                <h3 className="font-display text-3xl sm:text-4xl text-white uppercase font-bold leading-tight">
+                  Ready to Register?
+                </h3>
+                <p className="text-eco-muted-light text-sm sm:text-base leading-relaxed">
+                  Save a spot for your child in our Grades 1 to 6 Saturday sessions at St. Francis of Assisi School gym. $249 covers all 8 sessions, a reversible Jr. NBA or Jr. WNBA uniform, and a basketball.
+                </p>
+                <ul className="space-y-2 text-xs sm:text-sm text-white/90 font-heading">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
+                    <span>Saturdays, January 23 to March 13, 2027 (8 sessions)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
+                    <span>Maximum 15 players per group. First paid, first served.</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
+                    <span>No tryouts. No cuts.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <a
+                  href={JR_NBA_REGISTER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full btn-glow !py-5 !px-6 text-base sm:text-lg font-display font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-glow-md hover:scale-[1.01] transition-transform text-center"
+                >
+                  <span>Register</span>
+                  <ExternalLink size={18} />
+                </a>
+                <p className="text-xs text-eco-muted-light leading-relaxed">
+                  Only the first two groups that fill will run. If your child's group does not fill, you choose a full refund or holding the spot for a later start.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN: WAITLIST FORM CARD */}
-          <div className="lg:col-span-5">
-            <div className="glow-card p-6 sm:p-8 bg-[#0F1628]/90 border border-eco-blue/20 backdrop-blur-xl rounded-3xl shadow-2xl relative">
-              {/* ISOLATED FORM & CONFIRMATION RECEIPT */}
-              <WaitlistForm />
+          {/* SECONDARY ACTION ALONGSIDE REGISTER: EMAIL UPDATES SIGNUP */}
+          <div className="lg:col-span-7">
+            <div className="h-full glow-card p-6 sm:p-8 bg-[#0F1628]/90 border border-eco-blue/20 backdrop-blur-xl rounded-3xl shadow-2xl">
+              <UpdatesSignupForm />
             </div>
           </div>
-
         </div>
       </div>
     </section>

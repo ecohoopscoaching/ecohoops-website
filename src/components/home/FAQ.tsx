@@ -26,11 +26,11 @@ const FAQS = [
   },
   {
     question: 'How do I sign up for Jr. NBA/Jr. WNBA programming?',
-    answer: 'You can join the parent priority waitlist directly on our homepage! We will notify you first as soon as program dates, age divisions, and registration details are finalized.'
+    answer: 'Registration is open on our homepage for girls and boys in Grades 1 to 6. Sessions are planned for Saturdays, January 23 to March 13, 2027 at St. Francis of Assisi School gym in Mississauga. Only the first two groups that fill will run. If your child\'s group does not fill, you choose a full refund or holding the spot for a later start. Not ready to register yet? Sign up for email updates in the same section.'
   },
   {
     question: 'How do parents register for EcoHoops programs?',
-    answer: 'You can register online through our website, join the Jr. NBA/Jr. WNBA waitlist, or contact our coaching team directly at ecohoopscoaching@gmail.com.'
+    answer: 'You can register for Jr. NBA and Jr. WNBA right from our homepage, sign up for email updates, or contact our coaching team directly at ecohoopscoaching@gmail.com.'
   }
 ]
 
