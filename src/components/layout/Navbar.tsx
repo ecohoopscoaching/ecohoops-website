@@ -663,8 +663,8 @@ export default function Navbar() {
                   className="mt-16 pt-8 border-t border-eco-border/50 w-full max-w-lg flex flex-col sm:flex-row items-center justify-between gap-6"
                 >
                   <div className="flex items-center gap-6 text-sm font-mono uppercase tracking-wider text-eco-muted">
-                    <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-[#97B3D2] transition-colors">Instagram</a>
-                    <a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-[#97B3D2] transition-colors">YouTube</a>
+                    <a href="https://www.instagram.com/ecohoopsbasketball/" target="_blank" rel="noreferrer" className="hover:text-[#97B3D2] transition-colors">Instagram</a>
+                    <a href="https://youtube.com/playlist?list=PLs1EFeW6jHRkBob2wMjvC5tCjw2GRwOb9" target="_blank" rel="noreferrer" className="hover:text-[#97B3D2] transition-colors">YouTube</a>
                   </div>
                   
                   <div className="flex items-center gap-5">

@@ -16,6 +16,7 @@ import type { Player, CoachProfile } from '../types'
 import {
   U16_BOYS_SCHEDULE,
   U15_GIRLS_SCHEDULE,
+  U15_GIRLS_RECORDS,
   BOYS_PRACTICE_RULES,
   GIRLS_PRACTICE_RULES,
   BOYS_NO_PRACTICE_DATES,
@@ -60,12 +61,51 @@ export default function TeamPortal() {
     return teams.find((t) => t.id === selectedTeamId) || teams[0]
   }, [teams, selectedTeamId])
 
-  useDocumentTitle(currentTeam ? `${currentTeam.name} | Team Hub` : 'Team Hub', { noindex: true })
-
   // Active View Tab
   const [activeView, setActiveView] = useState<HubView>('games')
   const [showClosures, setShowClosures] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  // Team Passcode Unlock State
+  const [passcodeInput, setPasscodeInput] = useState('')
+  const [passcodeError, setPasscodeError] = useState<string | null>(null)
+  const [passcodeSubmitting, setPasscodeSubmitting] = useState(false)
+
+  const handlePasscodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = passcodeInput.trim()
+    if (!trimmed) {
+      setPasscodeError('Please enter your team passcode.')
+      return
+    }
+
+    setPasscodeSubmitting(true)
+    setPasscodeError(null)
+
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode: trimmed }),
+      })
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok || !data?.redirectTo) {
+        setPasscodeError(
+          typeof data?.error === 'string'
+            ? data.error
+            : 'Invalid team passcode. Please double-check your code or use your team WhatsApp link.'
+        )
+        setPasscodeSubmitting(false)
+        return
+      }
+
+      window.location.assign(data.redirectTo)
+    } catch {
+      setPasscodeError('Network error while checking passcode. Please try again.')
+      setPasscodeSubmitting(false)
+    }
+  }
 
   // Coach Broadcast Modal
   const [showBroadcastModal, setShowBroadcastModal] = useState(false)
@@ -97,8 +137,18 @@ export default function TeamPortal() {
     showToast(`RSVP updated: ${status === 'going' ? 'Attending ✓' : status === 'maybe' ? 'Maybe ⏱️' : 'Can\'t Attend ✕'}${pLabel}`)
   }
 
+  // Toronto local YYYY-MM-DD helper (avoids UTC rolling over at 7 PM EST)
+  const getTorontoDateIso = (dateObj: Date = new Date()): string => {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Toronto',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(dateObj)
+  }
+
   // Next Upcoming Event
-  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const todayStr = useMemo(() => getTorontoDateIso(), [])
   const nextTeamEvent = useMemo(() => {
     if (!currentTeam) return null
     const allForTeam = schedule
@@ -112,12 +162,13 @@ export default function TeamPortal() {
     const isBoys = selectedTeamId === 'u16-boys'
     const teamClosures = isBoys ? BOYS_NO_PRACTICE_DATES : GIRLS_NO_PRACTICE_DATES
     const closures = [...teamClosures, ...FRIDAY_NO_GYM_DATES].sort((a, b) => a.date.localeCompare(b.date))
-    const now = new Date()
-    const day = now.getDay()
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-    const monday = new Date(now.setDate(diff))
-    const sunday = new Date(monday)
-    sunday.setDate(monday.getDate() + 6)
+    const todayIso = getTorontoDateIso()
+    const [y, m, d] = todayIso.split('-').map(Number)
+    const todayUtc = new Date(Date.UTC(y, m - 1, d))
+    const day = todayUtc.getUTCDay()
+    const diffToMonday = day === 0 ? -6 : 1 - day
+    const monday = new Date(Date.UTC(y, m - 1, d + diffToMonday))
+    const sunday = new Date(Date.UTC(y, m - 1, d + diffToMonday + 6))
     const monStr = monday.toISOString().split('T')[0]
     const sunStr = sunday.toISOString().split('T')[0]
     return closures.find((c) => c.date >= monStr && c.date <= sunStr) || null
@@ -152,46 +203,15 @@ export default function TeamPortal() {
     return scopedTeamId === selectedTeamId
   }, [isAdmin, isCoach, scopedTeamId, selectedTeamId])
 
-  // Lock screen if not authorized for this squad
-  if (!isAuthorizedForThisTeam) {
-    const isOtherTeamScoped = scopedTeamId && scopedTeamId !== selectedTeamId
-    const otherTeamName = scopedTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys'
-    const targetTeamName = selectedTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys'
+  const hubPageTitle = isAuthorizedForThisTeam && currentTeam
+    ? `${currentTeam.name} | Team Hub`
+    : resolvedParamTeamId === 'u15-girls'
+    ? 'U15 Girls | Team Hub'
+    : resolvedParamTeamId === 'u16-boys'
+    ? 'U16 Boys | Team Hub'
+    : 'EcoHoops Team Hub'
 
-    return (
-      <section className="pt-28 pb-20 min-h-screen bg-[#060A10] text-white flex items-center justify-center px-4">
-        <div className="w-full max-w-md p-6 sm:p-10 text-center border-2 border-white/10 bg-[#0B131E] rounded-3xl shadow-2xl">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-center justify-center mx-auto mb-5 text-[#97B3D2]">
-            <Lock size={32} />
-          </div>
-          <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono text-[11px] uppercase tracking-widest inline-block mb-3 font-bold">
-            Private Access
-          </span>
-          <h1 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-2">
-            {targetTeamName} Hub
-          </h1>
-          <p className="text-white/70 text-xs sm:text-sm leading-relaxed mb-6">
-            {isOtherTeamScoped
-              ? `This private team area is exclusively for registered ${targetTeamName} players and parents.`
-              : 'This hub is private for registered EcoHoops families. Please tap the secret link pinned in your WhatsApp group to enter.'}
-          </p>
-          {isOtherTeamScoped ? (
-            <button
-              type="button"
-              onClick={() => navigate(`/hub/${scopedTeamId}`, { replace: true })}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#97B3D2] hover:bg-white text-[#060A10] text-xs font-heading font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
-            >
-              Go to Your {otherTeamName} Hub →
-            </button>
-          ) : (
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
-              No password needed — tap the link from your WhatsApp group.
-            </div>
-          )}
-        </div>
-      </section>
-    )
-  }
+  useDocumentTitle(hubPageTitle, { noindex: true })
 
   const isBoys = selectedTeamId === 'u16-boys'
   const currentSchedule = isBoys ? U16_BOYS_SCHEDULE : U15_GIRLS_SCHEDULE
@@ -207,6 +227,22 @@ export default function TeamPortal() {
     }
     return Array.from(map.values()).sort((a, b) => a.date.localeCompare(b.date))
   }, [isBoys])
+
+  // Authoritative Team Records
+  const teamRecords = useMemo(() => {
+    if (selectedTeamId === 'u15-girls') {
+      return {
+        obl: currentTeam?.records?.obl || U15_GIRLS_RECORDS.obl,
+        coalition: currentTeam?.records?.coalition || U15_GIRLS_RECORDS.coalition,
+        overall: currentTeam?.records?.overall || currentTeam?.record || U15_GIRLS_RECORDS.overall
+      }
+    }
+    return {
+      obl: currentTeam?.records?.obl || '0-0',
+      coalition: currentTeam?.records?.coalition || '0-0',
+      overall: currentTeam?.records?.overall || currentTeam?.record || '0-0'
+    }
+  }, [selectedTeamId, currentTeam])
 
   // Dedicated Events Tab Data: Tournaments, Playoffs, All-Star, Scrimmages, and Coach-Added Events
   const teamEvents = useMemo(() => {
@@ -238,6 +274,95 @@ export default function TeamPortal() {
       .filter((e) => (e.teamId === currentTeam.id || e.teamId === 'all' || !e.teamId) && e.id.startsWith('custom-event-') && e.type === 'practice')
       .sort((a, b) => a.date.localeCompare(b.date))
   }, [schedule, currentTeam])
+
+  const hasUnauthorizedError = useMemo(() => {
+    return new URLSearchParams(location.search).get('error') === 'unauthorized'
+  }, [location.search])
+
+  // Lock screen if not authorized for this squad
+  if (!isAuthorizedForThisTeam) {
+    const isOtherTeamScoped = scopedTeamId && scopedTeamId !== selectedTeamId
+    const otherTeamName = scopedTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys'
+    const targetTeamName = resolvedParamTeamId
+      ? (resolvedParamTeamId === 'u15-girls' ? 'U15 Girls' : 'U16 Boys')
+      : 'EcoHoops Team'
+
+    return (
+      <section className="pt-28 pb-20 min-h-screen bg-[#060A10] text-white flex items-center justify-center px-4">
+        <div className="w-full max-w-md p-6 sm:p-10 text-center border-2 border-white/10 bg-[#0B131E] rounded-3xl shadow-2xl">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-[#97B3D2]/10 border border-[#97B3D2]/30 flex items-center justify-center mx-auto mb-5 text-[#97B3D2]">
+            <Lock size={32} />
+          </div>
+          <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono text-[11px] uppercase tracking-widest inline-block mb-3 font-bold">
+            {hasUnauthorizedError ? 'Invalid or Expired Link' : 'Private Access'}
+          </span>
+          <h1 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-2">
+            {targetTeamName} Hub
+          </h1>
+          <p className="text-white/70 text-xs sm:text-sm leading-relaxed mb-6">
+            {isOtherTeamScoped
+              ? `This private team area is exclusively for registered ${targetTeamName} players and parents.`
+              : hasUnauthorizedError
+              ? 'That schedule link is invalid or expired. Enter your team passcode below or tap the latest secret link pinned in your WhatsApp group.'
+              : 'This hub is private for registered EcoHoops families. Enter your team passcode below or tap the pinned link in your WhatsApp group.'}
+          </p>
+          {isOtherTeamScoped && (
+            <button
+              type="button"
+              onClick={() => navigate(`/hub/${scopedTeamId}`, { replace: true })}
+              className="w-full py-3.5 px-4 mb-5 rounded-xl bg-[#97B3D2] hover:bg-white text-[#060A10] text-xs font-heading font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+            >
+              Go to Your {otherTeamName} Hub →
+            </button>
+          )}
+          <form onSubmit={handlePasscodeSubmit} className="space-y-3 text-left">
+            <div>
+              <label
+                htmlFor="team-passcode-input"
+                className="block text-[11px] font-mono uppercase tracking-wider text-white/60 mb-1.5"
+              >
+                {isOtherTeamScoped ? `Switch with ${targetTeamName} Passcode` : 'Team Passcode'}
+              </label>
+              <input
+                id="team-passcode-input"
+                type="password"
+                autoComplete="off"
+                placeholder="Enter team passcode..."
+                value={passcodeInput}
+                onChange={(e) => {
+                  setPasscodeInput(e.target.value)
+                  if (passcodeError) setPasscodeError(null)
+                }}
+                className="w-full px-4 py-3 rounded-xl bg-[#060A10] border border-white/15 focus:border-[#97B3D2] focus:outline-none text-sm text-white placeholder:text-white/35 font-mono tracking-wider"
+              />
+            </div>
+            {passcodeError && (
+              <p role="alert" className="text-xs text-rose-400 font-medium">
+                {passcodeError}
+              </p>
+            )}
+            <button
+              type="submit"
+              disabled={passcodeSubmitting}
+              className={`w-full py-3.5 px-4 rounded-xl text-xs font-heading font-black uppercase tracking-wider transition-all cursor-pointer shadow-md ${
+                isOtherTeamScoped
+                  ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                  : 'bg-[#97B3D2] hover:bg-white text-[#060A10]'
+              } disabled:opacity-60`}
+            >
+              {passcodeSubmitting ? 'Checking Passcode...' : 'Unlock Schedule →'}
+            </button>
+          </form>
+          <p className="text-[11px] text-white/50 mt-5 leading-relaxed">
+            Need your team passcode or WhatsApp link? Message your coach or email{' '}
+            <a href="mailto:ecohoopscoaching@gmail.com" className="text-[#97B3D2] underline">
+              ecohoopscoaching@gmail.com
+            </a>.
+          </p>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <div className="pt-20 sm:pt-24 pb-32 min-h-screen bg-[#060A10] text-white font-sans selection:bg-[#97B3D2] selection:text-[#060A10] overflow-x-hidden">
@@ -316,7 +441,13 @@ export default function TeamPortal() {
                 ⚡ NEXT UP
               </span>
               <span className="text-xs font-mono uppercase tracking-wider text-white/60">
-                {nextTeamEvent?.type === 'game' ? 'Game Session' : 'Team Practice'}
+                {nextTeamEvent?.category === 'friday_night_hoops'
+                  ? 'Friday Night Hoops (Open Gym)'
+                  : nextTeamEvent?.type === 'game'
+                  ? 'Game Session'
+                  : nextTeamEvent?.type === 'tournament'
+                  ? 'Tournament / Playoffs'
+                  : 'Team Practice'}
               </span>
             </div>
 
@@ -489,7 +620,39 @@ export default function TeamPortal() {
 
         {/* VIEW 1: GAME DATES (Mobile Cards) */}
         {activeView === 'games' && (
-          <div className="space-y-3 pt-1">
+          <div className="space-y-4 pt-1">
+            {/* RECORD BLOCK: Exactly three lines (OBL, Coalition, Overall) */}
+            <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#0B131E] border border-white/10 space-y-3 shadow-lg">
+              <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#97B3D2]">
+                  {currentTeam.name} Season Record
+                </span>
+                <span className="text-[10px] font-mono uppercase text-white/50">
+                  {currentTeam.season}
+                </span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between py-1 text-xs sm:text-sm">
+                  <span className="text-white/80 font-heading uppercase tracking-wide">OBL Record</span>
+                  <span className="font-mono font-bold text-white bg-white/5 px-2.5 py-0.5 rounded-lg border border-white/10">
+                    {teamRecords.obl}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-1 text-xs sm:text-sm">
+                  <span className="text-white/80 font-heading uppercase tracking-wide">Coalition Record</span>
+                  <span className="font-mono font-bold text-white bg-white/5 px-2.5 py-0.5 rounded-lg border border-white/10">
+                    {teamRecords.coalition}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-1 text-xs sm:text-sm border-t border-white/5 pt-2">
+                  <span className="text-white font-heading font-black uppercase tracking-wide">Overall Record</span>
+                  <span className="font-mono font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
+                    {teamRecords.overall}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between px-1">
               <h2 className="text-lg sm:text-2xl font-black uppercase tracking-tight text-white">
                 Confirmed Game Weekends
@@ -600,62 +763,165 @@ export default function TeamPortal() {
               </div>
             )}
 
-            <div className="space-y-2.5">
-              {currentSchedule.map((item) => (
-                <div
-                  key={item.id}
-                  className={`p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    item.isPlayoffs
-                      ? 'bg-gradient-to-r from-amber-500/20 via-[#0B131E] to-[#0B131E] border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.15)]'
-                      : item.isAllStar
-                      ? 'bg-gradient-to-r from-purple-500/20 via-[#0B131E] to-[#0B131E] border-purple-400/50'
-                      : 'bg-[#0B131E] border-white/10'
-                  }`}
-                >
-                  <div className="space-y-1.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider border ${
-                        item.league === 'Coalition'
-                          ? 'bg-amber-500/15 text-amber-200 border-amber-500/30'
-                          : 'bg-rose-500/15 text-rose-200 border-rose-500/30'
-                      }`}>
-                        <img
-                          src={item.league === 'Coalition' ? '/images/branding/coalition-logo.png' : '/images/branding/obl-logo.jpg'}
-                          alt={item.league}
-                          className="w-3.5 h-3.5 rounded-full object-cover"
-                        />
-                        <span>{item.league}</span>
-                      </span>
+            <div className="space-y-3">
+              {currentSchedule.map((item) => {
+                const hasGames = item.games && item.games.length > 0
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 transition-all flex flex-col gap-3.5 ${
+                      item.isPlayoffs
+                        ? 'bg-gradient-to-r from-amber-500/20 via-[#0B131E] to-[#0B131E] border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.15)]'
+                        : item.isAllStar
+                        ? 'bg-gradient-to-r from-purple-500/20 via-[#0B131E] to-[#0B131E] border-purple-400/50'
+                        : hasGames
+                        ? 'bg-gradient-to-r from-[#0F1B2B] via-[#0B131E] to-[#0B131E] border-[#97B3D2]/40 shadow-lg'
+                        : 'bg-[#0B131E] border-white/10'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider border ${
+                            item.league === 'Coalition'
+                              ? 'bg-amber-500/15 text-amber-200 border-amber-500/30'
+                              : 'bg-rose-500/15 text-rose-200 border-rose-500/30'
+                          }`}>
+                            <img
+                              src={item.league === 'Coalition' ? '/images/branding/coalition-logo.png' : '/images/branding/obl-logo.jpg'}
+                              alt={item.league}
+                              className="w-3.5 h-3.5 rounded-full object-cover"
+                            />
+                            <span>{item.league}</span>
+                          </span>
 
-                      {item.isPlayoffs && (
-                        <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-black uppercase tracking-wider bg-amber-400 text-[#060A10] flex items-center gap-1">
-                          <Trophy size={12} /> Playoffs
-                        </span>
-                      )}
+                          {item.location && (
+                            <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-white/70 flex items-center gap-1">
+                              <MapPin size={11} className="text-[#97B3D2]" /> {item.location}
+                            </span>
+                          )}
 
-                      {item.isAllStar && (
-                        <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-purple-400/20 text-purple-200 border border-purple-400/40 flex items-center gap-1">
-                          <Sparkles size={12} /> All-Star
-                        </span>
-                      )}
+                          {item.isPlayoffs && (
+                            <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-black uppercase tracking-wider bg-amber-400 text-[#060A10] flex items-center gap-1">
+                              <Trophy size={12} /> Playoffs
+                            </span>
+                          )}
+
+                          {item.isAllStar && (
+                            <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-purple-400/20 text-purple-200 border border-purple-400/40 flex items-center gap-1">
+                              <Sparkles size={12} /> All-Star
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-xl sm:text-2xl font-black uppercase text-white tracking-wide">
+                          {item.dateRange}
+                        </div>
+
+                        <div className="text-xs font-mono text-white/60">
+                          {item.sessionType} &middot; {item.games && item.games.length > 0 ? `${item.games.length} Games Played` : 'Confirmed'}
+                        </div>
+                      </div>
+
+                      <div className="self-start sm:self-auto">
+                        {item.games && item.games.length > 0 ? (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                            Completed ({item.league === 'Coalition' ? teamRecords.coalition : teamRecords.obl})
+                          </span>
+                        ) : item.endDate < todayStr ? (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-white/60">
+                            Completed
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-[#97B3D2]">
+                            Confirmed
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="text-xl sm:text-2xl font-black uppercase text-white tracking-wide">
-                      {item.dateRange}
-                    </div>
+                    {/* Played Games with Final Scores and Clear Win/Loss */}
+                    {item.games && item.games.length > 0 && (
+                      <div className="pt-3 border-t border-white/10 space-y-2.5">
+                        <div className="text-[11px] font-mono uppercase tracking-wider text-[#97B3D2] font-bold flex items-center justify-between">
+                          <span>Played Games</span>
+                          <span className="text-white/40 text-[10px]">Official Final Scores</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {item.games.map((g) => {
+                            const isWin = g.outcome === 'W'
+                            return (
+                              <div
+                                key={g.id}
+                                className={`p-4 rounded-2xl border space-y-3 ${
+                                  isWin
+                                    ? 'bg-emerald-950/20 border-emerald-500/30'
+                                    : 'bg-rose-950/20 border-rose-500/30'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wide">
+                                      Game {g.gameNumber}
+                                    </span>
+                                    <span className="text-[11px] font-mono text-white/50">
+                                      &middot; {g.date}
+                                    </span>
+                                  </div>
+                                  <span className={`px-2.5 py-0.5 rounded-md text-xs font-mono font-black uppercase tracking-wider ${
+                                    isWin
+                                      ? 'bg-emerald-500 text-[#060A10]'
+                                      : 'bg-rose-500 text-white'
+                                  }`}>
+                                    {isWin ? 'WIN' : 'LOSS'}
+                                  </span>
+                                </div>
 
-                    <div className="text-xs font-mono text-white/60">
-                      {item.sessionType} &middot; Confirmed
-                    </div>
+                                <div className="bg-[#060A10]/70 rounded-xl p-3 border border-white/5 space-y-2">
+                                  {/* EcoHoops Score Row */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-[#97B3D2]"></span>
+                                      <span className={`text-sm font-heading uppercase tracking-wide ${isWin ? 'font-black text-white' : 'font-semibold text-white/80'}`}>
+                                        EcoHoops
+                                      </span>
+                                    </div>
+                                    <span className={`font-mono text-lg ${isWin ? 'font-black text-emerald-400' : 'font-bold text-white/80'}`}>
+                                      {g.ecoScore}
+                                    </span>
+                                  </div>
+
+                                  {/* Opponent Score Row */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-white/20"></span>
+                                      <span className={`text-sm font-heading uppercase tracking-wide ${!isWin ? 'font-black text-white' : 'font-semibold text-white/80'}`}>
+                                        {g.opponent}
+                                      </span>
+                                    </div>
+                                    <span className={`font-mono text-lg ${!isWin ? 'font-black text-rose-400' : 'font-bold text-white/80'}`}>
+                                      {g.opponentScore}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between text-[11px] font-mono text-white/60 px-1 pt-1">
+                                  <span>{g.halftime ? `Halftime: ${g.halftime}` : 'Final Score'}</span>
+                                  {g.location && (
+                                    <span className="flex items-center gap-1">
+                                      <MapPin size={10} className="text-[#97B3D2]" /> {g.location}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="self-start sm:self-auto">
-                    <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-white/5 border border-white/10 text-[#97B3D2]">
-                      Confirmed
-                    </span>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

@@ -137,7 +137,7 @@ export default function Rep() {
             <span className="gradient-text">BRACKETS</span>
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto mt-4 leading-relaxed">
-            We are currently fielding our 2011 Boys Team and 2012 Girls Team. Our squads play in 2 competitive leagues around the GTA (such as the Coalition League and secondary circuit) to maximize development and game reps.
+            We are currently fielding our 2011 Boys Team (U16 Boys in Coalition League) and 2012 Girls Team (U15 Girls in OBL & Coalition League) to maximize development and game reps.
           </p>
         </motion.div>
 
@@ -285,7 +285,7 @@ export default function Rep() {
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
-                  <span><strong>Dual League Play:</strong> Complete entry into 2 competitive GTA leagues (like the Coalition League and secondary circuit) for maximum game experience.</span>
+                  <span><strong>Competitive League Play:</strong> Entry into competitive GTA circuits (Coalition League & Ontario Basketball League).</span>
                 </li>
                 <li className="flex gap-3 items-start">
                   <div className="w-5 h-5 rounded-full bg-[#97B3D2]/10 flex items-center justify-center text-[#97B3D2] font-bold text-xs flex-shrink-0 mt-0.5">✓</div>

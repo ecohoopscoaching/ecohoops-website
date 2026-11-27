@@ -14,13 +14,13 @@ export default function MarketingPlaybook() {
   const [activeTab, setActiveTab] = useState<PlaybookTab>('generator')
 
   // Copy Generator State
-  const [targetProgram, setTargetProgram] = useState('August Tryouts (Mississauga)')
-  const [ageGroup, setAgeGroup] = useState('Grades 5/6, 7/8, 9/10')
+  const [targetProgram, setTargetProgram] = useState('Jr. NBA / Jr. WNBA (Grades 1–6)')
+  const [ageGroup, setAgeGroup] = useState('Grades 1–6 (Co-ed) & U15/U16 Rep')
   const [channel, setChannel] = useState<'instagram' | 'email' | 'flyer'>('instagram')
   const [copied, setCopied] = useState(false)
 
   // Copy Checker State
-  const [draftCopy, setDraftCopy] = useState(`Your kid practices every week, but when the game gets fast, do they freeze? EcoHoops builds players who stay calm and read the court. Our practices are built like real games so learning transfers when it counts. Tryouts are August 1 & 8 in Mississauga!`)
+  const [draftCopy, setDraftCopy] = useState(`Your kid practices every week, but when the game gets fast, do they freeze? EcoHoops builds players who stay calm and read the court. Our practices are built like real games so learning transfers when it counts. Winter 2027 Jr. NBA runs Jan 23 – Mar 13 in Mississauga!`)
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({
     1: true, 2: true, 3: true, 4: true, 5: true
   })
@@ -59,14 +59,14 @@ We don't do static cone drills. We teach basketball the way it's actually played
 
 The result? Players who stay calm under pressure, read the floor, and solve problems on their own.
 
-Details for our upcoming Rep Team Tryouts:
-• Dates: August 1 and August 8
+Details for our Winter 2027 Mississauga Program:
+• Schedule: Saturdays, Jan 23 – Mar 13, 2027 (8 Sessions)
 • Location: Mississauga, ON
 • Divisions: ${ageGroup}
 
 Spots are capped to guarantee high playing time and direct coaching focus.
 
-Reserve your child's tryout spot here: https://ecohoops.ca/register
+Reserve your child's spot here: https://ecohoops.ca/register
 
 Coach Adrian
 Founder, EcoHoops Basketball`
@@ -83,9 +83,9 @@ Build a smarter, more confident competitor with EcoHoops Mississauga.
 • No shouting or fear — just proven player development.
 • Teaches players to read the court and make smart decisions under pressure.
 
-[TRYOUT DATES & LOCATION]
-📅 August 1 & August 8 | Mississauga, ON
-🏀 Age Groups: ${ageGroup}
+[DATES & LOCATION]
+📅 Saturdays, Jan 23 – Mar 13, 2027 | Mississauga, ON
+🏀 Divisions: ${ageGroup}
 
 [CALL TO ACTION]
 Register now before spots fill up: www.ecohoops.ca/register`
@@ -192,9 +192,9 @@ Register now before spots fill up: www.ecohoops.ca/register`
                     onChange={(e) => setTargetProgram(e.target.value)}
                     className="w-full bg-eco-black border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-eco-blue text-xs font-body"
                   >
-                    <option>August Tryouts (Mississauga)</option>
-                    <option>Junior Hoops (Ages 5-10)</option>
-                    <option>Girls Basketball Program</option>
+                    <option>Jr. NBA / Jr. WNBA (Grades 1–6)</option>
+                    <option>U15 Girls Rep Basketball</option>
+                    <option>U16 Boys Rep Basketball</option>
                     <option>General Club Registration</option>
                   </select>
                 </div>

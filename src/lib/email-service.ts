@@ -225,8 +225,8 @@ export function generateEmailHtml(params: DispatchNotificationParams): { subject
             ` : ''}
             
             <div style="text-align: center; margin: 26px 0 10px;">
-              <a href="https://ecohoops.ca/team-portal" class="btn">
-                ${eventType === 'rsvp_nudge' ? 'Confirm Player RSVP Now' : 'Open Team Portal & View Schedule'}
+              <a href="https://www.ecohoops.ca/hub/${team.id}" class="btn">
+                ${eventType === 'rsvp_nudge' ? 'Confirm Player RSVP Now' : 'Open Team Hub & View Schedule'}
               </a>
             </div>
           ` : ''}

@@ -1,4 +1,6 @@
-import { ScheduleEvent } from '../types'
+import { ScheduleEvent, LeagueGame } from '../types'
+
+export type { LeagueGame }
 
 export interface LeagueWeekend {
   id: string
@@ -11,6 +13,8 @@ export interface LeagueWeekend {
   gamesCount?: string
   isPlayoffs?: boolean
   isAllStar?: boolean
+  location?: string
+  games?: LeagueGame[]
 }
 
 export interface PracticeRule {
@@ -258,6 +262,12 @@ export const U16_BOYS_SCHEDULE: LeagueWeekend[] = [
   }
 ]
 
+export const U15_GIRLS_RECORDS = {
+  obl: '1-1',
+  coalition: '0-0',
+  overall: '1-1'
+}
+
 export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
   {
     id: 'g-obl-1',
@@ -266,7 +276,31 @@ export const U15_GIRLS_SCHEDULE: LeagueWeekend[] = [
     startDate: '2026-11-07',
     endDate: '2026-11-08',
     league: 'OBL',
-    sessionType: 'League Session'
+    sessionType: 'Weekend 1',
+    location: 'Thorold',
+    games: [
+      {
+        id: 'g-obl-1-game-1',
+        gameNumber: 1,
+        opponent: 'Blitz Girls',
+        date: 'Saturday, November 7, 2026',
+        location: 'Thorold',
+        ecoScore: 52,
+        opponentScore: 59,
+        outcome: 'L',
+        halftime: '34-34'
+      },
+      {
+        id: 'g-obl-1-game-2',
+        gameNumber: 2,
+        opponent: 'CW Celtics',
+        date: 'Saturday, November 7, 2026',
+        location: 'Thorold',
+        ecoScore: 58,
+        opponentScore: 32,
+        outcome: 'W'
+      }
+    ]
   },
   {
     id: 'g-coalition-1',
@@ -521,8 +555,8 @@ export const SCHEDULE: ScheduleEvent[] = [
     date: w.startDate,
     endDate: w.endDate,
     time: 'Confirmed Weekend',
-    location: `${w.league} Competition Venue`,
-    venueDetails: `Greater Toronto Area (Host Gym Assigned by ${w.league})`,
+    location: w.location ? `${w.league} (${w.location})` : `${w.league} Competition Venue`,
+    venueDetails: w.location ? `${w.location}, ON` : `Greater Toronto Area (Host Gym Assigned by ${w.league})`,
     teamId: w.teamId,
     league: w.league,
     sessionType: w.sessionType,
@@ -530,6 +564,7 @@ export const SCHEDULE: ScheduleEvent[] = [
     isAllStar: w.isAllStar,
     category: w.isPlayoffs ? 'playoffs' : w.isAllStar ? 'all_star' : 'league_session',
     notes: `Confirmed ${w.league} session dates: ${w.dateRange}. Exact game times and matchups released prior to weekend.`,
+    games: w.games,
     rsvp: { going: 0, maybe: 0, notGoing: 0, total: 0 }
   }))
 ].sort((a, b) => a.date.localeCompare(b.date))

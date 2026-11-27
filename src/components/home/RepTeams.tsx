@@ -59,7 +59,7 @@ export default function RepTeams() {
               <ul className="space-y-2 text-xs text-eco-muted-light font-body mb-6">
                 <li className="flex items-center gap-2">
                   <ShieldCheck size={14} className="text-eco-blue" />
-                  <span>12 OBL/OBA Games + 12 Coalition Games</span>
+                  <span>Coalition Basketball League (Weekends + Playoffs)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Calendar size={14} className="text-eco-blue" />
@@ -97,7 +97,7 @@ export default function RepTeams() {
               <ul className="space-y-2 text-xs text-eco-muted-light font-body mb-6">
                 <li className="flex items-center gap-2">
                   <ShieldCheck size={14} className="text-eco-blue" />
-                  <span>12 OBL/OBA Games + 12 Coalition Games</span>
+                  <span>OBL (Ontario Basketball) + Coalition League Play</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Calendar size={14} className="text-eco-blue" />

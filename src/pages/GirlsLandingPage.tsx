@@ -472,12 +472,12 @@ export default function GirlsLandingPage() {
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           
           <div className="text-center mb-10">
-            <span className="tag mb-2 inline-block">Tryout Information</span>
+            <span className="tag mb-2 inline-block">Program & Roster Details</span>
             <h2 className="font-display text-3xl uppercase text-white">
-              TRYOUT DATES & LOCATION
+              2026–27 REP SQUAD INFORMATION
             </h2>
             <p className="text-xs text-eco-muted-light font-mono mt-1">
-              Churchill Meadows Community Centre • Open to Grades 5 & 6 Girls
+              Mississauga Gyms • U16 Boys (2 Open Spots) & U15 Girls Rep Programs
             </p>
           </div>
 
@@ -488,9 +488,9 @@ export default function GirlsLandingPage() {
                 <Calendar size={22} />
               </div>
               <div>
-                <span className="text-[11px] font-mono uppercase text-eco-muted block">Date</span>
-                <span className="font-heading font-bold text-white text-base">Sunday, August 2, 2026</span>
-                <span className="text-xs text-eco-muted-light block mt-0.5">Grade 5 & 6 Girls</span>
+                <span className="text-[11px] font-mono uppercase text-eco-muted block">Status</span>
+                <span className="font-heading font-bold text-white text-base">2026–27 In Season</span>
+                <span className="text-xs text-eco-muted-light block mt-0.5">U16 Boys: 2 Open Spots</span>
               </div>
             </div>
 
@@ -499,9 +499,9 @@ export default function GirlsLandingPage() {
                 <Clock size={22} />
               </div>
               <div>
-                <span className="text-[11px] font-mono uppercase text-eco-muted block">Session Time</span>
-                <span className="font-heading font-bold text-white text-base">3:00 PM – 4:00 PM</span>
-                <span className="text-xs text-eco-muted-light block mt-0.5">Check-in starts 2:45 PM</span>
+                <span className="text-[11px] font-mono uppercase text-eco-muted block">Weekly Training</span>
+                <span className="font-heading font-bold text-white text-base">2x Practices + Fridays</span>
+                <span className="text-xs text-eco-muted-light block mt-0.5">Plus GTA League Weekends</span>
               </div>
             </div>
 
@@ -511,8 +511,8 @@ export default function GirlsLandingPage() {
               </div>
               <div>
                 <span className="text-[11px] font-mono uppercase text-eco-muted block">Location</span>
-                <span className="font-heading font-bold text-white text-base">Churchill Meadows</span>
-                <span className="text-xs text-eco-muted-light block mt-0.5">Community Centre • Mississauga</span>
+                <span className="font-heading font-bold text-white text-base">Mississauga, ON</span>
+                <span className="text-xs text-eco-muted-light block mt-0.5">Iona CSS & Green Glade PS</span>
               </div>
             </div>
 
@@ -523,7 +523,7 @@ export default function GirlsLandingPage() {
               <div>
                 <span className="text-[11px] font-mono uppercase text-eco-muted block">What To Bring</span>
                 <span className="font-heading font-bold text-white text-base">Sneakers & Water</span>
-                <span className="text-xs text-eco-muted-light block mt-0.5">Size 28.5 ball (if available)</span>
+                <span className="text-xs text-eco-muted-light block mt-0.5">Basketball provided if needed</span>
               </div>
             </div>
 
@@ -577,16 +577,16 @@ export default function GirlsLandingPage() {
             GIVE YOUR DAUGHTER A GREAT FIRST REP BASKETBALL EXPERIENCE.
           </h2>
           <p className="text-eco-muted-light text-base max-w-xl mx-auto font-body">
-            Tryouts are Sunday, August 2 at Churchill Meadows Community Centre. Spots are capped for personalized coaching focus.
+            Interested in joining an EcoHoops Rep team or upcoming evaluations in Mississauga? Message our coaching staff to get started.
           </p>
           <div>
-            <button
-              onClick={scrollToForm}
-              className="btn-glow !px-10 !py-5 text-base sm:text-lg font-bold uppercase tracking-wider flex items-center justify-center gap-3 cursor-pointer mx-auto !bg-eco-orange text-eco-black hover:!bg-eco-orange/90 shadow-[0_0_35px_rgba(242,122,34,0.4)]"
+            <Link
+              to="/contact"
+              className="btn-glow !px-10 !py-5 text-base sm:text-lg font-bold uppercase tracking-wider inline-flex items-center justify-center gap-3 cursor-pointer mx-auto !bg-eco-orange text-eco-black hover:!bg-eco-orange/90 shadow-[0_0_35px_rgba(242,122,34,0.4)]"
             >
-              Register for Tryouts Now
+              Message Our Coaching Staff
               <ArrowRight size={20} />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

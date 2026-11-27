@@ -42,32 +42,54 @@ export function DataProvider({ children }: { children: ReactNode }) {
   // Clean state: Load user-saved state from localStorage or initialize clean
   const [teams, setTeams] = useState<Team[]>(() => {
     try {
+      localStorage.removeItem('ecohoops_teams_v8')
       localStorage.removeItem('ecohoops_teams_v7')
       localStorage.removeItem('ecohoops_teams_v6')
       localStorage.removeItem('ecohoops_teams')
     } catch {}
 
-    const saved = localStorage.getItem('ecohoops_teams_v8')
+    const saved = localStorage.getItem('ecohoops_teams_v9')
     if (!saved) return TEAMS
     try {
       const parsed: Team[] = JSON.parse(saved)
-      return parsed.map((t) => ({
-        ...t,
-        roster: (t.roster || [])
-          .filter((p) => p.id !== 'b-ronit' && !p.name.toLowerCase().includes('ronit'))
-          .map((p) => (p.id === 'b-avir' || p.name.toLowerCase().includes('avir') ? { ...p, number: 1 } : p))
-      }))
+      return parsed.map((t) => {
+        const canonical = TEAMS.find(ct => ct.id === t.id)
+        return {
+          ...t,
+          record: canonical?.record || t.record,
+          records: canonical?.records || t.records,
+          roster: (t.roster || [])
+            .filter((p) => p.id !== 'b-ronit' && !p.name.toLowerCase().includes('ronit'))
+            .map((p) => (p.id === 'b-avir' || p.name.toLowerCase().includes('avir') ? { ...p, number: 1 } : p))
+        }
+      })
     } catch {
       return TEAMS
     }
   })
 
   const [schedule, setSchedule] = useState<ScheduleEvent[]>(() => {
-    const saved = localStorage.getItem('ecohoops_schedule_v5')
+    const saved = localStorage.getItem('ecohoops_schedule_v6')
     if (!saved) return SCHEDULE
     try {
       const parsed: ScheduleEvent[] = JSON.parse(saved)
-      return parsed.length > 0 ? parsed.filter(e => !e.id.startsWith('b-obl-')) : SCHEDULE
+      if (!Array.isArray(parsed) || parsed.length === 0) return SCHEDULE
+
+      // Preserve saved RSVP/attendance on canonical events and retain custom/result events
+      const savedById = new Map(parsed.map((e) => [e.id, e]))
+      const mergedCanonical = SCHEDULE.map((canonical) => {
+        const existing = savedById.get(canonical.id)
+        if (!existing) return canonical
+        return {
+          ...canonical,
+          rsvp: existing.rsvp || canonical.rsvp,
+          attendance: existing.attendance || canonical.attendance,
+        }
+      })
+      const customEvents = parsed.filter(
+        (e) => e.id.startsWith('custom-') || e.id.startsWith('result-') || e.id.startsWith('event-')
+      )
+      return [...mergedCanonical, ...customEvents].sort((a, b) => a.date.localeCompare(b.date))
     } catch {
       return SCHEDULE
     }
@@ -85,16 +107,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // One-time automated update to ensure Winter season, U16 Boys / U15 Girls, and confirmed schedule are synced
   useEffect(() => {
-    const cleanFlagKey = 'ecohoops_clean_baseline_v21'
+    const cleanFlagKey = 'ecohoops_clean_baseline_v23'
     if (!localStorage.getItem(cleanFlagKey)) {
       try {
+        localStorage.removeItem('ecohoops_schedule_v5')
         localStorage.removeItem('ecohoops_schedule_v4')
+        localStorage.removeItem('ecohoops_teams_v8')
         localStorage.removeItem('ecohoops_teams_v7')
         localStorage.removeItem('ecohoops_teams_v6')
         localStorage.removeItem('ecohoops_teams')
       } catch {}
-      localStorage.setItem('ecohoops_teams_v8', JSON.stringify(TEAMS))
-      localStorage.setItem('ecohoops_schedule_v5', JSON.stringify(SCHEDULE))
+      localStorage.setItem('ecohoops_teams_v9', JSON.stringify(TEAMS))
+      localStorage.setItem('ecohoops_schedule_v6', JSON.stringify(SCHEDULE))
       localStorage.setItem(cleanFlagKey, 'true')
       setTeams(TEAMS)
       setSchedule(SCHEDULE)
@@ -103,11 +127,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // Synchronize state changes to localStorage
   useEffect(() => {
-    localStorage.setItem('ecohoops_teams_v8', JSON.stringify(teams))
+    localStorage.setItem('ecohoops_teams_v9', JSON.stringify(teams))
   }, [teams])
 
   useEffect(() => {
-    localStorage.setItem('ecohoops_schedule_v5', JSON.stringify(schedule))
+    localStorage.setItem('ecohoops_schedule_v6', JSON.stringify(schedule))
   }, [schedule])
 
   useEffect(() => {
@@ -119,13 +143,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [messages])
 
   const clearAllData = () => {
+    localStorage.removeItem('ecohoops_schedule_v6')
     localStorage.removeItem('ecohoops_schedule_v4')
     localStorage.removeItem('ecohoops_payments')
     localStorage.removeItem('ecohoops_messages')
     localStorage.removeItem('ecohoops_jr_waitlist')
     localStorage.removeItem('ecohoops_sent_notifications_v1')
     localStorage.removeItem('ecohoops_teams_v7')
-    localStorage.setItem('ecohoops_teams_v8', JSON.stringify(TEAMS))
+    localStorage.setItem('ecohoops_teams_v9', JSON.stringify(TEAMS))
     setSchedule([])
     setPayments([])
     setMessages([])
@@ -133,6 +158,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }
 
   const clearSchedule = () => {
+    localStorage.removeItem('ecohoops_schedule_v6')
     localStorage.removeItem('ecohoops_schedule_v4')
     setSchedule([])
   }

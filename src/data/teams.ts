@@ -25,6 +25,12 @@ const createPlayer = (
   },
 })
 
+export const U15_GIRLS_RECORDS = {
+  obl: '1-1',
+  coalition: '0-0',
+  overall: '1-1'
+}
+
 export const TEAMS: Team[] = [
   {
     id: 'u15-girls',
@@ -34,7 +40,12 @@ export const TEAMS: Team[] = [
     birthYear: 2012,
     season: 'Winter 2026-2027',
     isActive: true,
-    record: '0-0',
+    record: '1-1',
+    records: {
+      obl: '1-1',
+      coalition: '0-0',
+      overall: '1-1'
+    },
     roster: [
       // Oldest to youngest
       createPlayer('g-laila', 30, 'Laila Gaafar', 'January 30, 2012', 'C', '/images/Player Profile Pics/Laila.png'),

@@ -664,7 +664,7 @@ const RECENT_GAMES: GameVideo[] = [
     team: '2011 Boys',
     teamColor: '#97B3D2',
     date: 'Mar 2025',
-    description: 'Home game at Hershey Centre, Mississauga',
+    description: 'Home game at Paramount Fine Foods Centre, Mississauga',
     score: 'W 45-41',
     youtubeUrl: `https://youtube.com/playlist?list=${YOUTUBE_PLAYLIST_ID}`,
   },

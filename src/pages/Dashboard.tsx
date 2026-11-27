@@ -211,10 +211,10 @@ function OverviewTab() {
           </div>
         </div>
         <button
-          onClick={() => navigate(selectedChild?.teamId ? `/team-portal/${selectedChild.teamId}` : '/team-portal')}
+          onClick={() => navigate(selectedChild?.teamId ? `/hub/${selectedChild.teamId}` : '/hub')}
           className="px-5 py-2.5 rounded-xl bg-[#97B3D2] text-[#060A10] text-xs font-heading font-bold uppercase tracking-wider hover:bg-white transition-all shadow-glow-sm flex items-center gap-2 self-start sm:self-auto whitespace-nowrap"
         >
-          <span>Open Team Portal</span>
+          <span>Open Team Hub</span>
           <ArrowUpRight size={14} />
         </button>
       </div>
@@ -233,7 +233,7 @@ function OverviewTab() {
               <span className="text-xs text-eco-muted font-mono">Today &middot; 4:15 PM</span>
             </div>
             <p className="text-sm font-semibold text-white mt-0.5">
-              Practice gym update: Hershey Centre Court 3 available 30 min early for warm-ups & shooting lab.
+              Practice gym reminder: Check the Team Hub for current permit times and holiday closures at Iona CSS & Green Glade PS.
             </p>
           </div>
         </div>
@@ -308,7 +308,7 @@ function OverviewTab() {
                   <span className="px-2.5 py-0.5 rounded-full bg-eco-orange/20 text-eco-orange text-[10px] font-mono uppercase font-bold tracking-wider">
                     PLAYER ACCOUNT
                   </span>
-                  <span className="text-xs text-eco-muted font-mono">U15 Boys Rep</span>
+                  <span className="text-xs text-eco-muted font-mono">U16 Boys Rep</span>
                 </div>
                 <h2 className="font-display text-2xl md:text-3xl text-white uppercase tracking-tight">
                   {userProfile?.name || 'Jacob Sagat'}
@@ -364,7 +364,7 @@ function OverviewTab() {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full bg-eco-blue/20 text-eco-blue text-[10px] font-mono uppercase font-bold tracking-wider">
-                  TEAMSNAP FAMILY HUB
+                  ECOHOOPS FAMILY HUB
                 </span>
                 <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg border border-emerald-500/20">
                   ✓ Season Fees: Paid in Full
@@ -531,9 +531,9 @@ function OverviewTab() {
                 <div key={event.id} className="p-4 rounded-xl bg-eco-surface2 border border-eco-border space-y-3">
                   <div className="flex items-center gap-4">
                     <div className="text-center w-10 flex-shrink-0">
-                      <p className="font-display text-lg text-white">{new Date(event.date).getDate()}</p>
+                      <p className="font-display text-lg text-white">{new Date(event.date + 'T12:00:00').getDate()}</p>
                       <p className="text-[10px] text-eco-muted uppercase">
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
+                        {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
                       </p>
                     </div>
                     <div className="flex-1 min-w-0">

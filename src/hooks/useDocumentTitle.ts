@@ -22,14 +22,18 @@ export function useDocumentTitle(title: string, options?: DocumentTitleOptions) 
       metaTag.setAttribute('content', options.metaDescription)
     }
 
+    const robotsTag = document.querySelector('meta[name="robots"]')
     if (options?.noindex) {
-      let robotsTag = document.querySelector('meta[name="robots"]')
       if (!robotsTag) {
-        robotsTag = document.createElement('meta')
-        robotsTag.setAttribute('name', 'robots')
-        document.head.appendChild(robotsTag)
+        const tag = document.createElement('meta')
+        tag.setAttribute('name', 'robots')
+        tag.setAttribute('content', 'noindex, nofollow')
+        document.head.appendChild(tag)
+      } else {
+        robotsTag.setAttribute('content', 'noindex, nofollow')
       }
-      robotsTag.setAttribute('content', 'noindex, nofollow')
+    } else if (robotsTag && robotsTag.getAttribute('content') === 'noindex, nofollow') {
+      robotsTag.remove()
     }
   }, [title, options?.raw, options?.metaDescription, options?.noindex])
 }

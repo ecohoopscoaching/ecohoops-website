@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { 
-  Heart, Users, CheckCircle, Sparkles, Move, Target, Shield, Play, Smile, ChevronRight, ChevronLeft, BookOpen, Brain, X
+  Heart, Users, CheckCircle, Sparkles, Move, Target, Shield, Play, Smile, ChevronRight, ChevronLeft, BookOpen, Brain, X, ExternalLink
 } from 'lucide-react'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
+import { JR_NBA_REGISTER_URL } from '../components/home/JrNbaAnnouncement'
 
 export default function Jr() {
-  useDocumentTitle('EcoHoops Jr. | Jr. NBA & Jr. WNBA (Ages 5–6, 7–8 & 9–10)')
+  useDocumentTitle('EcoHoops Jr. | Jr. NBA & Jr. WNBA (Grades 1 to 6)')
   const { ref, isVisible } = useScrollReveal(0.05)
   const [activeCohort, setActiveCohort] = useState<'minis' | 'rookies' | 'rising'>('minis')
   const [psychologySlide, setPsychologySlide] = useState(0)
@@ -175,18 +176,18 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
 
   const cohorts = {
     minis: {
-      title: "Mini Movers (5–6 Co-Ed)",
-      desc: "Every child gets their own ball in a joyful co-ed environment. No standing in lines, and no long speeches. We use fun tag games, balance challenges, and guided play to teach running, stopping, coordination, and fundamental movement. Kids leave sweating, smiling, and asking to come back.",
+      title: "Grades 1–2 (Co-Ed Group)",
+      desc: "Girls and boys in Grades 1 and 2 play together in one joyful co-ed group. Every child gets their own basketball with no standing in lines and no long speeches. We use fun tag games, balance challenges, and guided play to build movement and confidence. Saturdays, Jan 23 to Mar 13, 2027 (8 sessions).",
       focus: "Basic movement, balance, ball familiarity, and joyful play."
     },
     rookies: {
-      title: "Rookie Ballers (Ages 7–8 Separate Girls’ and Boys’ Groups)",
-      desc: "Separated into dedicated girls’ and boys’ groups. Small-sided play (2v2 and 3v3) on scaled courts. Every kid gets to pass, shoot, and defend constantly with high ball touches. They learn game decisions, court spacing, and real confidence in a supportive, pressure-free environment.",
+      title: "Grades 3–4 (Girls & Boys Groups)",
+      desc: "Separate girls group (10:00–11:00 AM) and boys group (11:00 AM–12:00 PM). Small-sided play (2v2 and 3v3) on scaled courts so every player gets constant ball touches, passes, shots, and real game decisions in a supportive gym. Maximum 15 players per group.",
       focus: "Dribbling under light pressure, finding open space, decision making, and team chemistry."
     },
     rising: {
-      title: "Rising Stars (Ages 9–10 Separate Girls’ and Boys’ Groups)",
-      desc: "Separated into dedicated girls’ and boys’ groups. Designed for pre-teens building court IQ, live advantage play, shooting mechanics, and defensive footwork before competitive rep ball. High energy, zero toxicity.",
+      title: "Grades 5–6 (Girls & Boys Groups)",
+      desc: "Separate girls group (10:00–11:00 AM) and boys group (11:00 AM–12:00 PM). Designed for older elementary players building court IQ, live advantage play, shooting mechanics, and defensive footwork. High energy, no tryouts, no cuts. Maximum 15 players per group.",
       focus: "Advantage creation, court awareness, dynamic spacing, and communication."
     }
   }
@@ -221,7 +222,7 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             </div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#003366]/50 border border-[#97B3D2]/30 text-[#97B3D2] text-xs font-mono font-bold uppercase tracking-wider">
               <Sparkles size={14} className="text-[#97B3D2]" />
-              Official Jr. NBA / Jr. WNBA Program • Ages 5–6 (Co-Ed) • Ages 7–8 & 9–10 (Separate Groups)
+              Official Jr. NBA / Jr. WNBA Program • Grades 1–2 (Co-Ed) • Grades 3–4 & 5–6 (Girls & Boys Groups)
             </div>
           </div>
           <h1 className="font-display text-hero uppercase tracking-tighter mb-4 text-white leading-none">
@@ -230,13 +231,22 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
           <p className="text-eco-blue font-heading font-semibold text-lg max-w-3xl mx-auto tracking-wide">
             Imagine buying your 6-year-old a new video game, and the first level is an impossible boss fight with ten adults screaming instructions from the couch. They’d throw the controller down. Yet that's exactly how we teach kids basketball. We’re changing that.
           </p>
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
-              href="/#jr-nba-waitlist"
+              href={JR_NBA_REGISTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-glow inline-flex items-center gap-2 text-sm !py-2.5 !px-6"
             >
               <Sparkles size={16} />
-              Join the Waitlist
+              Register Now
+              <ExternalLink size={14} />
+            </a>
+            <a
+              href="/#jr-nba-waitlist"
+              className="btn-ghost inline-flex items-center gap-2 text-sm !py-2.5 !px-6"
+            >
+              Get Program Updates
             </a>
           </div>
         </motion.div>
@@ -550,9 +560,9 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
         <div className="mb-24">
           <div className="text-center mb-10">
             <span className="tag mb-3 inline-block">The Right Fit</span>
-            <h2 className="font-display text-3xl uppercase tracking-wide text-white">Our Age Groups</h2>
+            <h2 className="font-display text-3xl uppercase tracking-wide text-white">Our Grade Groups</h2>
             <p className="text-eco-muted-light text-sm max-w-xl mx-auto mt-2">
-              We group children into three focused divisions — Ages 5–6 (co-ed), Ages 7–8 (separate girls’ and boys’ groups), and Ages 9–10 (separate girls’ and boys’ groups). Groups will run based on registration numbers.
+              Five groups total for Grades 1 to 6 — Grades 1–2 (co-ed), Grades 3–4 (girls and boys groups), and Grades 5–6 (girls and boys groups). Only the first two groups that fill will run.
             </p>
           </div>
 
@@ -866,29 +876,29 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-2">
                 <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
                   <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
-                    Division 1: Minis
+                    Group 1: Co-Ed
                   </div>
-                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">5–6 Co-Ed</div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Grades 1–2 (Co-Ed)</div>
                   <p className="text-xs text-eco-muted-light leading-relaxed">
-                    60-minute weekly sessions focused on joy, movement exploration, ball balance, and play-based games.
+                    60-minute weekly Saturday sessions focused on joy, movement exploration, ball balance, and play-based games.
                   </p>
                 </div>
                 <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
                   <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
-                    Division 2: Rookies
+                    Groups 2 & 3: Girls / Boys
                   </div>
-                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Ages 7–8 (Separate Groups)</div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Grades 3–4 (Girls & Boys)</div>
                   <p className="text-xs text-eco-muted-light leading-relaxed">
-                    Small-sided 2v2 and 3v3 mini-games ensuring maximum touches, decision-making, and confidence.
+                    Small-sided 2v2 and 3v3 mini-games ensuring maximum touches, decision-making, and confidence. Girls 10–11 AM • Boys 11 AM–12 PM.
                   </p>
                 </div>
                 <div className="bg-[#050B14]/80 border border-white/5 rounded-2xl p-4">
                   <div className="text-xs font-mono uppercase tracking-wider text-[#97B3D2] font-bold mb-1">
-                    Division 3: Rising Stars
+                    Groups 4 & 5: Girls / Boys
                   </div>
-                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Ages 9–10 (Separate Groups)</div>
+                  <div className="text-white font-heading font-bold text-sm sm:text-base mb-1">Grades 5–6 (Girls & Boys)</div>
                   <p className="text-xs text-eco-muted-light leading-relaxed">
-                    Dynamic spacing, advantage play, and live game reads for pre-teens building true court IQ.
+                    Dynamic spacing, advantage play, and live game reads. Girls 10–11 AM • Boys 11 AM–12 PM.
                   </p>
                 </div>
               </div>
@@ -897,19 +907,30 @@ Visit EcoHoops Jr. at https://ecohoops.ca/jr for more resources.`;
             <div className="glow-card p-6 sm:p-8 bg-gradient-to-r from-[#003366]/30 via-eco-surface to-eco-surface border border-eco-blue/20 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6">
               <div>
                 <h4 className="font-display text-xl uppercase text-white mb-1">
-                  Ready to Reserve Your Spot?
+                  Registration Is Open — Winter 2027
                 </h4>
                 <p className="text-xs text-eco-muted-light max-w-md">
-                  Spots are capped at 12 players per coach to ensure personalized attention and optimal ball touches.
+                  Saturdays, Jan 23 to Mar 13, 2027 (8 sessions) at St. Francis of Assisi School gym. $249 total, max 15 players per group, first paid first served.
                 </p>
               </div>
-              <a
-                href="/#jr-nba-waitlist"
-                className="btn-glow !py-3 !px-6 text-xs uppercase tracking-wider font-heading font-bold flex-shrink-0 flex items-center gap-2"
-              >
-                <Sparkles size={14} />
-                Join the Waitlist
-              </a>
+              <div className="flex flex-wrap gap-3 flex-shrink-0">
+                <a
+                  href={JR_NBA_REGISTER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-glow !py-3 !px-6 text-xs uppercase tracking-wider font-heading font-bold flex items-center gap-2"
+                >
+                  <Sparkles size={14} />
+                  Register Now
+                  <ExternalLink size={12} />
+                </a>
+                <a
+                  href="/#jr-nba-waitlist"
+                  className="btn-ghost !py-3 !px-5 text-xs uppercase tracking-wider font-heading font-bold flex items-center gap-2"
+                >
+                  Get Updates
+                </a>
+              </div>
             </div>
           </div>
         </div>

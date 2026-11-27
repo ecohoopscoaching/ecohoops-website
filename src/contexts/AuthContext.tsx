@@ -103,6 +103,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }
 
+  // Support legacy WhatsApp/email links that still carry ?token=... by routing them through /api/auth
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const legacyToken = params.get('token')?.trim()
+    if (legacyToken && !window.location.pathname.startsWith('/api/')) {
+      window.location.replace(`/api/auth?token=${encodeURIComponent(legacyToken)}`)
+    }
+  }, [])
+
   const checkInitialSecretAccess = (): { hasAccess: boolean; scopedTeam: string | null; isAdminSecret: boolean } => {
     if (typeof window === 'undefined') return { hasAccess: false, scopedTeam: null, isAdminSecret: false }
     
@@ -119,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       scoped = 'u15-girls'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
+      localStorage.setItem('ecohoops_user_role', 'parent')
       return { hasAccess: true, scopedTeam: scoped, isAdminSecret: false }
     }
 
@@ -126,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       scoped = 'u16-boys'
       localStorage.setItem('ecohoops_whatsapp_access', 'true')
       localStorage.setItem('ecohoops_scoped_team', scoped)
+      localStorage.setItem('ecohoops_user_role', 'parent')
       return { hasAccess: true, scopedTeam: scoped, isAdminSecret: false }
     }
 
@@ -147,15 +159,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     if (savedProfile && savedRole) {
       try {
-        return JSON.parse(savedProfile)
+        const parsed: UserProfile = JSON.parse(savedProfile)
+        if (!initialAccess.scopedTeam || parsed.teamId === initialAccess.scopedTeam || initialAccess.isAdminSecret) {
+          return parsed
+        }
       } catch {
         return DEFAULT_PROFILES[savedRole] || null
       }
     }
-    if (savedRole && DEFAULT_PROFILES[savedRole]) {
-      return DEFAULT_PROFILES[savedRole]
-    }
-    if (initialAccess.hasAccess) {
+    if (initialAccess.hasAccess && !initialAccess.isAdminSecret) {
       if (initialAccess.scopedTeam === 'u15-girls') {
         return {
           id: 'parent-girls',
@@ -179,6 +191,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       return DEFAULT_PROFILES.parent
+    }
+    if (savedRole && DEFAULT_PROFILES[savedRole]) {
+      return DEFAULT_PROFILES[savedRole]
     }
     return null
   })
@@ -247,6 +262,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('ecohoops_whatsapp_access')
     localStorage.removeItem('ecohoops_scoped_team')
     localStorage.removeItem('ecohoops_parent_player_id')
+    localStorage.removeItem('ecohoops_admin_access')
+    if (typeof document !== 'undefined') {
+      document.cookie = 'ecohoops_hub_access=; Path=/; Max-Age=0; SameSite=Lax'
+      document.cookie = 'ecohoops_admin_access=; Path=/; Max-Age=0; SameSite=Lax'
+      document.cookie = 'ecohoops_hub_access=; Path=/; Domain=.ecohoops.ca; Max-Age=0; SameSite=Lax'
+      document.cookie = 'ecohoops_admin_access=; Path=/; Domain=.ecohoops.ca; Max-Age=0; SameSite=Lax'
+    }
     setHasSecretPass(false)
     setScopedTeamId(null)
     setUserRole(null)

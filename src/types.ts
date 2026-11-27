@@ -62,6 +62,12 @@ export interface ParentContact {
   linkedPlayerNumber?: number
 }
 
+export interface TeamRecords {
+  obl?: string
+  coalition?: string
+  overall?: string
+}
+
 export interface Team {
   id: string
   name: string
@@ -72,6 +78,7 @@ export interface Team {
   teamPhoto?: string
   isActive: boolean
   record: string
+  records?: TeamRecords
   roster: Player[]
   coaches?: CoachProfile[]
   parentContacts?: ParentContact[]
@@ -83,6 +90,19 @@ export interface AttendanceRecord {
   note?: string
   checkedIn?: boolean
   updatedAt?: string
+}
+
+export interface LeagueGame {
+  id: string
+  gameNumber: number
+  opponent: string
+  date: string
+  location?: string
+  ecoScore: number
+  opponentScore: number
+  outcome: 'W' | 'L'
+  halftime?: string
+  notes?: string
 }
 
 export interface ScheduleEvent {
@@ -112,6 +132,7 @@ export interface ScheduleEvent {
     score: string
     outcome: 'W' | 'L' | 'T'
   }
+  games?: LeagueGame[]
   lastAlertSent?: string
   lastAlertType?: 'pre_game' | 'weather' | 'update' | 'rsvp' | string
   isOptional?: boolean

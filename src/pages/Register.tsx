@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -10,9 +11,9 @@ import {
 type Step = 1 | 2 | 3 | 4 | 5
 
 const PROGRAMS = [
-  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Ages 5–10 • 5–6 Co-Ed, 7–8 & 9–10)', price: 249, spots: 'Waitlist Open', billing: '8 weeks, gear kit included' },
-  { id: 'rep-boys', name: 'Rep Team — U16 Boys (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
-  { id: 'rep-girls', name: 'Rep Team — U15 Girls (OBA + Coalition League)', price: 1950, spots: 'Open', billing: 'per season + HST' },
+  { id: 'jr-nba', name: 'EcoHoops Junior — Jr. NBA / Jr. WNBA (Grades 1 to 6 • Jan 23–Mar 13, 2027)', price: 249, spots: 'Registration Open (Max 15/group)', billing: '8 sessions, uniform & ball included' },
+  { id: 'rep-boys', name: 'Rep Team — U16 Boys (Coalition League)', price: 1950, spots: '2 Open Spots', billing: 'per season + HST' },
+  { id: 'rep-girls', name: 'Rep Team — U15 Girls (OBL + Coalition League)', price: 1950, spots: 'In Season (2026–27)', billing: 'per season + HST' },
   { id: 'friday-hoops', name: 'Friday Night Hoops', price: 0, spots: 'Free — Open to all', billing: '' },
   { id: 'skills', name: 'Skills Development Program', price: 149, spots: '1 session per week', billing: 'per month + HST' },
 ]
@@ -390,7 +391,9 @@ export default function Register() {
                       <input name="agreedToWaiver" checked={formData.agreedToWaiver} onChange={handleInputChange} type="checkbox" className="mt-1 accent-eco-orange" />
                       <span className="text-sm text-eco-muted-light">
                         I agree to the EcoHoops{' '}
-                        <span className="text-eco-orange hover-underline cursor-pointer">Waiver & Code of Conduct</span>.
+                        <Link to="/waiver" target="_blank" className="text-eco-orange hover:underline font-semibold">
+                          Waiver & Code of Conduct
+                        </Link>.
                         I understand the EcoHoops philosophy and commit to supporting a positive, growth-focused environment.
                       </span>
                     </label>
@@ -468,7 +471,11 @@ export default function Register() {
                   </div>
                   <h3 className="font-display text-3xl md:text-4xl text-white uppercase gradient-text">Registration Complete!</h3>
                   <p className="text-eco-muted-light text-lg max-w-md mx-auto">
-                    Please complete the Google Form and send the $249 fee by Interac to fees@ecohoops.ca to secure your child's spot (first-paid, first-served, 12 spots).
+                    {selectedProgram === 'jr-nba'
+                      ? "Please complete the Google Form and send the $249 fee by Interac to fees@ecohoops.ca to secure your child's spot (first-paid, first-served, max 15 spots per group)."
+                      : selectedProgram === 'friday-hoops'
+                      ? "Your registration for Friday Night Hoops (free open gym) is received! We look forward to seeing you on the court."
+                      : `Your registration for ${PROGRAMS.find(p => p.id === selectedProgram)?.name || 'EcoHoops'} has been received. Our coaching team will follow up shortly with next steps.`}
                   </p>
                   <button 
                     onClick={() => { 
